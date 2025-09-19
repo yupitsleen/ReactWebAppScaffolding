@@ -19,6 +19,15 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    gap: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .logo {
@@ -27,6 +36,20 @@
   margin-right: auto;
   letter-spacing: -0.025em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .logo {
+    font-size: 1.5rem;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.25rem;
+  }
 }
 
 .navLink {
@@ -39,6 +62,21 @@
   transition: all 0.3s ease;
   position: relative;
   backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+  .navLink {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navLink {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
 }
 
 .navLink:hover {
@@ -67,6 +105,21 @@
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
 
+@media (max-width: 768px) {
+  .logoutButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logoutButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
 .logoutButton:hover {
   background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
   transform: translateY(-1px);
@@ -79,4 +132,22 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 0.75rem;
+  }
 }

@@ -3,6 +3,15 @@ import type { ThemeConfig } from '../types/portal'
 
 // Create theme based on configuration
 export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    },
+  },
   palette: {
     mode: themeConfig.mode,
     primary: {
@@ -189,9 +198,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
         root: {
           paddingTop: '32px',
           paddingBottom: '32px',
-          '@media (max-width: 768px)': {
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          '@media (max-width: 640px)': {
             paddingTop: '16px',
             paddingBottom: '16px',
+            paddingLeft: '12px',
+            paddingRight: '12px',
+          },
+          '@media (max-width: 480px)': {
+            paddingTop: '12px',
+            paddingBottom: '12px',
+            paddingLeft: '8px',
+            paddingRight: '8px',
           },
         },
       },
@@ -206,6 +225,14 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '16px',
+          '@media (max-width: 640px)': {
+            fontSize: '2rem',
+            marginBottom: '12px',
+          },
+          '@media (max-width: 480px)': {
+            fontSize: '1.75rem',
+            marginBottom: '8px',
+          },
         },
         h3: {
           fontWeight: 600,
@@ -214,6 +241,14 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '16px',
+          '@media (max-width: 640px)': {
+            fontSize: '1.5rem',
+            marginBottom: '12px',
+          },
+          '@media (max-width: 480px)': {
+            fontSize: '1.25rem',
+            marginBottom: '8px',
+          },
         },
         h4: {
           fontWeight: 600,
@@ -222,6 +257,14 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '12px',
+          '@media (max-width: 640px)': {
+            fontSize: '1.25rem',
+            marginBottom: '8px',
+          },
+          '@media (max-width: 480px)': {
+            fontSize: '1.125rem',
+            marginBottom: '6px',
+          },
         },
         h5: {
           fontWeight: 500,
@@ -260,6 +303,12 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
             '&:last-child': {
               marginBottom: 0,
             },
+            '@media (max-width: 640px)': {
+              marginBottom: '32px',
+            },
+            '@media (max-width: 480px)': {
+              marginBottom: '24px',
+            },
           },
           '&.header-section': {
             marginBottom: '48px',
@@ -268,11 +317,20 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
               textAlign: 'left',
               marginBottom: '32px',
             },
+            '@media (max-width: 480px)': {
+              marginBottom: '24px',
+            },
           },
           '&.card-content-layout': {
             padding: '24px',
             height: '100%',
             transition: 'all 0.3s ease',
+            '@media (max-width: 640px)': {
+              padding: '16px',
+            },
+            '@media (max-width: 480px)': {
+              padding: '12px',
+            },
           },
           '&.card-header': {
             display: 'flex',
