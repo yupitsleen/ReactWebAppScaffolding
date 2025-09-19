@@ -5,10 +5,11 @@ import { AppProvider } from './context/AppContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
 import Home from './pages/Home'
-import About from './pages/About'
-import Register from './pages/Register'
-import Login from './pages/Login'
-import Profile from './pages/Profile'
+import Tasks from './pages/Tasks'
+import Payments from './pages/Payments'
+import Documents from './pages/Documents'
+import Discussions from './pages/Discussions'
+import Account from './pages/Account'
 import NotFound from './pages/NotFound'
 import './App.css'
 
@@ -28,10 +29,11 @@ function App() {
             <Layout>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/todos" element={<Tasks />} />
+                <Route path="/payments" element={<Payments />} />
+                <Route path="/documents" element={<Documents />} />
+                <Route path="/discussions" element={<Discussions />} />
+                <Route path="/account" element={<Account />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

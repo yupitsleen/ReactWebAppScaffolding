@@ -1,5 +1,14 @@
 // Mock data for wedding portal - uses generic interfaces with wedding-specific content
-import type { User, TodoItem, Payment, Document, Discussion, ServiceInfo, DashboardSummary } from '../types/portal'
+import type {
+  User,
+  TodoItem,
+  Payment,
+  Document,
+  Discussion,
+  ServiceInfo,
+  DashboardSummary,
+  AppConfig
+} from '../types/portal'
 
 // Mock users
 export const users: User[] = [
@@ -103,7 +112,7 @@ export const payments: Payment[] = [
   },
   {
     id: "payment-003",
-    title: "Final Service Payment",
+    description: "Final Service Payment",
     amount: 3200.00,
     dueDate: "2024-08-01",
     status: "pending",
@@ -231,4 +240,74 @@ export const dashboardSummary: DashboardSummary = {
   pendingPayments: payments.filter(payment => payment.status === 'pending').length,
   totalDocuments: documents.length,
   unreadDiscussions: discussions.filter(d => !d.resolved).length
+}
+
+// App configuration
+export const appConfig: AppConfig = {
+  appName: "Grandview Portal",
+  pageTitle: "Dashboard",
+  navigation: [
+    { id: "home", label: "Home", path: "/", enabled: true },
+    { id: "tasks", label: "Tasks", path: "/todos", enabled: true },
+    { id: "payments", label: "Payments", path: "/payments", enabled: true },
+    { id: "documents", label: "Documents", path: "/documents", enabled: true },
+    { id: "discussions", label: "Discussions", path: "/discussions", enabled: true },
+    { id: "account", label: "Account", path: "/account", enabled: true }
+  ],
+  dashboardCards: [
+    {
+      id: "tasks-card",
+      title: "Tasks",
+      subtitle: "Completed",
+      dataSource: "todoItems",
+      valueType: "ratio",
+      icon: "AssignmentTurnedIn",
+      color: "primary"
+    },
+    {
+      id: "payments-card",
+      title: "Payments",
+      subtitle: "Outstanding",
+      dataSource: "payments",
+      valueType: "count",
+      icon: "Payment",
+      color: "warning"
+    },
+    {
+      id: "documents-card",
+      title: "Documents",
+      subtitle: "Available",
+      dataSource: "documents",
+      valueType: "count",
+      icon: "Description",
+      color: "info"
+    },
+    {
+      id: "discussions-card",
+      title: "Discussions",
+      subtitle: "Need attention",
+      dataSource: "discussions",
+      valueType: "count",
+      icon: "Forum",
+      color: "secondary"
+    }
+  ],
+  dashboardSections: [
+    {
+      id: "priority-tasks",
+      title: "Priority Tasks",
+      dataSource: "todoItems",
+      filterCriteria: { priority: "high", status: "!completed" },
+      maxItems: 5,
+      enabled: true
+    },
+    {
+      id: "recent-discussions",
+      title: "Recent Discussions",
+      dataSource: "discussions",
+      filterCriteria: { resolved: false },
+      maxItems: 5,
+      enabled: true
+    }
+  ]
 }
