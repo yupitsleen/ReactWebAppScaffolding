@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+import createPortalTheme from './theme/portalTheme'
+import { appConfig } from './data/mockData'
 import { AppProvider } from './context/AppContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
@@ -13,15 +15,9 @@ import Account from './pages/Account'
 import NotFound from './pages/NotFound'
 import './App.css'
 
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-  },
-})
-
 function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={createPortalTheme(appConfig.theme)}>
       <CssBaseline />
       <ErrorBoundary>
         <AppProvider>

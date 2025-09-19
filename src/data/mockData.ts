@@ -7,7 +7,8 @@ import type {
   Discussion,
   ServiceInfo,
   DashboardSummary,
-  AppConfig
+  AppConfig,
+  ThemeConfig
 } from '../types/portal'
 
 // Mock users
@@ -309,5 +310,12 @@ export const appConfig: AppConfig = {
       maxItems: 5,
       enabled: true
     }
-  ]
+  ],
+  theme: {
+    primaryColor: "#1976d2",
+    secondaryColor: "#9c27b0",
+    mode: "light",
+    borderRadius: 12,
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
+  }
 }
