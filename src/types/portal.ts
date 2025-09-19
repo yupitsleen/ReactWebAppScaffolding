@@ -109,10 +109,19 @@ export interface DashboardSection {
   enabled: boolean
 }
 
+export interface ThemeConfig {
+  primaryColor: string
+  secondaryColor: string
+  mode: 'light' | 'dark'
+  borderRadius: number
+  fontFamily: string
+}
+
 export interface AppConfig {
   appName: string
   navigation: NavigationItem[]
   pageTitle: string
   dashboardCards: DashboardCard[]
   dashboardSections: DashboardSection[]
+  theme: ThemeConfig
 }
