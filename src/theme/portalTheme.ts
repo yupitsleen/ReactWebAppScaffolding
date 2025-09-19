@@ -299,9 +299,24 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
       styleOverrides: {
         root: {
           '&.dashboard-section': {
-            marginBottom: '48px',
+            marginBottom: '72px',
+            position: 'relative',
             '&:last-child': {
               marginBottom: 0,
+            },
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: '-36px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '120px',
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent 0%, #6B46C1 50%, transparent 100%)',
+              opacity: 0.3,
+            },
+            '&:first-child::before': {
+              display: 'none',
             },
             '@media (max-width: 640px)': {
               marginBottom: '32px',
@@ -311,11 +326,37 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
             },
           },
           '&.header-section': {
-            marginBottom: '48px',
+            marginBottom: '96px',
             textAlign: 'center',
+            position: 'relative',
+            padding: '48px 0',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '200px',
+              height: '200px',
+              background: 'radial-gradient(circle, rgba(107, 70, 193, 0.1) 0%, transparent 70%)',
+              borderRadius: '50%',
+              zIndex: -1,
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-48px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '300px',
+              height: '1px',
+              background: 'linear-gradient(90deg, transparent 0%, #F59E0B 25%, #6B46C1 50%, #10B981 75%, transparent 100%)',
+              opacity: 0.4,
+            },
             '@media (max-width: 768px)': {
               textAlign: 'left',
               marginBottom: '32px',
+              padding: '24px 0',
             },
             '@media (max-width: 480px)': {
               marginBottom: '24px',
