@@ -13,7 +13,7 @@ function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const { state, setUser } = useAppContext()
   
-  const isActive = (path: string) => location.pathname === path
+  const isPageActive = (path: string) => location.pathname === path
 
   const handleLogout = () => {
     setUser(null)
@@ -25,47 +25,42 @@ function Layout({ children }: LayoutProps) {
       <header className={styles.header}>
         <nav className={styles.nav}>
           <div className={styles.logo}>{env.APP_NAME}</div>
-          <Link 
-            to="/" 
-            className={`${styles.navLink} ${isActive('/') ? styles.active : ''}`}
+          <Link
+            to="/"
+            className={`${styles.navLink} ${isPageActive('/') ? styles.active : ''}`}
           >
             Home
           </Link>
-          <Link 
-            to="/about" 
-            className={`${styles.navLink} ${isActive('/about') ? styles.active : ''}`}
+          <Link
+            to="/todos"
+            className={`${styles.navLink} ${isPageActive('/todos') ? styles.active : ''}`}
           >
-            About
+            Tasks
           </Link>
-          
-          {state.user ? (
-            <>
-              <Link 
-                to="/profile" 
-                className={`${styles.navLink} ${isActive('/profile') ? styles.active : ''}`}
-              >
-                Profile
-              </Link>
-              <button onClick={handleLogout} className={styles.logoutButton}>
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link 
-                to="/register" 
-                className={`${styles.navLink} ${isActive('/register') ? styles.active : ''}`}
-              >
-                Register
-              </Link>
-              <Link 
-                to="/login" 
-                className={`${styles.navLink} ${isActive('/login') ? styles.active : ''}`}
-              >
-                Login
-              </Link>
-            </>
-          )}
+          <Link
+            to="/payments"
+            className={`${styles.navLink} ${isPageActive('/payments') ? styles.active : ''}`}
+          >
+            Payments
+          </Link>
+          <Link
+            to="/documents"
+            className={`${styles.navLink} ${isPageActive('/documents') ? styles.active : ''}`}
+          >
+            Documents
+          </Link>
+          <Link
+            to="/discussions"
+            className={`${styles.navLink} ${isPageActive('/discussions') ? styles.active : ''}`}
+          >
+            Discussions
+          </Link>
+          <Link
+            to="/account"
+            className={`${styles.navLink} ${isPageActive('/account') ? styles.active : ''}`}
+          >
+            Account
+          </Link>
         </nav>
       </header>
       <main className={styles.main}>
