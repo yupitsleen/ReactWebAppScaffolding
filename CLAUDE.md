@@ -57,6 +57,29 @@ npm run lint    # Run ESLint
 - The app is fully responsive and supports light/dark theming via Context
 - Code is structured to be easily forkable for new projects
 
+## Git Workflow
+
+**IMPORTANT: Always start new features from a fresh branch off main**
+
+```bash
+# 1. Start from main
+git checkout main
+git pull origin main
+
+# 2. Create new feature branch
+git checkout -b feature/feature-name
+
+# 3. Make changes and commit
+git add src/
+git commit -m "Add feature description"
+
+# 4. Push and create PR
+git push -u origin feature/feature-name
+# Then create PR via GitHub URL provided in output
+
+# 5. After PR is merged, repeat from step 1
+```
+
 ## Development Preferences
 
 - Take development slowly, explaining each step for learning
@@ -64,6 +87,7 @@ npm run lint    # Run ESLint
 - Commit all significant code additions when the app is running properly
 - Focus on one feature at a time with explanations
 - Use concise commit messages without Claude co-author attribution
+- Always create fresh branches off main for new features
 
 ## Future Technology Plans
 

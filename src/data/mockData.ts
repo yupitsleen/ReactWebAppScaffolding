@@ -312,10 +312,10 @@ export const appConfig: AppConfig = {
     }
   ],
   theme: {
-    primaryColor: "#1976d2",
-    secondaryColor: "#9c27b0",
+    primaryColor: "#6B46C1",
+    secondaryColor: "#F59E0B",
     mode: "light",
-    borderRadius: 12,
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
+    borderRadius: 16,
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
   }
 }

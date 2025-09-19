@@ -18,32 +18,32 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
       contrastText: '#ffffff',
     },
     success: {
-      main: '#2e7d32',
-      light: '#4caf50',
-      dark: '#1b5e20',
+      main: '#10B981',
+      light: '#34D399',
+      dark: '#047857',
     },
     warning: {
-      main: '#ed6c02',
-      light: '#ff9800',
-      dark: '#e65100',
+      main: '#F59E0B',
+      light: '#FCD34D',
+      dark: '#D97706',
     },
     error: {
-      main: '#d32f2f',
-      light: '#f44336',
-      dark: '#c62828',
+      main: '#EF4444',
+      light: '#F87171',
+      dark: '#DC2626',
     },
     info: {
-      main: '#0288d1',
-      light: '#03a9f4',
-      dark: '#01579b',
+      main: '#8B5CF6',
+      light: '#A78BFA',
+      dark: '#7C3AED',
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#FAFAF9',
+      paper: '#FFFFFF',
     },
     text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.6)',
+      primary: '#1F2937',
+      secondary: '#6B7280',
     },
   },
   typography: {
@@ -103,14 +103,18 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     // Card component defaults
     MuiCard: {
       defaultProps: {
-        elevation: 2,
+        elevation: 0,
       },
       styleOverrides: {
         root: {
           borderRadius: themeConfig.borderRadius,
-          transition: 'box-shadow 0.3s ease-in-out',
+          border: '1px solid #F3F4F6',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease-in-out',
           '&:hover': {
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0 8px 25px rgba(107, 70, 193, 0.15)',
+            transform: 'translateY(-2px)',
+            borderColor: '#E5E7EB',
           },
         },
       },
@@ -154,28 +158,28 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
           fontWeight: 500,
         },
         colorPrimary: {
-          backgroundColor: '#e3f2fd',
-          color: '#1565c0',
+          backgroundColor: '#EDE9FE',
+          color: '#6B46C1',
         },
         colorSecondary: {
-          backgroundColor: '#f3e5f5',
-          color: '#7b1fa2',
+          backgroundColor: '#FEF3C7',
+          color: '#D97706',
         },
         colorSuccess: {
-          backgroundColor: '#e8f5e8',
-          color: '#1b5e20',
+          backgroundColor: '#D1FAE5',
+          color: '#047857',
         },
         colorWarning: {
-          backgroundColor: '#fff3e0',
-          color: '#e65100',
+          backgroundColor: '#FEF3C7',
+          color: '#D97706',
         },
         colorError: {
-          backgroundColor: '#ffebee',
-          color: '#c62828',
+          backgroundColor: '#FEE2E2',
+          color: '#DC2626',
         },
         colorInfo: {
-          backgroundColor: '#e1f5fe',
-          color: '#01579b',
+          backgroundColor: '#EDE9FE',
+          color: '#7C3AED',
         },
       },
     },
