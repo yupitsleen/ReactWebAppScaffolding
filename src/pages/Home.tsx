@@ -80,122 +80,134 @@ function Home() {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
-        {appConfig.pageTitle}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        Welcome to {serviceInfo.name} - {serviceInfo.tagline}
-      </Typography>
+      {/* Header Section */}
+      <Box className="header-section">
+        <Typography variant="h3" component="h1">
+          {appConfig.pageTitle}
+        </Typography>
+        <Typography variant="h6" color="text.secondary">
+          Welcome to {serviceInfo.name} - {serviceInfo.tagline}
+        </Typography>
+      </Box>
 
-      {/* Dynamic Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {appConfig.dashboardCards.map((card) => (
-          <Grid item xs={12} sm={6} md={3} key={card.id}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Box sx={{ color: `${card.color}.main`, mr: 1 }}>
-                    {card.icon && iconMap[card.icon as keyof typeof iconMap]}
+      {/* Summary Cards Section */}
+      <Box className="dashboard-section">
+        <Typography variant="h5" component="h2">
+          Overview
+        </Typography>
+        <Grid container spacing={3}>
+          {appConfig.dashboardCards.map((card) => (
+            <Grid item xs={12} sm={6} lg={3} key={card.id}>
+              <Card>
+                <CardContent>
+                  <Box className="card-header">
+                    <Box className="card-icon" sx={{ color: `${card.color}.main` }}>
+                      {card.icon && iconMap[card.icon as keyof typeof iconMap]}
+                    </Box>
+                    <Typography variant="h4" component="div" className="card-value">
+                      {getCardValue(card)}
+                    </Typography>
                   </Box>
-                  <Typography variant="h6" component="div">
-                    {getCardValue(card)}
+                  <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
+                    {card.title}
                   </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {card.title}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {card.subtitle}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                  <Typography variant="body2" color="text.secondary">
+                    {card.subtitle}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
-      {/* Progress Bar */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Overall Progress
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            <Box sx={{ width: '100%', mr: 1 }}>
-              <LinearProgress variant="determinate" value={completionRate} />
+      {/* Progress Section */}
+      <Box className="dashboard-section">
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Overall Progress
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ width: '100%', mr: 1 }}>
+                <LinearProgress variant="determinate" value={completionRate} />
+              </Box>
+              <Box sx={{ minWidth: 35 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {completionRate}%
+                </Typography>
+              </Box>
             </Box>
-            <Box sx={{ minWidth: 35 }}>
-              <Typography variant="body2" color="text.secondary">
-                {completionRate}%
-              </Typography>
-            </Box>
-          </Box>
-          <Typography variant="body2" color="text.secondary">
-            {dashboardSummary.completedTodos} of {dashboardSummary.totalTodos} tasks completed
-          </Typography>
-        </CardContent>
-      </Card>
+            <Typography variant="body2" color="text.secondary">
+              {dashboardSummary.completedTodos} of {dashboardSummary.totalTodos} tasks completed
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Dynamic Sections */}
-      <Grid container spacing={3}>
-        {appConfig.dashboardSections
-          .filter(section => section.enabled)
-          .map((section, index) => {
-            const sectionData = getSectionData(section)
-            return (
-              <Grid item xs={12} md={6} key={section.id}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {section.title}
-                    </Typography>
-                    {sectionData.length > 0 ? (
-                      <List dense>
-                        {sectionData.map((item: any) => (
-                          <ListItem key={item.id}>
-                            {section.dataSource === 'todoItems' && (
-                              <>
-                                <Warning color="error" sx={{ mr: 1 }} />
-                                <ListItemText
-                                  primary={item.title}
-                                  secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}
-                                />
-                                <Chip
-                                  label={item.priority}
-                                  size="small"
-                                  color="error"
-                                />
-                              </>
-                            )}
-                            {section.dataSource === 'discussions' && (
-                              <>
-                                <ListItemText
-                                  primary={item.title}
-                                  secondary={`${item.author} · ${new Date(item.createdAt).toLocaleDateString()}`}
-                                />
-                                <Chip
-                                  label={item.priority}
-                                  size="small"
-                                  color={item.priority === 'urgent' ? 'error' : 'default'}
-                                />
-                              </>
-                            )}
-                          </ListItem>
-                        ))}
-                      </List>
-                    ) : (
-                      <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-                        <CheckCircle color="success" sx={{ mr: 1 }} />
-                        <Typography variant="body2" color="text.secondary">
-                          {section.dataSource === 'todoItems' ? 'No urgent tasks at this time' : 'All discussions resolved'}
-                        </Typography>
-                      </Box>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            )
-          })}
-      </Grid>
+      <Box className="dashboard-section">
+        <Grid container spacing={3}>
+          {appConfig.dashboardSections
+            .filter(section => section.enabled)
+            .map((section) => {
+              const sectionData = getSectionData(section)
+              return (
+                <Grid item xs={12} md={6} key={section.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        {section.title}
+                      </Typography>
+                      {sectionData.length > 0 ? (
+                        <List dense>
+                          {sectionData.map((item: any) => (
+                            <ListItem key={item.id}>
+                              {section.dataSource === 'todoItems' && (
+                                <>
+                                  <Warning color="error" sx={{ mr: 1 }} />
+                                  <ListItemText
+                                    primary={item.title}
+                                    secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}
+                                  />
+                                  <Chip
+                                    label={item.priority}
+                                    size="small"
+                                    color="error"
+                                  />
+                                </>
+                              )}
+                              {section.dataSource === 'discussions' && (
+                                <>
+                                  <ListItemText
+                                    primary={item.title}
+                                    secondary={`${item.author} · ${new Date(item.createdAt).toLocaleDateString()}`}
+                                  />
+                                  <Chip
+                                    label={item.priority}
+                                    size="small"
+                                    color={item.priority === 'urgent' ? 'error' : 'default'}
+                                  />
+                                </>
+                              )}
+                            </ListItem>
+                          ))}
+                        </List>
+                      ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                          <CheckCircle color="success" sx={{ mr: 1 }} />
+                          <Typography variant="body2" color="text.secondary">
+                            {section.dataSource === 'todoItems' ? 'No urgent tasks at this time' : 'All discussions resolved'}
+                          </Typography>
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              )
+            })}
+        </Grid>
+      </Box>
     </Container>
   )
 }

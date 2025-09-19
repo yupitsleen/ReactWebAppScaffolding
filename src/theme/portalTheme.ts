@@ -187,8 +187,107 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiContainer: {
       styleOverrides: {
         root: {
-          paddingTop: '24px',
-          paddingBottom: '24px',
+          paddingTop: '32px',
+          paddingBottom: '32px',
+          '@media (max-width: 768px)': {
+            paddingTop: '16px',
+            paddingBottom: '16px',
+          },
+        },
+      },
+    },
+    // Typography component defaults
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, #6B46C1 0%, #8B5CF6 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '16px',
+        },
+        h3: {
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, #6B46C1 0%, #8B5CF6 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '16px',
+        },
+        h4: {
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, #6B46C1 0%, #8B5CF6 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '12px',
+        },
+        h5: {
+          fontWeight: 500,
+          marginBottom: '24px',
+          color: '#1F2937',
+        },
+        h6: {
+          fontWeight: 400,
+          lineHeight: 1.6,
+          maxWidth: '600px',
+          margin: '0 auto 32px',
+          '@media (max-width: 768px)': {
+            textAlign: 'left',
+            margin: '0 0 24px',
+          },
+        },
+      },
+    },
+    // Grid component defaults
+    MuiGrid: {
+      styleOverrides: {
+        container: {
+          marginBottom: '48px',
+          '&:last-child': {
+            marginBottom: 0,
+          },
+        },
+      },
+    },
+    // Box component for sections
+    MuiBox: {
+      styleOverrides: {
+        root: {
+          '&.dashboard-section': {
+            marginBottom: '48px',
+            '&:last-child': {
+              marginBottom: 0,
+            },
+          },
+          '&.header-section': {
+            marginBottom: '48px',
+            textAlign: 'center',
+            '@media (max-width: 768px)': {
+              textAlign: 'left',
+              marginBottom: '32px',
+            },
+          },
+          '&.card-content-layout': {
+            padding: '24px',
+            height: '100%',
+            transition: 'all 0.3s ease',
+          },
+          '&.card-header': {
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            marginBottom: '16px',
+          },
+          '&.card-icon': {
+            fontSize: '2rem',
+            marginRight: '12px',
+          },
+          '&.card-value': {
+            fontWeight: 700,
+            lineHeight: 1.2,
+          },
         },
       },
     },
