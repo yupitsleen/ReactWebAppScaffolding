@@ -1,11 +1,13 @@
 import { Container, Typography, Card, CardContent, Chip, Box } from '@mui/material'
-import { todoItems } from '../data/mockData'
+import { todoItems, appConfig } from '../data/mockData'
 
 function Tasks() {
+  const pageConfig = appConfig.navigation.find(nav => nav.path === '/todos')
+
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        Tasks
+        {pageConfig?.label || 'Tasks'}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
         Manage your project tasks and deadlines.

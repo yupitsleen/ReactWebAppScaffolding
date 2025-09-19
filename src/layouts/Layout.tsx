@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import Footer from '../components/Footer'
-import { env } from '../utils/env'
+import { appConfig } from '../data/mockData'
 import styles from './Layout.module.css'
 
 interface LayoutProps {
@@ -24,43 +24,18 @@ function Layout({ children }: LayoutProps) {
     <div className={styles.layout}>
       <header className={styles.header}>
         <nav className={styles.nav}>
-          <div className={styles.logo}>{env.APP_NAME}</div>
-          <Link
-            to="/"
-            className={`${styles.navLink} ${isPageActive('/') ? styles.active : ''}`}
-          >
-            Home
-          </Link>
-          <Link
-            to="/todos"
-            className={`${styles.navLink} ${isPageActive('/todos') ? styles.active : ''}`}
-          >
-            Tasks
-          </Link>
-          <Link
-            to="/payments"
-            className={`${styles.navLink} ${isPageActive('/payments') ? styles.active : ''}`}
-          >
-            Payments
-          </Link>
-          <Link
-            to="/documents"
-            className={`${styles.navLink} ${isPageActive('/documents') ? styles.active : ''}`}
-          >
-            Documents
-          </Link>
-          <Link
-            to="/discussions"
-            className={`${styles.navLink} ${isPageActive('/discussions') ? styles.active : ''}`}
-          >
-            Discussions
-          </Link>
-          <Link
-            to="/account"
-            className={`${styles.navLink} ${isPageActive('/account') ? styles.active : ''}`}
-          >
-            Account
-          </Link>
+          <div className={styles.logo}>{appConfig.appName}</div>
+          {appConfig.navigation
+            .filter(nav => nav.enabled)
+            .map(nav => (
+              <Link
+                key={nav.id}
+                to={nav.path}
+                className={`${styles.navLink} ${isPageActive(nav.path) ? styles.active : ''}`}
+              >
+                {nav.label}
+              </Link>
+            ))}
         </nav>
       </header>
       <main className={styles.main}>

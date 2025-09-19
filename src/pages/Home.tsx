@@ -19,71 +19,86 @@ import {
   Warning,
   CheckCircle
 } from '@mui/icons-material'
-import { dashboardSummary, todoItems, payments, discussions, serviceInfo } from '../data/mockData'
+import { dashboardSummary, todoItems, payments, discussions, serviceInfo, appConfig } from '../data/mockData'
 
 function Home() {
-  const urgentTodos = todoItems.filter(todo => todo.priority === 'high' && todo.status !== 'completed')
-  const overduePayments = payments.filter(payment => payment.status === 'overdue')
-  const openDiscussions = discussions.filter(discussion => !discussion.resolved)
   const completionRate = Math.round((dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100)
 
-  // Get unique categories dynamically from data
-  const todoCategories = [...new Set(todoItems.map(todo => todo.category))]
-  const paymentCategories = [...new Set(payments.map(payment => payment.category))]
-  const documentTypes = [...new Set(discussions.map(discussion => discussion.authorRole))]
+  // Icon mapping
+  const iconMap = {
+    AssignmentTurnedIn: <AssignmentTurnedIn />,
+    Payment: <Payment />,
+    Description: <Description />,
+    Forum: <Forum />,
+    Warning: <Warning />,
+    CheckCircle: <CheckCircle />
+  }
 
-  const summaryCards = [
-    {
-      title: todoCategories.length > 1 ? 'Tasks' : todoCategories[0] || 'Tasks',
-      value: `${dashboardSummary.completedTodos}/${dashboardSummary.totalTodos}`,
-      subtitle: 'Completed',
-      icon: <AssignmentTurnedIn />,
-      color: 'primary'
-    },
-    {
-      title: paymentCategories.length > 1 ? 'Payments' : paymentCategories[0] || 'Payments',
-      value: dashboardSummary.pendingPayments,
-      subtitle: 'Outstanding',
-      icon: <Payment />,
-      color: 'warning'
-    },
-    {
-      title: 'Documents',
-      value: dashboardSummary.totalDocuments,
-      subtitle: 'Available',
-      icon: <Description />,
-      color: 'info'
-    },
-    {
-      title: 'Discussions',
-      value: dashboardSummary.unreadDiscussions,
-      subtitle: 'Need attention',
-      icon: <Forum />,
-      color: 'secondary'
+  // Calculate card values dynamically
+  const getCardValue = (card: any) => {
+    switch (card.dataSource) {
+      case 'todoItems':
+        return card.valueType === 'ratio'
+          ? `${dashboardSummary.completedTodos}/${dashboardSummary.totalTodos}`
+          : dashboardSummary.totalTodos
+      case 'payments':
+        return dashboardSummary.pendingPayments
+      case 'documents':
+        return dashboardSummary.totalDocuments
+      case 'discussions':
+        return dashboardSummary.unreadDiscussions
+      default:
+        return 0
     }
-  ]
+  }
+
+  // Get filtered data for sections
+  const getSectionData = (section: any) => {
+    const { dataSource, filterCriteria, maxItems } = section
+    let data: any[] = []
+
+    switch (dataSource) {
+      case 'todoItems':
+        data = todoItems.filter(item => {
+          if (filterCriteria?.priority && item.priority !== filterCriteria.priority) return false
+          if (filterCriteria?.status === '!completed' && item.status === 'completed') return false
+          return true
+        })
+        break
+      case 'discussions':
+        data = discussions.filter(item => {
+          if (filterCriteria?.resolved !== undefined && item.resolved !== filterCriteria.resolved) return false
+          return true
+        })
+        break
+      default:
+        data = []
+    }
+
+    return maxItems ? data.slice(0, maxItems) : data
+  }
 
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        Dashboard
+        {appConfig.pageTitle}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
         Welcome to {serviceInfo.name} - {serviceInfo.tagline}
       </Typography>
 
-      {/* Summary Cards */}
+      {/* Dynamic Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {summaryCards.map((card, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+        {appConfig.dashboardCards.map((card) => (
+          <Grid item xs={12} sm={6} md={3} key={card.id}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <Box sx={{ color: `${card.color}.main`, mr: 1 }}>
-                    {card.icon}
+                    {card.icon && iconMap[card.icon as keyof typeof iconMap]}
                   </Box>
                   <Typography variant="h6" component="div">
-                    {card.value}
+                    {getCardValue(card)}
                   </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -120,77 +135,66 @@ function Home() {
         </CardContent>
       </Card>
 
+      {/* Dynamic Sections */}
       <Grid container spacing={3}>
-        {/* Priority Tasks */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Priority Tasks
-              </Typography>
-              {urgentTodos.length > 0 ? (
-                <List dense>
-                  {urgentTodos.slice(0, 5).map(todo => (
-                    <ListItem key={todo.id}>
-                      <Warning color="error" sx={{ mr: 1 }} />
-                      <ListItemText
-                        primary={todo.title}
-                        secondary={`Due: ${new Date(todo.dueDate).toLocaleDateString()}`}
-                      />
-                      <Chip
-                        label={todo.priority}
-                        size="small"
-                        color="error"
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              ) : (
-                <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    No urgent tasks at this time
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Recent Discussions */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Recent Discussions
-              </Typography>
-              {openDiscussions.length > 0 ? (
-                <List dense>
-                  {openDiscussions.slice(0, 5).map(discussion => (
-                    <ListItem key={discussion.id}>
-                      <ListItemText
-                        primary={discussion.title}
-                        secondary={`${discussion.author} · ${new Date(discussion.createdAt).toLocaleDateString()}`}
-                      />
-                      <Chip
-                        label={discussion.priority}
-                        size="small"
-                        color={discussion.priority === 'urgent' ? 'error' : 'default'}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              ) : (
-                <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography variant="body2" color="text.secondary">
-                    All discussions resolved
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
+        {appConfig.dashboardSections
+          .filter(section => section.enabled)
+          .map((section, index) => {
+            const sectionData = getSectionData(section)
+            return (
+              <Grid item xs={12} md={6} key={section.id}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {section.title}
+                    </Typography>
+                    {sectionData.length > 0 ? (
+                      <List dense>
+                        {sectionData.map((item: any) => (
+                          <ListItem key={item.id}>
+                            {section.dataSource === 'todoItems' && (
+                              <>
+                                <Warning color="error" sx={{ mr: 1 }} />
+                                <ListItemText
+                                  primary={item.title}
+                                  secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}
+                                />
+                                <Chip
+                                  label={item.priority}
+                                  size="small"
+                                  color="error"
+                                />
+                              </>
+                            )}
+                            {section.dataSource === 'discussions' && (
+                              <>
+                                <ListItemText
+                                  primary={item.title}
+                                  secondary={`${item.author} · ${new Date(item.createdAt).toLocaleDateString()}`}
+                                />
+                                <Chip
+                                  label={item.priority}
+                                  size="small"
+                                  color={item.priority === 'urgent' ? 'error' : 'default'}
+                                />
+                              </>
+                            )}
+                          </ListItem>
+                        ))}
+                      </List>
+                    ) : (
+                      <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                        <CheckCircle color="success" sx={{ mr: 1 }} />
+                        <Typography variant="body2" color="text.secondary">
+                          {section.dataSource === 'todoItems' ? 'No urgent tasks at this time' : 'All discussions resolved'}
+                        </Typography>
+                      </Box>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            )
+          })}
       </Grid>
     </Container>
   )

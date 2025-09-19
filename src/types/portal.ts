@@ -82,3 +82,37 @@ export interface DashboardSummary {
   totalDocuments: number
   unreadDiscussions: number
 }
+
+export interface NavigationItem {
+  id: string
+  label: string
+  path: string
+  enabled: boolean
+}
+
+export interface DashboardCard {
+  id: string
+  title: string
+  subtitle: string
+  dataSource: string // which data array to pull from
+  valueType: 'count' | 'ratio' | 'custom'
+  icon?: string
+  color: 'primary' | 'secondary' | 'info' | 'warning' | 'error' | 'success'
+}
+
+export interface DashboardSection {
+  id: string
+  title: string
+  dataSource: string
+  filterCriteria?: any
+  maxItems?: number
+  enabled: boolean
+}
+
+export interface AppConfig {
+  appName: string
+  navigation: NavigationItem[]
+  pageTitle: string
+  dashboardCards: DashboardCard[]
+  dashboardSections: DashboardSection[]
+}
