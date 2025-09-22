@@ -1,5 +1,5 @@
+import { memo, useMemo } from 'react'
 import {
-  Container,
   Typography,
   Grid,
   Card,
@@ -14,21 +14,26 @@ import {
 import * as Icons from '@mui/icons-material'
 import { dashboardSummary, todoItems, payments, discussions, serviceInfo } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
+import PageLayout from '../components/PageLayout'
 import LoadingWrapper from '../components/LoadingWrapper'
 import { usePageLoading } from '../hooks/usePageLoading'
 
-function Home() {
+const Home = memo(() => {
   const [loading] = usePageLoading(false)
-  const completionRate = Math.round((dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100)
 
-  const iconMap = {
+  const completionRate = useMemo(
+    () => Math.round((dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100),
+    [dashboardSummary.completedTodos, dashboardSummary.totalTodos]
+  )
+
+  const iconMap = useMemo(() => ({
     AssignmentTurnedIn: <Icons.AssignmentTurnedIn />,
     Payment: <Icons.Payment />,
     Description: <Icons.Description />,
     Forum: <Icons.Forum />,
     Warning: <Icons.Warning />,
     CheckCircle: <Icons.CheckCircle />
-  }
+  }), [])
 
   const getCardValue = (card: any) => {
     switch (card.dataSource) {
@@ -73,16 +78,10 @@ function Home() {
   }
 
   return (
-    <Container maxWidth="lg">
-      {/* Header Section */}
-      <Box className="header-section">
-        <Typography variant="h3" component="h1">
-          {appConfig.pageTitle}
-        </Typography>
-        <Typography variant="h6" color="text.secondary">
-          Welcome to {serviceInfo.name} - {serviceInfo.tagline}
-        </Typography>
-      </Box>
+    <PageLayout
+      title={appConfig.pageTitle}
+      description={`Welcome to ${serviceInfo.name} - ${serviceInfo.tagline}`}
+    >
 
       {/* Summary Cards Section */}
       <LoadingWrapper loading={loading} minHeight="200px">
@@ -208,8 +207,8 @@ function Home() {
           </Grid>
         </Box>
       </LoadingWrapper>
-    </Container>
+    </PageLayout>
   )
-}
+})
 
 export default Home

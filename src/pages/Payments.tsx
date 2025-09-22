@@ -1,19 +1,11 @@
-import { Container, Typography, Card, CardContent, Chip, Box } from '@mui/material'
+import { memo } from 'react'
+import { Typography, Card, CardContent, Chip, Box } from '@mui/material'
 import { payments } from '../data/sampleData'
-import { appConfig } from '../data/configurableData'
+import PageLayout from '../components/PageLayout'
 
-function Payments() {
-  const pageConfig = appConfig.navigation.find(nav => nav.path === '/payments')
-
+const Payments = memo(() => {
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
-        {pageConfig?.label || 'Payments'}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {pageConfig?.description}
-      </Typography>
-
+    <PageLayout>
       <Box sx={{ mt: 3 }}>
         {payments.map(payment => (
           <Card key={payment.id} sx={{ mb: 2 }}>
@@ -53,8 +45,8 @@ function Payments() {
           </Card>
         ))}
       </Box>
-    </Container>
+    </PageLayout>
   )
-}
+})
 
 export default Payments

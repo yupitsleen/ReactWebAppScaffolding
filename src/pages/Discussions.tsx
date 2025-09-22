@@ -1,19 +1,11 @@
-import { Container, Typography, Card, CardContent, Chip, Box, Avatar } from '@mui/material'
+import { memo } from 'react'
+import { Typography, Card, CardContent, Chip, Box, Avatar } from '@mui/material'
 import { discussions } from '../data/sampleData'
-import { appConfig } from '../data/configurableData'
+import PageLayout from '../components/PageLayout'
 
-function Discussions() {
-  const pageConfig = appConfig.navigation.find(nav => nav.path === '/discussions')
-
+const Discussions = memo(() => {
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
-        {pageConfig?.label || 'Discussions'}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {pageConfig?.description}
-      </Typography>
-
+    <PageLayout>
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {discussions.map(discussion => (
           <Card key={discussion.id} sx={{ mb: 2, width: '100%', maxWidth: '600px' }}>
@@ -71,8 +63,8 @@ function Discussions() {
           </Card>
         ))}
       </Box>
-    </Container>
+    </PageLayout>
   )
-}
+})
 
 export default Discussions

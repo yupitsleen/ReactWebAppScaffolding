@@ -1,19 +1,11 @@
-import { Container, Typography, Card, CardContent, Box, Avatar, Button } from '@mui/material'
+import { memo } from 'react'
+import { Card, CardContent, Box, Avatar, Button, Typography } from '@mui/material'
 import { users, serviceInfo } from '../data/sampleData'
-import { appConfig } from '../data/configurableData'
+import PageLayout from '../components/PageLayout'
 
-function Account() {
-  const pageConfig = appConfig.navigation.find(nav => nav.path === '/account')
-
+const Account = memo(() => {
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
-        {pageConfig?.label || 'Account'}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {pageConfig?.description}
-      </Typography>
-
+    <PageLayout>
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* Users Section */}
         <Card>
@@ -82,8 +74,8 @@ function Account() {
           </CardContent>
         </Card>
       </Box>
-    </Container>
+    </PageLayout>
   )
-}
+})
 
 export default Account

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
 import type { AppState, AppContextValue, User } from '../types/app'
 import { getFromStorage, setToStorage, removeFromStorage } from '../utils/helpers'
@@ -20,30 +20,32 @@ interface AppProviderProps {
 export function AppProvider({ children }: AppProviderProps) {
   const [state, setState] = useState<AppState>(getInitialState)
 
-  const setUser = (user: User | null) => {
+  // Memoize callbacks to prevent recreation on every render
+  const setUser = useCallback((user: User | null) => {
     setState(prev => ({ ...prev, user }))
     if (user) {
       setToStorage('user', user)
     } else {
       removeFromStorage('user')
     }
-  }
+  }, [])
 
-  const setTheme = (theme: 'light' | 'dark') => {
+  const setTheme = useCallback((theme: 'light' | 'dark') => {
     setState(prev => ({ ...prev, theme }))
     setToStorage('theme', theme)
-  }
+  }, [])
 
-  const setLoading = (loading: boolean) => {
+  const setLoading = useCallback((loading: boolean) => {
     setState(prev => ({ ...prev, loading }))
-  }
+  }, [])
 
-  const value: AppContextValue = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo<AppContextValue>(() => ({
     state,
     setUser,
     setTheme,
     setLoading,
-  }
+  }), [state, setUser, setTheme, setLoading])
 
   return (
     <AppContext.Provider value={value}>
