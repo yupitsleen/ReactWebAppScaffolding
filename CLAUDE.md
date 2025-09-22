@@ -273,6 +273,49 @@ git push -u origin feature/feature-name
 - Always ask: "Can this be configured instead of coded?"
 - Prefer generic interfaces over specific implementations
 
+## Future Extensibility Roadmap
+
+**PRIORITY: Make the app more extensible through better abstractions following SOLID principles**
+
+### Planned Extensibility Improvements:
+
+**1. Generic Data Display Components**
+- **Problem**: Each page manually maps data fields with duplicated logic
+- **Solution**: Create `<DataCard>` and `<DataList>` components that work with any data structure
+- **Benefit**: Add new data types without touching existing components
+- **Configuration**: Use existing `fieldConfig` system for field rendering rules
+
+**2. Abstract Status and Action Systems**
+- **Problem**: Status colors and action buttons scattered across components
+- **Solution**: Create `<StatusChip>` and `<ActionButton>` components driven by configuration
+- **Benefit**: Add new statuses/actions by updating config only
+- **Enhancement**: Extend current `statusConfig` and `actions` systems
+
+**3. Configurable Field Rendering System**
+- **Problem**: Field display logic duplicated across pages (dates, chips, etc.)
+- **Solution**: Create `<FieldRenderer>` that handles different field types automatically
+- **Benefit**: Support new field types (currency, images, etc.) through config
+- **Integration**: Works with existing `fieldConfig.primary/secondary/hidden` system
+
+**4. Generic Filtering and Sorting**
+- **Problem**: Each page implements its own filtering logic
+- **Solution**: Create reusable `useDataFilter` and `useDataSort` hooks
+- **Benefit**: Add filtering/sorting to any page without custom implementation
+- **Configuration**: Define filter rules in `appConfig`
+
+### SOLID Principles Implementation:
+- **Single Responsibility**: Each component handles one specific concern
+- **Open/Closed**: Add new data types/actions/statuses without modifying existing code
+- **Liskov Substitution**: Generic components work with any data that follows the interface
+- **Interface Segregation**: Small, focused interfaces instead of large ones
+- **Dependency Inversion**: Components depend on abstractions (config) not concrete implementations
+
+### Architecture Benefits:
+- **One-Place Updates**: Add new features by updating configuration only
+- **Type Safety**: Generic components with proper TypeScript constraints
+- **Reusability**: Same components work across different business domains
+- **Maintainability**: Changes isolated to specific abstractions
+
 ## Development Preferences
 
 - **Be concise** - Keep responses short and focused
