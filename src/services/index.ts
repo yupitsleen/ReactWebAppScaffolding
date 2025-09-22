@@ -1,4 +1,2 @@
-export { apiClient } from './api'
-export { authService } from './auth'
-export type { ApiResponse, ApiError } from './api'
-export type { LoginRequest, RegisterRequest, AuthResponse } from './auth'
+export { apiClient, type ApiResponse, type ApiError } from './api'
+export { authService, type AuthUser, type AuthTokens, type LoginCredentials } from './auth'

@@ -1,4 +1,3 @@
-// Mock data for wedding portal - uses generic interfaces with wedding-specific content
 import type {
   User,
   TodoItem,
@@ -6,12 +5,9 @@ import type {
   Document,
   Discussion,
   ServiceInfo,
-  DashboardSummary,
-  AppConfig,
-  ThemeConfig
+  DashboardSummary
 } from '../types/portal'
 
-// Mock users
 export const users: User[] = [
   {
     id: "user-001",
@@ -39,7 +35,6 @@ export const users: User[] = [
   }
 ]
 
-// Mock todo items
 export const todoItems: TodoItem[] = [
   {
     id: "todo-001",
@@ -91,7 +86,6 @@ export const todoItems: TodoItem[] = [
   }
 ]
 
-// Mock payments
 export const payments: Payment[] = [
   {
     id: "payment-001",
@@ -129,7 +123,6 @@ export const payments: Payment[] = [
   }
 ]
 
-// Mock documents
 export const documents: Document[] = [
   {
     id: "doc-001",
@@ -173,7 +166,6 @@ export const documents: Document[] = [
   }
 ]
 
-// Mock discussions
 export const discussions: Discussion[] = [
   {
     id: "discussion-001",
@@ -222,7 +214,6 @@ export const discussions: Discussion[] = [
   }
 ]
 
-// Service/venue info
 export const serviceInfo: ServiceInfo = {
   name: "Grandview Gardens",
   tagline: "Creating Unforgettable Moments",
@@ -234,88 +225,10 @@ export const serviceInfo: ServiceInfo = {
   }
 }
 
-// Dashboard summary
 export const dashboardSummary: DashboardSummary = {
   totalTodos: todoItems.length,
   completedTodos: todoItems.filter(item => item.status === 'completed').length,
   pendingPayments: payments.filter(payment => payment.status === 'pending').length,
   totalDocuments: documents.length,
   unreadDiscussions: discussions.filter(d => !d.resolved).length
-}
-
-// App configuration
-export const appConfig: AppConfig = {
-  appName: "Grandview Portal",
-  pageTitle: "Dashboard",
-  navigation: [
-    { id: "home", label: "Home", path: "/", enabled: true },
-    { id: "tasks", label: "Tasks", path: "/todos", enabled: true },
-    { id: "payments", label: "Payments", path: "/payments", enabled: true },
-    { id: "documents", label: "Documents", path: "/documents", enabled: true },
-    { id: "discussions", label: "Discussions", path: "/discussions", enabled: true },
-    { id: "account", label: "Account", path: "/account", enabled: true }
-  ],
-  dashboardCards: [
-    {
-      id: "tasks-card",
-      title: "Tasks",
-      subtitle: "Completed",
-      dataSource: "todoItems",
-      valueType: "ratio",
-      icon: "AssignmentTurnedIn",
-      color: "primary"
-    },
-    {
-      id: "payments-card",
-      title: "Payments",
-      subtitle: "Outstanding",
-      dataSource: "payments",
-      valueType: "count",
-      icon: "Payment",
-      color: "warning"
-    },
-    {
-      id: "documents-card",
-      title: "Documents",
-      subtitle: "Available",
-      dataSource: "documents",
-      valueType: "count",
-      icon: "Description",
-      color: "info"
-    },
-    {
-      id: "discussions-card",
-      title: "Discussions",
-      subtitle: "Need attention",
-      dataSource: "discussions",
-      valueType: "count",
-      icon: "Forum",
-      color: "secondary"
-    }
-  ],
-  dashboardSections: [
-    {
-      id: "priority-tasks",
-      title: "Priority Tasks",
-      dataSource: "todoItems",
-      filterCriteria: { priority: "high", status: "!completed" },
-      maxItems: 5,
-      enabled: true
-    },
-    {
-      id: "recent-discussions",
-      title: "Recent Discussions",
-      dataSource: "discussions",
-      filterCriteria: { resolved: false },
-      maxItems: 5,
-      enabled: true
-    }
-  ],
-  theme: {
-    primaryColor: "#1976d2",
-    secondaryColor: "#9c27b0",
-    mode: "light",
-    borderRadius: 12,
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
-  }
 }

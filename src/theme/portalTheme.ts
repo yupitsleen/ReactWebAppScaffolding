@@ -1,8 +1,30 @@
 import { createTheme } from '@mui/material/styles'
 import type { ThemeConfig } from '../types/portal'
 
+// Inject CSS custom properties for dynamic color management
+const injectCSSVariables = (themeConfig: ThemeConfig) => {
+  const root = document.documentElement;
+  root.style.setProperty('--primary-color', themeConfig.primaryColor);
+  root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
+  root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#1F2937');
+  root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB');
+  root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF');
+  root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#374151');
+};
+
 // Create theme based on configuration
-export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
+export const createPortalTheme = (themeConfig: ThemeConfig) => {
+  injectCSSVariables(themeConfig);
+  return createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    },
+  },
   palette: {
     mode: themeConfig.mode,
     primary: {
@@ -18,32 +40,32 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
       contrastText: '#ffffff',
     },
     success: {
-      main: '#2e7d32',
-      light: '#4caf50',
-      dark: '#1b5e20',
+      main: '#10B981',
+      light: '#34D399',
+      dark: '#047857',
     },
     warning: {
-      main: '#ed6c02',
-      light: '#ff9800',
-      dark: '#e65100',
+      main: '#F59E0B',
+      light: '#FCD34D',
+      dark: '#D97706',
     },
     error: {
-      main: '#d32f2f',
-      light: '#f44336',
-      dark: '#c62828',
+      main: '#EF4444',
+      light: '#F87171',
+      dark: '#DC2626',
     },
     info: {
-      main: '#0288d1',
-      light: '#03a9f4',
-      dark: '#01579b',
+      main: '#8B5CF6',
+      light: '#A78BFA',
+      dark: '#7C3AED',
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#E8E3EB',
+      paper: '#FFFFFF',
     },
     text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.6)',
+      primary: '#1F2937',
+      secondary: '#6B7280',
     },
   },
   typography: {
@@ -97,20 +119,26 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
   },
   spacing: 8,
   shape: {
-    borderRadius: themeConfig.borderRadius,
+    borderRadius: 0,
   },
   components: {
     // Card component defaults
     MuiCard: {
       defaultProps: {
-        elevation: 2,
+        elevation: 0,
       },
       styleOverrides: {
         root: {
-          borderRadius: themeConfig.borderRadius,
-          transition: 'box-shadow 0.3s ease-in-out',
+          borderRadius: 0,
+          border: '1px solid #F3F4F6',
+          boxShadow: 'none',
+          transition: 'all 0.3s ease-in-out',
+          marginBottom: '24px',
+          textAlign: 'center',
           '&:hover': {
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.12)',
+            boxShadow: 'none',
+            borderColor: 'var(--primary-color)',
+            backgroundColor: 'rgba(49, 46, 129, 0.02)',
           },
         },
       },
@@ -119,9 +147,10 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: '24px',
+          padding: '12px',
+          textAlign: 'center',
           '&:last-child': {
-            paddingBottom: '24px',
+            paddingBottom: '12px',
           },
         },
       },
@@ -130,18 +159,20 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 0,
           textTransform: 'none',
           fontWeight: 500,
           padding: '8px 24px',
           boxShadow: 'none',
+          transition: 'all 0.3s ease-in-out',
           '&:hover': {
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+            boxShadow: 'none',
+            backgroundColor: 'rgba(49, 46, 129, 0.08)',
           },
         },
         contained: {
           '&:hover': {
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+            backgroundColor: 'rgba(49, 46, 129, 0.9)',
           },
         },
       },
@@ -150,32 +181,32 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: 0,
           fontWeight: 500,
         },
         colorPrimary: {
-          backgroundColor: '#e3f2fd',
-          color: '#1565c0',
+          backgroundColor: '#EDE9FE',
+          color: '#312E81',
         },
         colorSecondary: {
-          backgroundColor: '#f3e5f5',
-          color: '#7b1fa2',
+          backgroundColor: '#FEF3C7',
+          color: '#D97706',
         },
         colorSuccess: {
-          backgroundColor: '#e8f5e8',
-          color: '#1b5e20',
+          backgroundColor: '#D1FAE5',
+          color: '#047857',
         },
         colorWarning: {
-          backgroundColor: '#fff3e0',
-          color: '#e65100',
+          backgroundColor: '#FEF3C7',
+          color: '#D97706',
         },
         colorError: {
-          backgroundColor: '#ffebee',
-          color: '#c62828',
+          backgroundColor: '#FEE2E2',
+          color: '#DC2626',
         },
         colorInfo: {
-          backgroundColor: '#e1f5fe',
-          color: '#01579b',
+          backgroundColor: '#EDE9FE',
+          color: '#7C3AED',
         },
       },
     },
@@ -183,8 +214,175 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiContainer: {
       styleOverrides: {
         root: {
-          paddingTop: '24px',
-          paddingBottom: '24px',
+          paddingTop: '16px',
+          paddingBottom: '16px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          textAlign: 'center',
+          '@media (max-width: 640px)': {
+            paddingTop: '12px',
+            paddingBottom: '12px',
+            paddingLeft: '8px',
+            paddingRight: '8px',
+          },
+          '@media (max-width: 480px)': {
+            paddingTop: '8px',
+            paddingBottom: '8px',
+            paddingLeft: '6px',
+            paddingRight: '6px',
+          },
+        },
+      },
+    },
+    // Typography component defaults
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '8px',
+          textAlign: 'center',
+          '@media (max-width: 640px)': {
+            fontSize: '2rem',
+            marginBottom: '6px',
+          },
+          '@media (max-width: 480px)': {
+            fontSize: '1.75rem',
+            marginBottom: '4px',
+          },
+        },
+        h3: {
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '8px',
+          textAlign: 'center',
+          '@media (max-width: 640px)': {
+            fontSize: '1.5rem',
+            marginBottom: '6px',
+          },
+          '@media (max-width: 480px)': {
+            fontSize: '1.25rem',
+            marginBottom: '4px',
+          },
+        },
+        h4: {
+          fontWeight: 600,
+          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '6px',
+          textAlign: 'center',
+          '@media (max-width: 640px)': {
+            fontSize: '1.25rem',
+            marginBottom: '4px',
+          },
+          '@media (max-width: 480px)': {
+            fontSize: '1.125rem',
+            marginBottom: '3px',
+          },
+        },
+        h5: {
+          fontWeight: 500,
+          marginBottom: '12px',
+          color: '#1F2937',
+          textAlign: 'center',
+        },
+        h6: {
+          fontWeight: 400,
+          lineHeight: 1.6,
+          maxWidth: '600px',
+          margin: '0 auto 16px',
+          textAlign: 'center',
+          '@media (max-width: 768px)': {
+            margin: '0 0 12px',
+          },
+        },
+        body1: {
+          textAlign: 'center',
+        },
+        body2: {
+          textAlign: 'center',
+        },
+        subtitle1: {
+          textAlign: 'center',
+        },
+        subtitle2: {
+          textAlign: 'center',
+        },
+      },
+    },
+    // Grid component defaults
+    MuiGrid: {
+      styleOverrides: {
+        container: {
+          marginBottom: '40px',
+          justifyContent: 'center',
+          '&:last-child': {
+            marginBottom: 0,
+          },
+        },
+      },
+    },
+    // Box component for sections
+    MuiBox: {
+      styleOverrides: {
+        root: {
+          '&.dashboard-section': {
+            marginBottom: '48px',
+            textAlign: 'center',
+            '&:last-child': {
+              marginBottom: 0,
+            },
+            '@media (max-width: 640px)': {
+              marginBottom: '32px',
+            },
+            '@media (max-width: 480px)': {
+              marginBottom: '24px',
+            },
+          },
+          '&.header-section': {
+            marginBottom: '16px',
+            textAlign: 'center',
+            '@media (max-width: 768px)': {
+              textAlign: 'center',
+              marginBottom: '12px',
+            },
+            '@media (max-width: 480px)': {
+              marginBottom: '8px',
+            },
+          },
+          '&.card-content-layout': {
+            padding: '12px',
+            height: '100%',
+            transition: 'all 0.3s ease',
+            '@media (max-width: 640px)': {
+              padding: '10px',
+            },
+            '@media (max-width: 480px)': {
+              padding: '8px',
+            },
+          },
+          '&.card-header': {
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            marginBottom: '4px',
+          },
+          '&.card-icon': {
+            fontSize: '1.75rem',
+            marginRight: '8px',
+          },
+          '&.card-value': {
+            fontWeight: 700,
+            lineHeight: 1.2,
+          },
         },
       },
     },
@@ -192,7 +390,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 0,
         },
       },
     },
@@ -200,7 +398,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          boxShadow: 'none',
         },
       },
     },
@@ -208,10 +406,11 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiListItem: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 0,
           marginBottom: 4,
+          textAlign: 'center',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            backgroundColor: 'rgba(49, 46, 129, 0.04)',
           },
         },
       },
@@ -244,7 +443,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 16,
+          borderRadius: 0,
         },
       },
     },
@@ -252,13 +451,13 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => createTheme({
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
+          borderRadius: 0,
           height: 8,
         },
       },
     },
   },
-})
+})}
 
 // Default theme for backward compatibility
 export const portalTheme = createPortalTheme({

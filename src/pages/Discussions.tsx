@@ -1,21 +1,24 @@
 import { Container, Typography, Card, CardContent, Chip, Box, Avatar, Divider } from '@mui/material'
-import { discussions } from '../data/mockData'
+import { discussions } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Discussions() {
+  const pageConfig = appConfig.navigation.find(nav => nav.path === '/discussions')
+
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        Discussions
+        {pageConfig?.label || 'Discussions'}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Communicate with your team and track conversations.
+        {pageConfig?.description}
       </Typography>
 
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {discussions.map(discussion => (
-          <Card key={discussion.id} sx={{ mb: 2 }}>
+          <Card key={discussion.id} sx={{ mb: 2, width: '100%', maxWidth: '600px' }}>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2, flexDirection: 'column', gap: 1 }}>
                 <Typography variant="h6" component="h3">
                   {discussion.title}
                 </Typography>
@@ -33,14 +36,14 @@ function Discussions() {
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, justifyContent: 'center' }}>
                 <Avatar sx={{ width: 32, height: 32 }}>{discussion.author[0]}</Avatar>
                 <Typography variant="body2" color="text.secondary">
                   {discussion.author} ({discussion.authorRole}) · {new Date(discussion.createdAt).toLocaleDateString()}
                 </Typography>
               </Box>
 
-              <Typography variant="body2" paragraph>
+              <Typography variant="body2" paragraph sx={{ textAlign: 'left' }}>
                 {discussion.content}
               </Typography>
 
@@ -51,14 +54,14 @@ function Discussions() {
                     Replies ({discussion.replies.length})
                   </Typography>
                   {discussion.replies.map(reply => (
-                    <Box key={reply.id} sx={{ ml: 2, mt: 1, p: 1, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                    <Box key={reply.id} sx={{ mt: 1, p: 1, backgroundColor: 'grey.50', borderRadius: 1, textAlign: 'center' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, justifyContent: 'center' }}>
                         <Avatar sx={{ width: 24, height: 24 }}>{reply.author[0]}</Avatar>
                         <Typography variant="caption" color="text.secondary">
                           {reply.author} ({reply.authorRole}) · {new Date(reply.createdAt).toLocaleDateString()}
                         </Typography>
                       </Box>
-                      <Typography variant="body2">
+                      <Typography variant="body2" sx={{ textAlign: 'left' }}>
                         {reply.content}
                       </Typography>
                     </Box>

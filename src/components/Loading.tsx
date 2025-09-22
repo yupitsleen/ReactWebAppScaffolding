@@ -1,33 +1,25 @@
-import type { CSSProperties } from 'react'
-import styles from './Loading.module.css'
+import { CircularProgress, Box, Typography } from '@mui/material'
 
 interface LoadingProps {
-  size?: 'small' | 'medium' | 'large'
   text?: string
-  overlay?: boolean
-  className?: string
 }
 
-export default function Loading({ 
-  size = 'medium', 
-  text, 
-  overlay = false,
-  className = '' 
-}: LoadingProps) {
-  const content = (
-    <div className={`${styles.loading} ${styles[size]} ${className}`} role="status" aria-label={text || 'Loading'}>
-      <div className={styles.spinner} />
-      {text && <p className={styles.text}>{text}</p>}
-    </div>
+export default function Loading({ text = 'Loading...' }: LoadingProps) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '2rem',
+        gap: 2
+      }}
+    >
+      <CircularProgress size={40} />
+      <Typography variant="body2" color="text.secondary">
+        {text}
+      </Typography>
+    </Box>
   )
-
-  if (overlay) {
-    return (
-      <div className={styles.overlay}>
-        {content}
-      </div>
-    )
-  }
-
-  return content
 }

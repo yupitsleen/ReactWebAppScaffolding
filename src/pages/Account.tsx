@@ -1,14 +1,17 @@
 import { Container, Typography, Card, CardContent, Box, Avatar, Divider, Button } from '@mui/material'
-import { users, serviceInfo } from '../data/mockData'
+import { users, serviceInfo } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Account() {
+  const pageConfig = appConfig.navigation.find(nav => nav.path === '/account')
+
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        Account
+        {pageConfig?.label || 'Account'}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Manage your account settings and view service information.
+        {pageConfig?.description}
       </Typography>
 
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -19,21 +22,21 @@ function Account() {
               Team Members
             </Typography>
             {users.map(user => (
-              <Box key={user.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1 }}>
-                <Avatar src={user.avatar} sx={{ width: 48, height: 48 }}>
-                  {user.name[0]}
-                </Avatar>
-                <Box sx={{ flexGrow: 1 }}>
+              <Box key={user.id} sx={{ py: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
                   <Typography variant="subtitle1">{user.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {user.role} · {user.email}
-                  </Typography>
-                  {user.phone && (
-                    <Typography variant="body2" color="text.secondary">
-                      {user.phone}
-                    </Typography>
-                  )}
+                  <Avatar sx={{ width: 32, height: 32 }}>
+                    {user.name[0]}
+                  </Avatar>
                 </Box>
+                <Typography variant="body2" color="text.secondary">
+                  {user.role} · {user.email}
+                </Typography>
+                {user.phone && (
+                  <Typography variant="body2" color="text.secondary">
+                    {user.phone}
+                  </Typography>
+                )}
               </Box>
             ))}
           </CardContent>

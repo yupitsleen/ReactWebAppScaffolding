@@ -1,14 +1,17 @@
 import { Container, Typography, Card, CardContent, Chip, Box } from '@mui/material'
-import { payments } from '../data/mockData'
+import { payments } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Payments() {
+  const pageConfig = appConfig.navigation.find(nav => nav.path === '/payments')
+
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        Payments
+        {pageConfig?.label || 'Payments'}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        Track your payment schedule and status.
+        {pageConfig?.description}
       </Typography>
 
       <Box sx={{ mt: 3 }}>
