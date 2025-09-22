@@ -9,10 +9,10 @@ This is a React web application built with Vite, TypeScript, and modern React pa
 ### Key Files and Directories
 - `src/App.tsx` - Main application component with routing
 - `src/main.tsx` - Application entry point
-- `src/components/` - Reusable UI components (ErrorBoundary, Footer, Loading)
+- `src/components/` - Reusable UI components (ErrorBoundary, Footer, Loading, LoadingWrapper, PageLayout)
 - `src/layouts/` - Page layout components with theme-driven styling
 - `src/pages/` - Route components (Home, Tasks, Payments, Documents, Discussions, Account, About, Login, Register, Profile, NotFound)
-- `src/hooks/` - Custom React hooks (useDebounce, useToggle)
+- `src/hooks/` - Custom React hooks (useDebounce, useToggle, usePageLoading)
 - `src/utils/` - Utility functions and color management (helpers.ts, colorManager.ts, env.ts)
 - `src/context/` - React Context providers for state management
 - `src/types/` - TypeScript type definitions (app.ts, portal.ts)
@@ -50,6 +50,8 @@ npm run lint    # Run ESLint
 **Available Utilities:**
 - `useDebounce` - Debounce values for search/input
 - `useToggle` - Simple boolean state toggle
+- `usePageLoading` - Manage page-level loading states with configurable delays
+- `useAsyncLoading` - Handle async data loading with loading/error states
 - Helper functions: `formatDate`, `debounce`, `classNames`, `generateId`, `isValidEmail`
 
 ## Development Notes
@@ -183,6 +185,35 @@ git push -u origin feature/feature-name
 
 **NEVER hardcode colors** - always use CSS variables or theme configuration.
 
+## Smart Abstraction System
+
+**CRITICAL: This scaffold uses extensive abstraction for maximum reusability**
+
+### PageLayout Component
+- **Use for all pages**: `<PageLayout pageId="documents" loading={loading}>{content}</PageLayout>`
+- **Eliminates boilerplate**: Automatic title/description lookup, built-in loading wrapper
+- **Page titles/descriptions**: Configured in `appConfig.navigation`
+
+### Action Button Configuration
+- **All buttons configurable**: `appConfig.actions.document`, `appConfig.actions.account`
+- **Dynamic rendering**: Icons, variants, colors, sizes from mockData
+- **Add new actions**: Just add to mockData, no component changes needed
+
+### Status/Priority System
+- **All status colors configurable**: `appConfig.statusConfig.priority`, `statusConfig.status`
+- **Usage**: `statusConfig.priority[todo.priority].color` instead of hardcoded logic
+- **Supports**: priority, status, paymentStatus, documentShared mappings
+
+### Field Display Configuration
+- **Controls field rendering**: `appConfig.fieldConfig.todoItem.primary/secondary/hidden`
+- **Dynamic field display**: Primary field prominent, secondary as chips, hidden excluded
+- **Per-entity config**: todoItem, document, payment, discussion
+
+### Icon Mapping
+- **All icons configurable**: `appConfig.theme.iconMappings`
+- **Dynamic loading**: `Icons[action.icon as keyof typeof Icons]`
+- **Centralized**: No hardcoded icon imports in components
+
 ## Abstraction & Hierarchy Philosophy
 
 **CRITICAL: Maximize abstraction and create clear hierarchies for ease of development**
@@ -221,10 +252,10 @@ git push -u origin feature/feature-name
 
 ## Development Preferences
 
-- Take development slowly, explaining each step for learning
+- **Be concise** - Keep responses short and focused
 - Keep the development server running to see changes in real-time
 - Commit all significant code additions when the app is running properly
-- Focus on one feature at a time with explanations
+- Focus on one feature at a time
 - **Use concise commit messages without Claude co-author attribution** (#memorize)
 - **Avoid adjectives like "sophisticated" in commit messages** (#memorize)
 - Always create fresh branches off main for new features
@@ -234,6 +265,13 @@ git push -u origin feature/feature-name
 - Use theme-defined classes and Material-UI variants
 - All visual changes go through theme provider
 - Maintain accessibility and responsive design principles
+- **All text centered by default** through theme overrides
+- Discussion content text left-aligned for readability
+
+**Loading System:**
+- Use `LoadingWrapper` for all async content
+- Use `usePageLoading` hook for page-level loading
+- No artificial delays - loading states for real async operations only
 
 ## Services Architecture
 

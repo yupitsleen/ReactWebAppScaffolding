@@ -134,6 +134,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           boxShadow: 'none',
           transition: 'all 0.3s ease-in-out',
           marginBottom: '24px',
+          textAlign: 'center',
           '&:hover': {
             boxShadow: 'none',
             borderColor: 'var(--primary-color)',
@@ -147,6 +148,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       styleOverrides: {
         root: {
           padding: '12px',
+          textAlign: 'center',
           '&:last-child': {
             paddingBottom: '12px',
           },
@@ -216,6 +218,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           paddingBottom: '16px',
           paddingLeft: '12px',
           paddingRight: '12px',
+          textAlign: 'center',
           '@media (max-width: 640px)': {
             paddingTop: '12px',
             paddingBottom: '12px',
@@ -241,6 +244,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
+          textAlign: 'center',
           '@media (max-width: 640px)': {
             fontSize: '2rem',
             marginBottom: '6px',
@@ -257,6 +261,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
+          textAlign: 'center',
           '@media (max-width: 640px)': {
             fontSize: '1.5rem',
             marginBottom: '6px',
@@ -273,6 +278,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           marginBottom: '6px',
+          textAlign: 'center',
           '@media (max-width: 640px)': {
             fontSize: '1.25rem',
             marginBottom: '4px',
@@ -286,16 +292,29 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           fontWeight: 500,
           marginBottom: '12px',
           color: '#1F2937',
+          textAlign: 'center',
         },
         h6: {
           fontWeight: 400,
           lineHeight: 1.6,
           maxWidth: '600px',
           margin: '0 auto 16px',
+          textAlign: 'center',
           '@media (max-width: 768px)': {
-            textAlign: 'left',
             margin: '0 0 12px',
           },
+        },
+        body1: {
+          textAlign: 'center',
+        },
+        body2: {
+          textAlign: 'center',
+        },
+        subtitle1: {
+          textAlign: 'center',
+        },
+        subtitle2: {
+          textAlign: 'center',
         },
       },
     },
@@ -317,6 +336,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         root: {
           '&.dashboard-section': {
             marginBottom: '48px',
+            textAlign: 'center',
             '&:last-child': {
               marginBottom: 0,
             },
@@ -388,6 +408,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         root: {
           borderRadius: 0,
           marginBottom: 4,
+          textAlign: 'center',
           '&:hover': {
             backgroundColor: 'rgba(49, 46, 129, 0.04)',
           },

@@ -86,6 +86,17 @@ export interface NavigationItem {
   label: string
   path: string
   enabled: boolean
+  description?: string
+}
+
+export interface ActionButton {
+  id: string
+  label: string
+  icon: string
+  variant: 'contained' | 'outlined' | 'text'
+  color?: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success'
+  size?: 'small' | 'medium' | 'large'
+  onClick: string
 }
 
 export interface DashboardCard {
@@ -113,6 +124,32 @@ export interface ThemeConfig {
   mode: 'light' | 'dark'
   borderRadius: number
   fontFamily: string
+  iconMappings: {
+    [key: string]: string
+  }
+}
+
+export interface StatusMapping {
+  [key: string]: {
+    color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
+    label: string
+    variant?: 'filled' | 'outlined'
+  }
+}
+
+export interface StatusConfig {
+  priority: StatusMapping
+  status: StatusMapping
+  paymentStatus: StatusMapping
+  documentShared: StatusMapping
+}
+
+export interface FieldConfig {
+  [entityType: string]: {
+    primary: string // main field to display prominently
+    secondary: string[] // fields to show in chips/metadata
+    hidden?: string[] // fields to not display
+  }
 }
 
 export interface AppConfig {
@@ -122,4 +159,11 @@ export interface AppConfig {
   dashboardCards: DashboardCard[]
   dashboardSections: DashboardSection[]
   theme: ThemeConfig
+  actions: {
+    document: ActionButton[]
+    account: ActionButton[]
+    [key: string]: ActionButton[]
+  }
+  statusConfig: StatusConfig
+  fieldConfig: FieldConfig
 }
