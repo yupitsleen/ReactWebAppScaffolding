@@ -1,5 +1,3 @@
-// Generic portal interfaces that can be used for any type of portal
-
 export interface User {
   id: string
   name: string

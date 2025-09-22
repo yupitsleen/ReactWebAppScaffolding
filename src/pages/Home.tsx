@@ -20,11 +20,13 @@ import {
   CheckCircle
 } from '@mui/icons-material'
 import { dashboardSummary, todoItems, payments, discussions, serviceInfo, appConfig } from '../data/mockData'
+import LoadingWrapper from '../components/LoadingWrapper'
+import { usePageLoading } from '../hooks/usePageLoading'
 
 function Home() {
+  const [loading] = usePageLoading(false)
   const completionRate = Math.round((dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100)
 
-  // Icon mapping
   const iconMap = {
     AssignmentTurnedIn: <AssignmentTurnedIn />,
     Payment: <Payment />,
@@ -34,7 +36,6 @@ function Home() {
     CheckCircle: <CheckCircle />
   }
 
-  // Calculate card values dynamically
   const getCardValue = (card: any) => {
     switch (card.dataSource) {
       case 'todoItems':
@@ -52,7 +53,6 @@ function Home() {
     }
   }
 
-  // Get filtered data for sections
   const getSectionData = (section: any) => {
     const { dataSource, filterCriteria, maxItems } = section
     let data: any[] = []
@@ -91,123 +91,129 @@ function Home() {
       </Box>
 
       {/* Summary Cards Section */}
-      <Box className="dashboard-section">
-        <Typography variant="h5" component="h2">
-          Overview
-        </Typography>
-        <Grid container spacing={3}>
-          {appConfig.dashboardCards.map((card) => (
-            <Grid item xs={12} sm={6} lg={3} key={card.id}>
-              <Card>
-                <CardContent>
-                  <Box className="card-header">
-                    <Box className="card-icon" sx={{ color: `${card.color}.main` }}>
-                      {card.icon && iconMap[card.icon as keyof typeof iconMap]}
+      <LoadingWrapper loading={loading} minHeight="200px">
+        <Box className="dashboard-section">
+          <Typography variant="h5" component="h2">
+            Overview
+          </Typography>
+          <Grid container spacing={3}>
+            {appConfig.dashboardCards.map((card) => (
+              <Grid item xs={12} sm={6} lg={3} key={card.id}>
+                <Card>
+                  <CardContent>
+                    <Box className="card-header">
+                      <Box className="card-icon" sx={{ color: `${card.color}.main` }}>
+                        {card.icon && iconMap[card.icon as keyof typeof iconMap]}
+                      </Box>
+                      <Typography variant="h4" component="div" className="card-value">
+                        {getCardValue(card)}
+                      </Typography>
                     </Box>
-                    <Typography variant="h4" component="div" className="card-value">
-                      {getCardValue(card)}
+                    <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
+                      {card.title}
                     </Typography>
-                  </Box>
-                  <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
-                    {card.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {card.subtitle}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {card.subtitle}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </LoadingWrapper>
 
       {/* Progress Section */}
-      <Box className="dashboard-section">
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Overall Progress
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Box sx={{ width: '100%', mr: 1 }}>
-                <LinearProgress variant="determinate" value={completionRate} />
+      <LoadingWrapper loading={loading} minHeight="120px">
+        <Box className="dashboard-section">
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Overall Progress
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Box sx={{ width: '100%', mr: 1 }}>
+                  <LinearProgress variant="determinate" value={completionRate} />
+                </Box>
+                <Box sx={{ minWidth: 35 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {completionRate}%
+                  </Typography>
+                </Box>
               </Box>
-              <Box sx={{ minWidth: 35 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {completionRate}%
-                </Typography>
-              </Box>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              {dashboardSummary.completedTodos} of {dashboardSummary.totalTodos} tasks completed
-            </Typography>
-          </CardContent>
-        </Card>
-      </Box>
+              <Typography variant="body2" color="text.secondary">
+                {dashboardSummary.completedTodos} of {dashboardSummary.totalTodos} tasks completed
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </LoadingWrapper>
 
       {/* Dynamic Sections */}
-      <Box className="dashboard-section">
-        <Grid container spacing={3}>
-          {appConfig.dashboardSections
-            .filter(section => section.enabled)
-            .map((section) => {
-              const sectionData = getSectionData(section)
-              return (
-                <Grid item xs={12} md={6} key={section.id}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {section.title}
-                      </Typography>
-                      {sectionData.length > 0 ? (
-                        <List dense>
-                          {sectionData.map((item: any) => (
-                            <ListItem key={item.id}>
-                              {section.dataSource === 'todoItems' && (
-                                <>
-                                  <Warning color="error" sx={{ mr: 1 }} />
-                                  <ListItemText
-                                    primary={item.title}
-                                    secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}
-                                  />
-                                  <Chip
-                                    label={item.priority}
-                                    size="small"
-                                    color="error"
-                                  />
-                                </>
-                              )}
-                              {section.dataSource === 'discussions' && (
-                                <>
-                                  <ListItemText
-                                    primary={item.title}
-                                    secondary={`${item.author} · ${new Date(item.createdAt).toLocaleDateString()}`}
-                                  />
-                                  <Chip
-                                    label={item.priority}
-                                    size="small"
-                                    color={item.priority === 'urgent' ? 'error' : 'default'}
-                                  />
-                                </>
-                              )}
-                            </ListItem>
-                          ))}
-                        </List>
-                      ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-                          <CheckCircle color="success" sx={{ mr: 1 }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {section.dataSource === 'todoItems' ? 'No urgent tasks at this time' : 'All discussions resolved'}
-                          </Typography>
-                        </Box>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-              )
-            })}
-        </Grid>
-      </Box>
+      <LoadingWrapper loading={loading} minHeight="300px">
+        <Box className="dashboard-section">
+          <Grid container spacing={3}>
+            {appConfig.dashboardSections
+              .filter(section => section.enabled)
+              .map((section) => {
+                const sectionData = getSectionData(section)
+                return (
+                  <Grid item xs={12} md={6} key={section.id}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          {section.title}
+                        </Typography>
+                        {sectionData.length > 0 ? (
+                          <List dense>
+                            {sectionData.map((item: any) => (
+                              <ListItem key={item.id}>
+                                {section.dataSource === 'todoItems' && (
+                                  <>
+                                    <Warning color="error" sx={{ mr: 1 }} />
+                                    <ListItemText
+                                      primary={item.title}
+                                      secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}
+                                    />
+                                    <Chip
+                                      label={item.priority}
+                                      size="small"
+                                      color="error"
+                                    />
+                                  </>
+                                )}
+                                {section.dataSource === 'discussions' && (
+                                  <>
+                                    <ListItemText
+                                      primary={item.title}
+                                      secondary={`${item.author} · ${new Date(item.createdAt).toLocaleDateString()}`}
+                                    />
+                                    <Chip
+                                      label={item.priority}
+                                      size="small"
+                                      color={item.priority === 'urgent' ? 'error' : 'default'}
+                                    />
+                                  </>
+                                )}
+                              </ListItem>
+                            ))}
+                          </List>
+                        ) : (
+                          <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                            <CheckCircle color="success" sx={{ mr: 1 }} />
+                            <Typography variant="body2" color="text.secondary">
+                              {section.dataSource === 'todoItems' ? 'No urgent tasks at this time' : 'All discussions resolved'}
+                            </Typography>
+                          </Box>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                )
+              })}
+          </Grid>
+        </Box>
+      </LoadingWrapper>
     </Container>
   )
 }

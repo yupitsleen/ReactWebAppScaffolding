@@ -1,4 +1,3 @@
-// Mock data for wedding portal - uses generic interfaces with wedding-specific content
 import type {
   User,
   TodoItem,
@@ -11,7 +10,6 @@ import type {
   ThemeConfig
 } from '../types/portal'
 
-// Mock users
 export const users: User[] = [
   {
     id: "user-001",
@@ -39,7 +37,6 @@ export const users: User[] = [
   }
 ]
 
-// Mock todo items
 export const todoItems: TodoItem[] = [
   {
     id: "todo-001",
@@ -91,7 +88,6 @@ export const todoItems: TodoItem[] = [
   }
 ]
 
-// Mock payments
 export const payments: Payment[] = [
   {
     id: "payment-001",
@@ -129,7 +125,6 @@ export const payments: Payment[] = [
   }
 ]
 
-// Mock documents
 export const documents: Document[] = [
   {
     id: "doc-001",
@@ -173,7 +168,6 @@ export const documents: Document[] = [
   }
 ]
 
-// Mock discussions
 export const discussions: Discussion[] = [
   {
     id: "discussion-001",
@@ -222,7 +216,6 @@ export const discussions: Discussion[] = [
   }
 ]
 
-// Service/venue info
 export const serviceInfo: ServiceInfo = {
   name: "Grandview Gardens",
   tagline: "Creating Unforgettable Moments",
@@ -234,7 +227,6 @@ export const serviceInfo: ServiceInfo = {
   }
 }
 
-// Dashboard summary
 export const dashboardSummary: DashboardSummary = {
   totalTodos: todoItems.length,
   completedTodos: todoItems.filter(item => item.status === 'completed').length,
@@ -243,7 +235,6 @@ export const dashboardSummary: DashboardSummary = {
   unreadDiscussions: discussions.filter(d => !d.resolved).length
 }
 
-// App configuration
 export const appConfig: AppConfig = {
   appName: "Grandview Portal",
   pageTitle: "Dashboard",
@@ -312,7 +303,7 @@ export const appConfig: AppConfig = {
     }
   ],
   theme: {
-    primaryColor: "#312E81",
+    primaryColor: "#2D1B35",
     secondaryColor: "#F59E0B",
     mode: "light",
     borderRadius: 16,
