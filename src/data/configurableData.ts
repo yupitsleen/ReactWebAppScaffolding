@@ -105,7 +105,7 @@ export const appConfig: AppConfig = {
       { id: 'download', label: 'Download', icon: 'Download', variant: 'outlined', size: 'small', onClick: 'handleDownload' },
       { id: 'share', label: 'Share', icon: 'Share', variant: 'outlined', size: 'small', onClick: 'handleShare' }
     ],
-    account: [
+    contact: [
       { id: 'update-profile', label: 'Update Profile', icon: 'Edit', variant: 'outlined', onClick: 'handleUpdateProfile' },
       { id: 'contact-support', label: 'Contact Support', icon: 'Support', variant: 'outlined', onClick: 'handleContactSupport' }
     ]

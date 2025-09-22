@@ -3,7 +3,7 @@ import { Card, CardContent, Box, Avatar, Button, Typography } from '@mui/materia
 import { users, serviceInfo } from '../data/sampleData'
 import PageLayout from '../components/PageLayout'
 
-const Account = memo(() => {
+const Contact = memo(() => {
   return (
     <PageLayout>
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -78,4 +78,4 @@ const Account = memo(() => {
   )
 })
 
-export default Account
+export default Contact

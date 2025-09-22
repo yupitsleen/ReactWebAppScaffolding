@@ -12,7 +12,7 @@ import Tasks from './pages/Tasks'
 import Payments from './pages/Payments'
 import Documents from './pages/Documents'
 import Discussions from './pages/Discussions'
-import Account from './pages/Account'
+import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import './utils/colorManager'
 
@@ -25,7 +25,7 @@ function App() {
     payments: Payments,
     documents: Documents,
     discussions: Discussions,
-    account: Account
+    contact: Contact
   }
 
   return (

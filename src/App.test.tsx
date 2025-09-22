@@ -12,7 +12,7 @@ import Tasks from './pages/Tasks'
 import Payments from './pages/Payments'
 import Documents from './pages/Documents'
 import Discussions from './pages/Discussions'
-import Account from './pages/Account'
+import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 
 vi.mock('./data/configurableData', () => ({
@@ -74,7 +74,7 @@ const AppRoutes = ({ initialEntries }: { initialEntries: string[] }) => {
     payments: Payments,
     documents: Documents,
     discussions: Discussions,
-    account: Account
+    contact: Contact
   }
 
   const mockNavigation = [
