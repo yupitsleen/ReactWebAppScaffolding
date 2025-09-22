@@ -1,3 +1,4 @@
+
 import type {
   AppConfig
 } from '../types/portal'
@@ -22,7 +23,7 @@ export const appConfig: AppConfig = {
     { id: "payments", label: "Payments", path: "/payments", enabled: true, description: "Track your payment schedule and status" },
     { id: "documents", label: "Documents", path: "/documents", enabled: true, description: "Access and manage your shared documents" },
     { id: "discussions", label: "Discussions", path: "/discussions", enabled: true, description: "Communicate with your team and track conversations" },
-    { id: "account", label: "Account", path: "/account", enabled: true, description: "Manage your account settings and view service information" }
+    { id: "contact", label: "Contact", path: "/contact", enabled: true, description: "View contact information" }
   ],
   dashboardCards: [
     {
@@ -104,7 +105,7 @@ export const appConfig: AppConfig = {
       { id: 'download', label: 'Download', icon: 'Download', variant: 'outlined', size: 'small', onClick: 'handleDownload' },
       { id: 'share', label: 'Share', icon: 'Share', variant: 'outlined', size: 'small', onClick: 'handleShare' }
     ],
-    account: [
+    contact: [
       { id: 'update-profile', label: 'Update Profile', icon: 'Edit', variant: 'outlined', onClick: 'handleUpdateProfile' },
       { id: 'contact-support', label: 'Contact Support', icon: 'Support', variant: 'outlined', onClick: 'handleContactSupport' }
     ]

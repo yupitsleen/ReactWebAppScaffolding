@@ -12,7 +12,7 @@ This is a React web application built with Vite, TypeScript, and modern React pa
 - `src/components/` - Reusable UI components (ErrorBoundary, Footer, Loading, LoadingWrapper, PageLayout)
 - `src/layouts/` - Page layout components with theme-driven styling
 - `src/pages/` - Route components (Home, Tasks, Payments, Documents, Discussions, Account, About, Login, Register, Profile, NotFound)
-- `src/hooks/` - Custom React hooks (useDebounce, useToggle, usePageLoading)
+- `src/hooks/` - Custom React hooks (useDebounce, useToggle, usePageLoading, useCurrentPage, useDocumentTitle)
 - `src/utils/` - Utility functions and color management (helpers.ts, colorManager.ts, env.ts)
 - `src/context/` - React Context providers for state management
 - `src/types/` - TypeScript type definitions (app.ts, portal.ts)
@@ -52,7 +52,29 @@ npm run lint    # Run ESLint
 - `useToggle` - Simple boolean state toggle
 - `usePageLoading` - Manage page-level loading states with configurable delays
 - `useAsyncLoading` - Handle async data loading with loading/error states
+- `useCurrentPage` - Automatically detect current page config from URL
+- `useDocumentTitle` - Dynamically set browser tab title
 - Helper functions: `formatDate`, `debounce`, `classNames`, `generateId`, `isValidEmail`
+
+## Performance & Patterns
+
+**React Performance Optimizations:**
+- **React.memo** - All page components wrapped with memo to prevent unnecessary re-renders
+- **useMemo/useCallback** - AppContext optimized with memoization to prevent cascading re-renders
+- **Component Memoization** - Expensive calculations and object creations are memoized
+- **Lazy Loading** - Route components are lazy loaded for better initial load performance
+
+**Component Patterns:**
+- **PageLayout Component** - Unified layout pattern for all pages
+- **useCurrentPage Hook** - Automatic page configuration detection from URL
+- **Dynamic Titles** - Browser tab titles automatically sync with navigation labels
+- **Feature Flags** - Easy on/off toggles for pages via navigation config
+
+**Architecture Benefits:**
+- ✅ No hardcoded page IDs or navigation lookups
+- ✅ Automatic synchronization between navigation and page titles
+- ✅ Consistent layout and loading patterns across all pages
+- ✅ Performance optimized with minimal re-renders
 
 ## Development Notes
 
@@ -61,6 +83,7 @@ npm run lint    # Run ESLint
 - Error boundaries catch and display user-friendly error messages
 - The app is fully responsive and supports light/dark theming via Context
 - Code is structured to be easily forkable for new projects
+- **IMPORTANT: Avoid Claude Code co-author attribution in commits** (#memorize)
 
 ## Git Workflow
 
@@ -249,6 +272,49 @@ git push -u origin feature/feature-name
 - If you need new functionality, create a reusable abstraction
 - Always ask: "Can this be configured instead of coded?"
 - Prefer generic interfaces over specific implementations
+
+## Future Extensibility Roadmap
+
+**PRIORITY: Make the app more extensible through better abstractions following SOLID principles**
+
+### Planned Extensibility Improvements:
+
+**1. Generic Data Display Components**
+- **Problem**: Each page manually maps data fields with duplicated logic
+- **Solution**: Create `<DataCard>` and `<DataList>` components that work with any data structure
+- **Benefit**: Add new data types without touching existing components
+- **Configuration**: Use existing `fieldConfig` system for field rendering rules
+
+**2. Abstract Status and Action Systems**
+- **Problem**: Status colors and action buttons scattered across components
+- **Solution**: Create `<StatusChip>` and `<ActionButton>` components driven by configuration
+- **Benefit**: Add new statuses/actions by updating config only
+- **Enhancement**: Extend current `statusConfig` and `actions` systems
+
+**3. Configurable Field Rendering System**
+- **Problem**: Field display logic duplicated across pages (dates, chips, etc.)
+- **Solution**: Create `<FieldRenderer>` that handles different field types automatically
+- **Benefit**: Support new field types (currency, images, etc.) through config
+- **Integration**: Works with existing `fieldConfig.primary/secondary/hidden` system
+
+**4. Generic Filtering and Sorting**
+- **Problem**: Each page implements its own filtering logic
+- **Solution**: Create reusable `useDataFilter` and `useDataSort` hooks
+- **Benefit**: Add filtering/sorting to any page without custom implementation
+- **Configuration**: Define filter rules in `appConfig`
+
+### SOLID Principles Implementation:
+- **Single Responsibility**: Each component handles one specific concern
+- **Open/Closed**: Add new data types/actions/statuses without modifying existing code
+- **Liskov Substitution**: Generic components work with any data that follows the interface
+- **Interface Segregation**: Small, focused interfaces instead of large ones
+- **Dependency Inversion**: Components depend on abstractions (config) not concrete implementations
+
+### Architecture Benefits:
+- **One-Place Updates**: Add new features by updating configuration only
+- **Type Safety**: Generic components with proper TypeScript constraints
+- **Reusability**: Same components work across different business domains
+- **Maintainability**: Changes isolated to specific abstractions
 
 ## Development Preferences
 

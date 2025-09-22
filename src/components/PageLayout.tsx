@@ -1,25 +1,27 @@
+import { memo } from 'react'
 import { Container, Typography } from '@mui/material'
-import { ReactNode } from 'react'
-import { appConfig } from '../data/configurableData'
+import type { ReactNode } from 'react'
+import { useCurrentPage } from '../hooks/useCurrentPage'
 import LoadingWrapper from './LoadingWrapper'
 
 interface PageLayoutProps {
-  pageId: string
   children: ReactNode
   loading?: boolean
   minHeight?: string
+  title?: string
+  description?: string
 }
 
-export default function PageLayout({ pageId, children, loading = false, minHeight = "400px" }: PageLayoutProps) {
-  const pageConfig = appConfig.navigation.find(nav => nav.id === pageId)
+const PageLayout = memo(({ children, loading = false, minHeight = "400px", title, description }: PageLayoutProps) => {
+  const pageConfig = useCurrentPage()
 
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        {pageConfig?.label || 'Page'}
+        {title || pageConfig?.label || 'Page'}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        {pageConfig?.description}
+        {description || pageConfig?.description}
       </Typography>
 
       <LoadingWrapper loading={loading} minHeight={minHeight}>
@@ -27,4 +29,6 @@ export default function PageLayout({ pageId, children, loading = false, minHeigh
       </LoadingWrapper>
     </Container>
   )
-}
+})
+
+export default PageLayout

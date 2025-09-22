@@ -6,7 +6,7 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
   const root = document.documentElement;
   root.style.setProperty('--primary-color', themeConfig.primaryColor);
   root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
-  root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#1F2937');
+  root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
   root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB');
   root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF');
   root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#374151');
@@ -135,7 +135,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           transition: 'all 0.3s ease-in-out',
           marginBottom: '24px',
           textAlign: 'center',
-          '&:hover': {
+          '&.clickable:hover, &[role="button"]:hover': {
             boxShadow: 'none',
             borderColor: 'var(--primary-color)',
             backgroundColor: 'rgba(49, 46, 129, 0.02)',
@@ -411,6 +411,11 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           textAlign: 'center',
           '&:hover': {
             backgroundColor: 'rgba(49, 46, 129, 0.04)',
+          },
+          '.MuiCard-root &': {
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
           },
         },
       },

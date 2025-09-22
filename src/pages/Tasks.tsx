@@ -1,16 +1,17 @@
+import { memo } from 'react'
 import { Typography, Card, CardContent, Chip, Box } from '@mui/material'
 import { todoItems } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
 
-function Tasks() {
+const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
 
   return (
-    <PageLayout pageId="tasks" loading={loading}>
+    <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
         {todoItems.map(todo => (
           <Card key={todo.id} sx={{ mb: 2 }}>
@@ -74,6 +75,6 @@ function Tasks() {
       </Box>
     </PageLayout>
   )
-}
+})
 
 export default Tasks

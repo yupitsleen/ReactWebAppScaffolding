@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Typography, Card, CardContent, Chip, Box, Button } from '@mui/material'
 import * as Icons from '@mui/icons-material'
 import { documents } from '../data/sampleData'
@@ -5,14 +6,14 @@ import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
 
-function Documents() {
+const Documents = memo(() => {
   const [loading] = usePageLoading(false)
   const { actions, statusConfig, fieldConfig, theme } = appConfig
   const documentActions = actions.document
   const documentFields = fieldConfig.document
 
   return (
-    <PageLayout pageId="documents" loading={loading}>
+    <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
         {documents.map(document => (
           <Card key={document.id} sx={{ mb: 2 }}>
@@ -76,6 +77,6 @@ function Documents() {
       </Box>
     </PageLayout>
   )
-}
+})
 
 export default Documents

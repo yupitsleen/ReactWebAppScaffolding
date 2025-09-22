@@ -1,19 +1,11 @@
-import { Container, Typography, Card, CardContent, Chip, Box, Avatar, Divider } from '@mui/material'
+import { memo } from 'react'
+import { Typography, Card, CardContent, Chip, Box, Avatar } from '@mui/material'
 import { discussions } from '../data/sampleData'
-import { appConfig } from '../data/configurableData'
+import PageLayout from '../components/PageLayout'
 
-function Discussions() {
-  const pageConfig = appConfig.navigation.find(nav => nav.path === '/discussions')
-
+const Discussions = memo(() => {
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
-        {pageConfig?.label || 'Discussions'}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {pageConfig?.description}
-      </Typography>
-
+    <PageLayout>
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {discussions.map(discussion => (
           <Card key={discussion.id} sx={{ mb: 2, width: '100%', maxWidth: '600px' }}>
@@ -49,12 +41,11 @@ function Discussions() {
 
               {discussion.replies.length > 0 && (
                 <>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="subtitle2" gutterBottom>
+                  <Typography variant="subtitle2" gutterBottom sx={{ mt: 3 }}>
                     Replies ({discussion.replies.length})
                   </Typography>
                   {discussion.replies.map(reply => (
-                    <Box key={reply.id} sx={{ mt: 1, p: 1, backgroundColor: 'grey.50', borderRadius: 1, textAlign: 'center' }}>
+                    <Box key={reply.id} sx={{ mt: 1, p: 1, border: '1px solid rgba(0,0,0,0.1)', borderRadius: 1, textAlign: 'center' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, justifyContent: 'center' }}>
                         <Avatar sx={{ width: 24, height: 24 }}>{reply.author[0]}</Avatar>
                         <Typography variant="caption" color="text.secondary">
@@ -72,8 +63,8 @@ function Discussions() {
           </Card>
         ))}
       </Box>
-    </Container>
+    </PageLayout>
   )
-}
+})
 
 export default Discussions
