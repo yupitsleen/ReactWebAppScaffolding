@@ -11,14 +11,7 @@ import {
   ListItemText,
   LinearProgress
 } from '@mui/material'
-import {
-  AssignmentTurnedIn,
-  Payment,
-  Description,
-  Forum,
-  Warning,
-  CheckCircle
-} from '@mui/icons-material'
+import * as Icons from '@mui/icons-material'
 import { dashboardSummary, todoItems, payments, discussions, serviceInfo } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 import LoadingWrapper from '../components/LoadingWrapper'
@@ -29,12 +22,12 @@ function Home() {
   const completionRate = Math.round((dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100)
 
   const iconMap = {
-    AssignmentTurnedIn: <AssignmentTurnedIn />,
-    Payment: <Payment />,
-    Description: <Description />,
-    Forum: <Forum />,
-    Warning: <Warning />,
-    CheckCircle: <CheckCircle />
+    AssignmentTurnedIn: <Icons.AssignmentTurnedIn />,
+    Payment: <Icons.Payment />,
+    Description: <Icons.Description />,
+    Forum: <Icons.Forum />,
+    Warning: <Icons.Warning />,
+    CheckCircle: <Icons.CheckCircle />
   }
 
   const getCardValue = (card: any) => {
@@ -171,7 +164,7 @@ function Home() {
                               <ListItem key={item.id}>
                                 {section.dataSource === 'todoItems' && (
                                   <>
-                                    <Warning color="error" sx={{ mr: 1 }} />
+                                    <Icons.Warning color="error" sx={{ mr: 1 }} />
                                     <ListItemText
                                       primary={item.title}
                                       secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}

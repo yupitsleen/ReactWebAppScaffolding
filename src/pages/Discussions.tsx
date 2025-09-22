@@ -1,4 +1,4 @@
-import { Container, Typography, Card, CardContent, Chip, Box, Avatar, Divider } from '@mui/material'
+import { Container, Typography, Card, CardContent, Chip, Box, Avatar } from '@mui/material'
 import { discussions } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 
@@ -49,12 +49,11 @@ function Discussions() {
 
               {discussion.replies.length > 0 && (
                 <>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="subtitle2" gutterBottom>
+                  <Typography variant="subtitle2" gutterBottom sx={{ mt: 3 }}>
                     Replies ({discussion.replies.length})
                   </Typography>
                   {discussion.replies.map(reply => (
-                    <Box key={reply.id} sx={{ mt: 1, p: 1, backgroundColor: 'grey.50', borderRadius: 1, textAlign: 'center' }}>
+                    <Box key={reply.id} sx={{ mt: 1, p: 1, border: '1px solid rgba(0,0,0,0.1)', borderRadius: 1, textAlign: 'center' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, justifyContent: 'center' }}>
                         <Avatar sx={{ width: 24, height: 24 }}>{reply.author[0]}</Avatar>
                         <Typography variant="caption" color="text.secondary">

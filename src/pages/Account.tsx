@@ -1,4 +1,4 @@
-import { Container, Typography, Card, CardContent, Box, Avatar, Divider, Button } from '@mui/material'
+import { Container, Typography, Card, CardContent, Box, Avatar, Button } from '@mui/material'
 import { users, serviceInfo } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 
@@ -58,9 +58,7 @@ function Account() {
               {serviceInfo.description}
             </Typography>
 
-            <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
               Contact Information
             </Typography>
             <Typography variant="body2" gutterBottom>
