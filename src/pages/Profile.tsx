@@ -1,145 +1,188 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Container, Paper, TextField, Button, Typography, Box, Alert, Avatar, Divider } from '@mui/material'
 import { useAppContext } from '../context/AppContext'
-import Loading from '../components/Loading'
-import styles from './Profile.module.css'
+import { authService, type AuthUser } from '../services/auth'
 
 function Profile() {
-  const { state, setUser, setTheme, setLoading } = useAppContext()
-  const [formData, setFormData] = useState({
-    name: state.user?.name || '',
-    email: state.user?.email || ''
+  const { user, setUser } = useAppContext()
+  const [formData, setFormData] = useState<Partial<AuthUser>>({
+    name: '',
+    email: '',
   })
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  if (!state.user) {
-    return (
-      <div className={styles.container}>
-        <h1>Access Denied</h1>
-        <p>Please log in to view your profile.</p>
-      </div>
-    )
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        email: user.email,
+      })
     }
-  }
+  }, [user])
 
-  const handleThemeChange = (theme: 'light' | 'dark') => {
-    setTheme(theme)
-  }
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+  const handleInputChange = (field: keyof AuthUser) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) {
+    setError('')
+    setMessage('')
+    setLoading(true)
+
+    try {
+      // TODO: Implement profile update when backend is ready
+      throw new Error('Profile update not yet implemented - backend API required')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Profile update failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePasswordChange = async () => {
+    setError('')
+    setMessage('')
+
+    try {
+      // TODO: Implement password change when backend is ready
+      throw new Error('Password change not yet implemented - backend API required')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Password change failed')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       return
     }
 
-    setLoading(true)
+    setError('')
+    setMessage('')
 
-    setTimeout(() => {
-      const updatedUser = {
-        ...state.user!,
-        name: formData.name,
-        email: formData.email
-      }
-      
-      setUser(updatedUser)
-      setLoading(false)
-      
-      alert('Profile updated successfully!')
-    }, 1000)
+    try {
+      // TODO: Implement account deletion when backend is ready
+      throw new Error('Account deletion not yet implemented - backend API required')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Account deletion failed')
+    }
   }
 
-  if (state.loading) {
-    return <Loading size="large" text="Updating profile..." />
+  if (!user) {
+    return (
+      <Container>
+        <Alert severity="warning">
+          Please log in to view your profile.
+        </Alert>
+      </Container>
+    )
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.profileCard}>
-        <h1>Profile Settings</h1>
-        
-        <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label htmlFor="name">Display Name</label>
-            <input
-              type="text"
+    <Container component="main" maxWidth="md">
+      <Box sx={{ marginTop: 4 }}>
+        <Paper elevation={3} sx={{ padding: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+            <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main' }}>
+              {user.name.charAt(0).toUpperCase()}
+            </Avatar>
+            <Box>
+              <Typography variant="h4" gutterBottom>
+                {user.name}
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                {user.role}
+              </Typography>
+            </Box>
+          </Box>
+
+          {message && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {message}
+            </Alert>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Typography variant="h6" gutterBottom>
+            Profile Information
+          </Typography>
+
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="name"
+              label="Full Name"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={errors.name ? styles.error : ''}
+              value={formData.name || ''}
+              onChange={handleInputChange('name')}
             />
-            {errors.name && <span className={styles.errorText}>{errors.name}</span>}
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="email"
+              label="Email Address"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={errors.email ? styles.error : ''}
+              type="email"
+              value={formData.email || ''}
+              onChange={handleInputChange('email')}
             />
-            {errors.email && <span className={styles.errorText}>{errors.email}</span>}
-          </div>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
+            >
+              {loading ? 'Updating...' : 'Update Profile'}
+            </Button>
+          </Box>
 
-          <button type="submit" className={styles.button}>
-            Save Changes
-          </button>
-        </form>
+          <Divider sx={{ my: 4 }} />
 
-        <div className={styles.settings}>
-          <h2>Appearance</h2>
-          <div className={styles.themeToggle}>
-            <label>
-              <input
-                type="radio"
-                name="theme"
-                value="light"
-                checked={state.theme === 'light'}
-                onChange={() => handleThemeChange('light')}
-              />
-              Light Mode
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="theme"
-                value="dark"
-                checked={state.theme === 'dark'}
-                onChange={() => handleThemeChange('dark')}
-              />
-              Dark Mode
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Typography variant="h6" gutterBottom>
+            Security
+          </Typography>
+
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={handlePasswordChange}
+              sx={{ mr: 2, mb: 2 }}
+            >
+              Change Password
+            </Button>
+          </Box>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Typography variant="h6" gutterBottom color="error">
+            Danger Zone
+          </Typography>
+
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleDeleteAccount}
+            >
+              Delete Account
+            </Button>
+            <Typography variant="caption" display="block" sx={{ mt: 1, color: 'text.secondary' }}>
+              This action cannot be undone and will permanently delete your account and all associated data.
+            </Typography>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
   )
 }
 

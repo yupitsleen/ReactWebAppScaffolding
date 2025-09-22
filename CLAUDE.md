@@ -9,14 +9,16 @@ This is a React web application built with Vite, TypeScript, and modern React pa
 ### Key Files and Directories
 - `src/App.tsx` - Main application component with routing
 - `src/main.tsx` - Application entry point
-- `src/components/` - Reusable UI components
-- `src/layouts/` - Page layout components
-- `src/pages/` - Route components (Home, About, NotFound)
-- `src/hooks/` - Custom React hooks
-- `src/utils/` - Utility functions and helpers
+- `src/components/` - Reusable UI components (ErrorBoundary, Footer, Loading)
+- `src/layouts/` - Page layout components with theme-driven styling
+- `src/pages/` - Route components (Home, Tasks, Payments, Documents, Discussions, Account, About, Login, Register, Profile, NotFound)
+- `src/hooks/` - Custom React hooks (useDebounce, useToggle)
+- `src/utils/` - Utility functions and color management (helpers.ts, colorManager.ts, env.ts)
 - `src/context/` - React Context providers for state management
-- `src/types/` - TypeScript type definitions
-- `src/constants/` - Application constants
+- `src/types/` - TypeScript type definitions (app.ts, portal.ts)
+- `src/services/` - API and authentication services (api.ts, auth.ts)
+- `src/data/` - Mock data and configuration (mockData.ts)
+- `src/theme/` - Centralized theme provider (portalTheme.ts)
 
 ## Common Commands
 
@@ -35,7 +37,8 @@ npm run lint    # Run ESLint
 - **TypeScript 5.8.3** - Strict typing with verbatimModuleSyntax
 - **Vite 7.1.0** - Fast build tool and dev server
 - **React Router** - Client-side routing
-- **CSS Modules** - Scoped styling
+- **Material-UI** - Component library with theme provider system
+- **CSS Modules** - Scoped styling for Layout component
 
 **Application Structure:**
 - **Routing** - React Router with BrowserRouter
@@ -90,10 +93,11 @@ git push -u origin feature/feature-name
 
 **Color Philosophy:**
 - Primary palette uses purple-yellow-green triadic harmony
-- Purple (#6B46C1) for primary actions and headers
-- Yellow (#F59E0B) for secondary actions and warnings
-- Green (#10B981) for success states
+- **Dark Purple (#312E81)** for primary actions and headers
+- **Yellow (#F59E0B)** for secondary actions and warnings
+- **Green (#10B981)** for success states
 - Mature, sophisticated tones (not bright or trendy)
+- **Subdued purple background (#F3F4F6)** for subtle page background
 
 **Data-Driven Configuration:**
 - All UI elements configurable through `src/data/mockData.ts`
@@ -102,10 +106,14 @@ git push -u origin feature/feature-name
 - Domain-specific content only in mock data
 
 **Visual Design Principles:**
-- **Simplicity** - Clean, uncluttered interfaces
-- **Intuitiveness** - Clear visual hierarchy and navigation
-- **Accessibility** - Proper semantic markup and contrast ratios
-- **Unity** - Consistent spacing, typography, and component behavior
+- **Desktop-First Design** - Reject mobile-first as too constraining for sophisticated interfaces
+- **Flat, Geometric Aesthetic** - No rounded edges, shadows, or movement animations
+- **Subtle Color-Based Interactions** - Hover effects use color changes only, no transforms or shadows
+- **Maximum Information Density** - Minimal whitespace, compact layouts
+- **Right-Aligned Discussions** - Discussion entries align right with max-width constraints
+- **Sophisticated, Non-Typical Design** - Avoid typical design patterns, prefer symmetry over asymmetry
+- **Sharp, Clean Lines** - borderRadius: 0 for all components
+- **Sleek, No-Nonsense Layouts** - Remove unnecessary spacing and decoration
 
 **Spacing System:**
 - Section spacing: 48px desktop, 32px mobile
@@ -118,6 +126,62 @@ git push -u origin feature/feature-name
 - H5: Section headers with medium weight
 - H6: Subtitle text with proper line height
 - Body text: Proper contrast ratios for accessibility
+
+## Dynamic Color Management System
+
+**CRITICAL: This app uses a centralized color management system with CSS custom properties**
+
+**How it Works:**
+1. **Theme Provider (`src/theme/portalTheme.ts`)** injects CSS variables into the DOM
+2. **All colors use CSS variables** (`var(--primary-color)`, `var(--background-color)`, etc.)
+3. **Configuration in `src/data/mockData.ts`** controls the theme colors
+
+**Available CSS Variables:**
+- `--primary-color` - Main theme color (currently #312E81)
+- `--secondary-color` - Accent color (#F59E0B)
+- `--background-color` - Page background (#F3F4F6)
+- `--text-primary` - Main text color
+- `--text-secondary` - Secondary text color
+- `--border-color` - Border and divider colors
+
+**Color Management Methods:**
+
+1. **Configuration Changes (Permanent):**
+   ```javascript
+   // Edit src/data/mockData.ts
+   theme: {
+     primaryColor: "#312E81",  // Change this to update entire app
+     secondaryColor: "#F59E0B",
+     // ...
+   }
+   ```
+
+2. **Live Testing (Browser Console):**
+   ```javascript
+   // Instant color changes for testing
+   setThemeColor('primary-color', '#d32f2f');  // Red
+   setThemeColor('primary-color', '#2e7d32');  // Green
+
+   // Use presets
+   applyColorPreset('red');
+   applyColorPreset('green');
+   applyColorPreset('blue');
+   applyColorPreset('dark-purple');  // Back to current
+   ```
+
+3. **Global Functions Available:**
+   - `setThemeColor(colorName, colorValue)` - Change any CSS variable
+   - `getThemeColor(colorName)` - Get current color value
+   - `applyColorPreset(preset)` - Apply predefined color schemes
+
+**Key Benefits:**
+- ✅ Change one value, updates entire app instantly
+- ✅ Live testing in browser console without file edits
+- ✅ No hunting through multiple CSS files
+- ✅ Future color schemes are just config changes
+- ✅ Works across all Material-UI components and CSS files
+
+**NEVER hardcode colors** - always use CSS variables or theme configuration.
 
 ## Abstraction & Hierarchy Philosophy
 
@@ -161,7 +225,8 @@ git push -u origin feature/feature-name
 - Keep the development server running to see changes in real-time
 - Commit all significant code additions when the app is running properly
 - Focus on one feature at a time with explanations
-- Use concise commit messages without Claude co-author attribution
+- **Use concise commit messages without Claude co-author attribution** (#memorize)
+- **Avoid adjectives like "sophisticated" in commit messages** (#memorize)
 - Always create fresh branches off main for new features
 
 **Styling Guidelines:**
@@ -170,12 +235,40 @@ git push -u origin feature/feature-name
 - All visual changes go through theme provider
 - Maintain accessibility and responsive design principles
 
+## Services Architecture
+
+**API Layer (`src/services/api.ts`):**
+- Modern fetch-based HTTP client with timeout handling
+- TypeScript interfaces for responses and errors
+- Authentication token support ready for Azure integration
+- Methods: `get()`, `post()`, `put()`, `delete()`
+- Usage: `import { apiClient } from '../services'`
+
+**Authentication (`src/services/auth.ts`):**
+- User management and token handling
+- Azure AD authentication placeholders
+- Local storage session management
+- Methods: `login()`, `loginWithAzure()`, `logout()`, `isAuthenticated()`
+- Usage: `import { authService } from '../services'`
+
+**Environment Config (`src/utils/env.ts`):**
+- Centralized environment variable management
+- Azure configuration placeholders (CLIENT_ID, TENANT_ID, etc.)
+- API endpoints and timeout settings
+- Development/production detection
+
+**Authentication Pages:**
+- `Login.tsx` - Full login form with Azure AD button
+- `Register.tsx` - User registration with validation
+- `Profile.tsx` - User profile management
+- All integrate with services layer and include TODO comments for backend implementation
+
 ## Future Technology Plans
 
-- **Azure** - User management and authentication
+- **Azure** - User management and authentication (services layer ready)
 - **Terraform** - Infrastructure as code management
 - **SQLite** - Local database storage
-- **C# and .NET** - Backend API development
+- **C# and .NET** - Backend API development (API client ready)
 
 ## Future Extensions
 

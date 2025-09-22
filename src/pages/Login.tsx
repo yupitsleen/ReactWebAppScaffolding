@@ -1,113 +1,122 @@
 import { useState } from 'react'
-import { Box, TextField, Button, Typography, Container, Paper } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { Container, Paper, TextField, Button, Typography, Box, Alert } from '@mui/material'
 import { useAppContext } from '../context/AppContext'
-import Loading from '../components/Loading'
+import { authService } from '../services/auth'
 
 function Login() {
-  const { setUser, setLoading, state } = useAppContext()
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
-    }
-  }
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email'
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  const navigate = useNavigate()
+  const { setUser } = useAppContext()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) {
-      return
-    }
-
+    setError('')
     setLoading(true)
 
-    setTimeout(() => {
-      const user = {
-        id: Math.random().toString(36).substring(2),
-        name: formData.email.split('@')[0],
-        email: formData.email
-      }
-      
+    try {
+      const { user } = await authService.login({ email, password })
       setUser(user)
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed')
+    } finally {
       setLoading(false)
-      
-      alert(`Welcome back, ${user.name}!`)
-    }, 1500)
+    }
   }
 
-  if (state.loading) {
-    return <Loading size="large" text="Signing you in..." />
+  const handleAzureLogin = async () => {
+    setError('')
+    setLoading(true)
+
+    try {
+      const { user } = await authService.loginWithAzure()
+      setUser(user)
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Azure login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Sign In
-        </Typography>
-        
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            type="email"
-            name="email"
-            label="Email"
-            value={formData.email}
-            onChange={handleChange}
-            error={!!errors.email}
-            helperText={errors.email}
-            margin="normal"
-            required
-          />
-
-          <TextField
-            fullWidth
-            type="password"
-            name="password"
-            label="Password"
-            value={formData.password}
-            onChange={handleChange}
-            error={!!errors.password}
-            helperText={errors.password}
-            margin="normal"
-            required
-          />
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            size="large"
-          >
+    <Container component="main" maxWidth="sm">
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
+          <Typography component="h1" variant="h4" align="center" gutterBottom>
             Sign In
-          </Button>
-        </Box>
-      </Paper>
+          </Typography>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
+            >
+              {loading ? 'Signing In...' : 'Sign In'}
+            </Button>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleAzureLogin}
+              disabled={loading}
+              sx={{ mb: 2 }}
+            >
+              Sign in with Azure AD
+            </Button>
+
+            <Box textAlign="center">
+              <Typography variant="body2">
+                Don't have an account?{' '}
+                <Button
+                  variant="text"
+                  onClick={() => navigate('/register')}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Sign up
+                </Button>
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
     </Container>
   )
 }

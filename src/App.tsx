@@ -14,7 +14,6 @@ import Discussions from './pages/Discussions'
 import Account from './pages/Account'
 import NotFound from './pages/NotFound'
 import './utils/colorManager'
-import './App.css'
 
 function App() {
   return (
