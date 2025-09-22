@@ -5,20 +5,18 @@ function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <Box 
-      component="footer" 
-      sx={{ 
+    <Box
+      component="footer"
+      sx={{
         mt: 'auto',
-        py: 2,
+        py: 0.5,
         backgroundColor: 'primary.main',
         color: 'primary.contrastText'
       }}
     >
-      <Container maxWidth="lg">
-        <Typography variant="body2" align="center">
-          © {currentYear} {appConfig.appName}. {serviceInfo.description}
-        </Typography>
-      </Container>
+      <Typography variant="caption" align="center" display="block">
+        © {currentYear} {appConfig.appName}
+      </Typography>
     </Box>
   )
 }

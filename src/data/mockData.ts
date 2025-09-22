@@ -312,7 +312,7 @@ export const appConfig: AppConfig = {
     }
   ],
   theme: {
-    primaryColor: "#6B46C1",
+    primaryColor: "#312E81",
     secondaryColor: "#F59E0B",
     mode: "light",
     borderRadius: 16,

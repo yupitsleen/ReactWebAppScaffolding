@@ -23,20 +23,25 @@ function Layout({ children }: LayoutProps) {
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
-        <nav className={styles.nav}>
+        <div className={styles.headerContent}>
           <div className={styles.logo}>{appConfig.appName}</div>
-          {appConfig.navigation
-            .filter(nav => nav.enabled)
-            .map(nav => (
-              <Link
-                key={nav.id}
-                to={nav.path}
-                className={`${styles.navLink} ${isPageActive(nav.path) ? styles.active : ''}`}
-              >
-                {nav.label}
-              </Link>
-            ))}
-        </nav>
+          <nav className={styles.nav}>
+            {appConfig.navigation
+              .filter(nav => nav.enabled)
+              .map(nav => (
+                <Link
+                  key={nav.id}
+                  to={nav.path}
+                  className={`${styles.navLink} ${isPageActive(nav.path) ? styles.active : ''}`}
+                >
+                  {nav.label}
+                </Link>
+              ))}
+            <button onClick={handleLogout} className={styles.logoutButton}>
+              Logout
+            </button>
+          </nav>
+        </div>
       </header>
       <main className={styles.main}>
         {children}

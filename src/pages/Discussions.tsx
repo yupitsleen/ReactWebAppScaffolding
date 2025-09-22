@@ -11,14 +11,11 @@ function Discussions() {
         Communicate with your team and track conversations.
       </Typography>
 
-      <Box sx={{ mt: 3 }}>
+      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
         {discussions.map(discussion => (
-          <Card key={discussion.id} sx={{ mb: 2 }}>
-            <CardContent>
+          <Card key={discussion.id} sx={{ mb: 2, width: '100%', maxWidth: '600px' }}>
+            <CardContent sx={{ textAlign: 'right' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                <Typography variant="h6" component="h3">
-                  {discussion.title}
-                </Typography>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <Chip
                     label={discussion.priority}
@@ -31,16 +28,19 @@ function Discussions() {
                     color={discussion.resolved ? 'success' : 'warning'}
                   />
                 </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Avatar sx={{ width: 32, height: 32 }}>{discussion.author[0]}</Avatar>
-                <Typography variant="body2" color="text.secondary">
-                  {discussion.author} ({discussion.authorRole}) · {new Date(discussion.createdAt).toLocaleDateString()}
+                <Typography variant="h6" component="h3">
+                  {discussion.title}
                 </Typography>
               </Box>
 
-              <Typography variant="body2" paragraph>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, justifyContent: 'flex-end' }}>
+                <Typography variant="body2" color="text.secondary">
+                  {discussion.author} ({discussion.authorRole}) · {new Date(discussion.createdAt).toLocaleDateString()}
+                </Typography>
+                <Avatar sx={{ width: 32, height: 32 }}>{discussion.author[0]}</Avatar>
+              </Box>
+
+              <Typography variant="body2" paragraph sx={{ textAlign: 'right' }}>
                 {discussion.content}
               </Typography>
 
