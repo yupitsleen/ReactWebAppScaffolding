@@ -12,7 +12,7 @@ This is a React web application built with Vite, TypeScript, and modern React pa
 - `src/components/` - Reusable UI components (ErrorBoundary, Footer, Loading, LoadingWrapper, PageLayout)
 - `src/layouts/` - Page layout components with theme-driven styling
 - `src/pages/` - Route components (Home, Tasks, Payments, Documents, Discussions, Account, About, Login, Register, Profile, NotFound)
-- `src/hooks/` - Custom React hooks (useDebounce, useToggle, usePageLoading)
+- `src/hooks/` - Custom React hooks (useDebounce, useToggle, usePageLoading, useCurrentPage, useDocumentTitle)
 - `src/utils/` - Utility functions and color management (helpers.ts, colorManager.ts, env.ts)
 - `src/context/` - React Context providers for state management
 - `src/types/` - TypeScript type definitions (app.ts, portal.ts)
@@ -52,7 +52,29 @@ npm run lint    # Run ESLint
 - `useToggle` - Simple boolean state toggle
 - `usePageLoading` - Manage page-level loading states with configurable delays
 - `useAsyncLoading` - Handle async data loading with loading/error states
+- `useCurrentPage` - Automatically detect current page config from URL
+- `useDocumentTitle` - Dynamically set browser tab title
 - Helper functions: `formatDate`, `debounce`, `classNames`, `generateId`, `isValidEmail`
+
+## Performance & Patterns
+
+**React Performance Optimizations:**
+- **React.memo** - All page components wrapped with memo to prevent unnecessary re-renders
+- **useMemo/useCallback** - AppContext optimized with memoization to prevent cascading re-renders
+- **Component Memoization** - Expensive calculations and object creations are memoized
+- **Lazy Loading** - Route components are lazy loaded for better initial load performance
+
+**Component Patterns:**
+- **PageLayout Component** - Unified layout pattern for all pages
+- **useCurrentPage Hook** - Automatic page configuration detection from URL
+- **Dynamic Titles** - Browser tab titles automatically sync with navigation labels
+- **Feature Flags** - Easy on/off toggles for pages via navigation config
+
+**Architecture Benefits:**
+- ✅ No hardcoded page IDs or navigation lookups
+- ✅ Automatic synchronization between navigation and page titles
+- ✅ Consistent layout and loading patterns across all pages
+- ✅ Performance optimized with minimal re-renders
 
 ## Development Notes
 
@@ -61,6 +83,7 @@ npm run lint    # Run ESLint
 - Error boundaries catch and display user-friendly error messages
 - The app is fully responsive and supports light/dark theming via Context
 - Code is structured to be easily forkable for new projects
+- **IMPORTANT: Avoid Claude Code co-author attribution in commits** (#memorize)
 
 ## Git Workflow
 

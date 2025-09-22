@@ -7,6 +7,8 @@ A sophisticated, configurable React portal application built with TypeScript, Ma
 - **Desktop-First Sophisticated Design** - Non-typical, mature aesthetic with symmetrical layouts
 - **Fully Configurable** - Change content, navigation, colors, and branding through data files
 - **Theme-Driven Architecture** - Centralized styling with Material-UI component overrides
+- **Performance Optimized** - React.memo, useMemo/useCallback, lazy loading for optimal performance
+- **Dynamic Page Management** - Automatic page titles, feature flags, and unified layouts
 - **Responsive Design** - Thoughtful mobile adaptations that preserve desktop character
 - **TypeScript** - Full type safety with generic, reusable interfaces
 - **Modern React Patterns** - React 19, Context API, custom hooks
@@ -155,6 +157,8 @@ All styling is managed through the theme provider (`src/theme/portalTheme.ts`). 
 **Key Principles:**
 - **Configuration Over Code** - Customize through data files, minimal component changes needed
 - **Smart Abstractions** - PageLayout, action buttons, status mappings, field display all configurable
+- **Performance First** - All components optimized with React.memo and memoization patterns
+- **Dynamic Everything** - Page titles, navigation, and layouts automatically sync from configuration
 - **Theme Inheritance** - Components inherit styling from theme provider
 - **Clear Data Separation** - Configuration vs. sample data clearly separated
 - **Generic Interfaces** - Reusable types that work for any business domain
@@ -168,63 +172,9 @@ npm run preview # Preview production build
 npm run lint    # Code linting
 ```
 
-## Expanding the ESLint configuration
+## Development Best Practices
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Performance** - All components use React.memo and memoization patterns for optimal rendering
+- **Type Safety** - Comprehensive TypeScript coverage with strict configuration
+- **Testing** - Components are tested with focus on behavior rather than implementation details
+- **Code Quality** - ESLint configuration included for consistent code style
