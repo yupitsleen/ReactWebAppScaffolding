@@ -1,5 +1,6 @@
 import { Container, Typography, Card, CardContent, Chip, Box } from '@mui/material'
-import { payments, appConfig } from '../data/mockData'
+import { payments } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Payments() {
   const pageConfig = appConfig.navigation.find(nav => nav.path === '/payments')

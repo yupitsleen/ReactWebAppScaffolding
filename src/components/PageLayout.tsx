@@ -1,6 +1,6 @@
 import { Container, Typography } from '@mui/material'
 import { ReactNode } from 'react'
-import { appConfig } from '../data/mockData'
+import { appConfig } from '../data/configurableData'
 import LoadingWrapper from './LoadingWrapper'
 
 interface PageLayoutProps {

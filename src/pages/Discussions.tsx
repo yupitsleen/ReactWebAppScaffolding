@@ -1,5 +1,6 @@
 import { Container, Typography, Card, CardContent, Chip, Box, Avatar, Divider } from '@mui/material'
-import { discussions, appConfig } from '../data/mockData'
+import { discussions } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Discussions() {
   const pageConfig = appConfig.navigation.find(nav => nav.path === '/discussions')

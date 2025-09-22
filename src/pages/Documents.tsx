@@ -1,6 +1,7 @@
 import { Typography, Card, CardContent, Chip, Box, Button } from '@mui/material'
 import * as Icons from '@mui/icons-material'
-import { documents, appConfig } from '../data/mockData'
+import { documents } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
 

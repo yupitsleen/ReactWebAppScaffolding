@@ -22,7 +22,7 @@ npm run dev     # Start development server (http://localhost:5173)
 
 This portal is currently configured as a wedding venue portal. Follow these steps to customize it for your specific domain:
 
-### 1. Update Business Information (`src/data/mockData.ts`)
+### 1. Update Business Information (`src/data/sampleData.ts`)
 
 ```typescript
 export const serviceInfo: ServiceInfo = {
@@ -37,14 +37,14 @@ export const serviceInfo: ServiceInfo = {
 }
 ```
 
-### 2. Configure App Settings
+### 2. Configure App Settings (`src/data/configurableData.ts`)
 
 ```typescript
 export const appConfig: AppConfig = {
   appName: "Your Portal Name",
   pageTitle: "Your Dashboard Title",
   navigation: [
-    { id: "tasks", label: "Your Tasks", path: "/tasks", enabled: true },
+    { id: "tasks", label: "Your Tasks", path: "/tasks", enabled: true, description: "Manage your tasks" },
     // Add/remove navigation items as needed
   ],
   theme: {
@@ -53,11 +53,25 @@ export const appConfig: AppConfig = {
     mode: "light", // or "dark"
     borderRadius: 16,
     fontFamily: '"Your Font", sans-serif'
+  },
+  // Configure status colors, field display, actions, etc.
+  statusConfig: {
+    priority: {
+      high: { color: 'error', label: 'High Priority' },
+      medium: { color: 'warning', label: 'Medium' }
+    }
+  },
+  fieldConfig: {
+    todoItem: {
+      primary: 'title',
+      secondary: ['priority', 'status', 'dueDate'],
+      hidden: ['id', 'createdBy']
+    }
   }
 }
 ```
 
-### 3. Replace Sample Data
+### 3. Replace Sample Data (`src/data/sampleData.ts`)
 
 Replace the sample wedding data with your domain's data:
 
@@ -67,7 +81,7 @@ Replace the sample wedding data with your domain's data:
 - **`discussions`** → Your communications/support tickets
 - **`users`** → Your user roles and information
 
-### 4. Update Dashboard Cards
+### 4. Update Dashboard Cards (`src/data/configurableData.ts`)
 
 ```typescript
 dashboardCards: [
@@ -75,21 +89,28 @@ dashboardCards: [
     id: "your-metric",
     title: "Your Metric",
     subtitle: "Description",
-    dataSource: "yourData", // Update getCardValue() in Home.tsx
-    valueType: "count",
-    icon: "YourIcon", // Add to iconMap in Home.tsx
+    dataSource: "yourData",
+    valueType: "count", // or "ratio"
+    icon: "YourIcon", // Add to iconMappings in theme
     color: "primary"
   }
 ]
 ```
 
-### 5. Customize Pages
+### 5. Configure Actions and Status Mappings
 
-- **`src/pages/Home.tsx`** - Update dashboard logic for your data
-- **`src/pages/Tasks.tsx`** - Customize for your task management
-- **`src/pages/Payments.tsx`** - Adapt for your billing system
-- **`src/pages/Documents.tsx`** - Configure for your file management
-- **`src/pages/Discussions.tsx`** - Modify for your communications
+The new configuration system allows you to define:
+- **Action buttons** for documents, accounts, etc.
+- **Status color mappings** for priorities, statuses, payment states
+- **Field display configuration** for what fields to show/hide
+- **Icon mappings** for dynamic icon loading
+
+### 6. Customize Pages (Optional)
+
+Most functionality is now configurable through data files, but you may need to update:
+
+- **`src/pages/Home.tsx`** - Dashboard calculations for your metrics
+- **Page-specific logic** - Only if your domain requires different behavior than the generic abstractions provide
 
 ### Common Business Examples
 
@@ -124,16 +145,19 @@ All styling is managed through the theme provider (`src/theme/portalTheme.ts`). 
 
 **File Structure:**
 - `src/types/portal.ts` - Generic, reusable TypeScript interfaces
-- `src/data/mockData.ts` - All configurable content and settings
+- `src/data/configurableData.ts` - App configuration (theme, navigation, actions, status mappings)
+- `src/data/sampleData.ts` - Demo content data (replace with your actual data)
 - `src/theme/portalTheme.ts` - Centralized styling and component overrides
-- `src/pages/` - Route components using theme and data
+- `src/components/PageLayout.tsx` - Eliminates page boilerplate
+- `src/pages/` - Route components using abstractions and configuration
 - `src/components/` - Reusable UI components
 
 **Key Principles:**
-- **Configuration Over Code** - Customize through data, not component changes
+- **Configuration Over Code** - Customize through data files, minimal component changes needed
+- **Smart Abstractions** - PageLayout, action buttons, status mappings, field display all configurable
 - **Theme Inheritance** - Components inherit styling from theme provider
+- **Clear Data Separation** - Configuration vs. sample data clearly separated
 - **Generic Interfaces** - Reusable types that work for any business domain
-- **Abstraction Hierarchy** - Clear parent-child relationships for easy maintenance
 
 ## Development
 

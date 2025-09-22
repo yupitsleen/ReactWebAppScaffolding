@@ -1,5 +1,6 @@
 import { Typography, Card, CardContent, Chip, Box } from '@mui/material'
-import { todoItems, appConfig } from '../data/mockData'
+import { todoItems } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
 

@@ -1,5 +1,6 @@
 import { Box, Typography, Container } from '@mui/material'
-import { appConfig, serviceInfo } from '../data/mockData'
+import { serviceInfo } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Footer() {
   const currentYear = new Date().getFullYear()

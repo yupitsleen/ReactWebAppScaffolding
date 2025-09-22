@@ -42,15 +42,15 @@ describe('useAsyncLoading', () => {
   })
 
   it('handles successful async operation', async () => {
-    const mockData = 'test data'
-    const mockAsyncFn = vi.fn(() => Promise.resolve(mockData))
+    const configurableData = 'test data'
+    const mockAsyncFn = vi.fn(() => Promise.resolve(configurableData))
     const { result } = renderHook(() => useAsyncLoading(mockAsyncFn))
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
     })
 
-    expect(result.current.data).toBe(mockData)
+    expect(result.current.data).toBe(configurableData)
     expect(result.current.error).toBe(null)
     expect(mockAsyncFn).toHaveBeenCalledTimes(1)
   })

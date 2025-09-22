@@ -60,7 +60,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       dark: '#7C3AED',
     },
     background: {
-      default: '#FAFAF9',
+      default: '#E8E3EB',
       paper: '#FFFFFF',
     },
     text: {

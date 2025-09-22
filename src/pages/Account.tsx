@@ -1,5 +1,6 @@
 import { Container, Typography, Card, CardContent, Box, Avatar, Divider, Button } from '@mui/material'
-import { users, serviceInfo, appConfig } from '../data/mockData'
+import { users, serviceInfo } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 
 function Account() {
   const pageConfig = appConfig.navigation.find(nav => nav.path === '/account')

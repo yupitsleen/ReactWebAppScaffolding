@@ -19,7 +19,8 @@ import {
   Warning,
   CheckCircle
 } from '@mui/icons-material'
-import { dashboardSummary, todoItems, payments, discussions, serviceInfo, appConfig } from '../data/mockData'
+import { dashboardSummary, todoItems, payments, discussions, serviceInfo } from '../data/sampleData'
+import { appConfig } from '../data/configurableData'
 import LoadingWrapper from '../components/LoadingWrapper'
 import { usePageLoading } from '../hooks/usePageLoading'
 

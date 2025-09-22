@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import Footer from '../components/Footer'
-import { appConfig } from '../data/mockData'
+import { appConfig } from '../data/configurableData'
 import styles from './Layout.module.css'
 
 interface LayoutProps {
