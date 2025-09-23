@@ -5,6 +5,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import createPortalTheme from './theme/portalTheme'
 import { AppProvider } from './context/AppContext'
+import { MockProvider } from './context/MockContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
 import Home from './pages/Home'
@@ -98,8 +99,9 @@ const AppRoutes = ({ initialEntries }: { initialEntries: string[] }) => {
       <ThemeProvider theme={createPortalTheme(mockTheme)}>
         <CssBaseline />
         <ErrorBoundary>
-          <AppProvider>
-            <Layout>
+          <MockProvider forceMock={true}>
+            <AppProvider>
+              <Layout>
               <Routes>
                 {mockNavigation
                   .filter(nav => nav.enabled)
@@ -111,8 +113,9 @@ const AppRoutes = ({ initialEntries }: { initialEntries: string[] }) => {
                   })}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </Layout>
-          </AppProvider>
+              </Layout>
+            </AppProvider>
+          </MockProvider>
         </ErrorBoundary>
       </ThemeProvider>
     </MemoryRouter>

@@ -1,25 +1,37 @@
-import { memo } from 'react'
-import { Card, CardContent, Box, Avatar, Button, Typography } from '@mui/material'
-import { users, serviceInfo } from '../data/sampleData'
-import PageLayout from '../components/PageLayout'
+import { memo } from "react";
+import { Card, CardContent, Box, Avatar, Typography } from "@mui/material";
+import { users, serviceInfo } from "../data/sampleData";
+import PageLayout from "../components/PageLayout";
 
 const Contact = memo(() => {
   return (
     <PageLayout>
-      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {/* Users Section */}
+      <Box
+        sx={{
+          mt: 3,
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+          gap: 3,
+        }}
+      >
+        {/* Team Members Section */}
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
               Team Members
             </Typography>
-            {users.map(user => (
+            {users.map((user) => (
               <Box key={user.id} sx={{ py: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    justifyContent: "center",
+                  }}
+                >
                   <Typography variant="subtitle1">{user.name}</Typography>
-                  <Avatar sx={{ width: 32, height: 32 }}>
-                    {user.name[0]}
-                  </Avatar>
+                  <Avatar sx={{ width: 32, height: 32 }}>{user.name[0]}</Avatar>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   {user.role} · {user.email}
@@ -34,7 +46,7 @@ const Contact = memo(() => {
           </CardContent>
         </Card>
 
-        {/* Service Info Section */}
+        {/* Service Information Section */}
         <Card>
           <CardContent>
             <Typography variant="h6" gutterBottom>
@@ -62,20 +74,11 @@ const Contact = memo(() => {
             <Typography variant="body2" gutterBottom>
               Address: {serviceInfo.contact.address}
             </Typography>
-
-            <Box sx={{ mt: 2 }}>
-              <Button variant="outlined" sx={{ mr: 1 }}>
-                Update Profile
-              </Button>
-              <Button variant="outlined">
-                Contact Support
-              </Button>
-            </Box>
           </CardContent>
         </Card>
       </Box>
     </PageLayout>
-  )
-})
+  );
+});
 
-export default Contact
+export default Contact;

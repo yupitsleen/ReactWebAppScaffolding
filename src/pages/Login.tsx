@@ -1,16 +1,24 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Container, Paper, TextField, Button, Typography, Box, Alert } from '@mui/material'
+import { Container, Paper, TextField, Button, Typography, Box, Alert, IconButton, InputAdornment } from '@mui/material'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useAppContext } from '../context/AppContext'
-import { authService } from '../services/auth'
+import { useAuthService } from '../context/MockContext'
 
 function Login() {
   const navigate = useNavigate()
   const { setUser } = useAppContext()
+  const authService = useAuthService()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,20 +36,6 @@ function Login() {
     }
   }
 
-  const handleAzureLogin = async () => {
-    setError('')
-    setLoading(true)
-
-    try {
-      const { user } = await authService.loginWithAzure()
-      setUser(user)
-      navigate('/')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Azure login failed')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <Container component="main" maxWidth="sm">
@@ -76,11 +70,24 @@ function Login() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleTogglePasswordVisibility}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"
@@ -92,15 +99,6 @@ function Login() {
               {loading ? 'Signing In...' : 'Sign In'}
             </Button>
 
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={handleAzureLogin}
-              disabled={loading}
-              sx={{ mb: 2 }}
-            >
-              Sign in with Azure AD
-            </Button>
 
             <Box textAlign="center">
               <Typography variant="body2">

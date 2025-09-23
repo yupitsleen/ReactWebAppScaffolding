@@ -1,10 +1,18 @@
+export type UserType = 'Customer' | 'Vendor' | 'Service Provider' | 'Admin'
+
 export interface User {
   id: string
   name: string
   email: string
   role: string
+  userType: UserType
   avatar?: string
   phone?: string
+}
+
+export interface AuthUser extends User {
+  isAuthenticated: boolean
+  token?: string
 }
 
 export interface TodoItem {

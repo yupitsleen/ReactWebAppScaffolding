@@ -1,12 +1,6 @@
 import { env } from '../utils/env'
 import { apiClient } from './api'
-
-export interface AuthUser {
-  id: string
-  email: string
-  name: string
-  role: string
-}
+import type { AuthUser, UserType } from '../types/portal'
 
 export interface AuthTokens {
   accessToken: string
@@ -19,6 +13,15 @@ export interface LoginCredentials {
   password: string
 }
 
+export interface RegisterData {
+  name: string
+  email: string
+  password: string
+  userType: UserType
+  role?: string
+  phone?: string
+}
+
 class AuthService {
   private readonly TOKEN_KEY = 'auth_tokens'
   private readonly USER_KEY = 'auth_user'
@@ -26,6 +29,11 @@ class AuthService {
   async login(credentials: LoginCredentials): Promise<{ user: AuthUser; tokens: AuthTokens }> {
     // TODO: Implement actual authentication when backend is ready
     throw new Error('Authentication not yet implemented - backend API required')
+  }
+
+  async register(data: RegisterData): Promise<{ user: AuthUser; tokens: AuthTokens }> {
+    // TODO: Implement actual registration when backend is ready
+    throw new Error('Registration not yet implemented - backend API required')
   }
 
   async loginWithAzure(): Promise<{ user: AuthUser; tokens: AuthTokens }> {
