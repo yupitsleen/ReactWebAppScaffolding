@@ -13,6 +13,9 @@ import Payments from './pages/Payments'
 import Documents from './pages/Documents'
 import Discussions from './pages/Discussions'
 import Contact from './pages/Contact'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import MyAccount from './pages/MyAccount'
 import NotFound from './pages/NotFound'
 import './utils/colorManager'
 
@@ -44,6 +47,9 @@ function App() {
                       <Route key={nav.id} path={nav.path} element={<Component />} />
                     ) : null
                   })}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/my-account" element={<MyAccount />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>

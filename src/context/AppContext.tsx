@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
-import type { AppState, AppContextValue, User } from '../types/app'
+import type { AppState, AppContextValue } from '../types/app'
+import type { AuthUser } from '../types/portal'
 import { getFromStorage, setToStorage, removeFromStorage } from '../utils/helpers'
 
 const getInitialState = (): AppState => {
   return {
-    user: getFromStorage<User | null>('user', null),
+    user: getFromStorage<AuthUser | null>('user', null),
     theme: getFromStorage<'light' | 'dark'>('theme', 'light'),
     loading: false,
   }
@@ -21,7 +22,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const [state, setState] = useState<AppState>(getInitialState)
 
   // Memoize callbacks to prevent recreation on every render
-  const setUser = useCallback((user: User | null) => {
+  const setUser = useCallback((user: AuthUser | null) => {
     setState(prev => ({ ...prev, user }))
     if (user) {
       setToStorage('user', user)

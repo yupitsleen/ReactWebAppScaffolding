@@ -14,6 +14,7 @@ export const users: User[] = [
     name: "Sarah Johnson",
     email: "sarah.johnson@email.com",
     role: "Client",
+    userType: "Customer",
     phone: "(555) 123-4567",
     avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b1e8?w=150&h=150&fit=crop&crop=face"
   },
@@ -22,6 +23,7 @@ export const users: User[] = [
     name: "Michael Chen",
     email: "michael.chen@email.com",
     role: "Client",
+    userType: "Customer",
     phone: "(555) 765-4321",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   },
@@ -30,8 +32,49 @@ export const users: User[] = [
     name: "Emily Rodriguez",
     email: "emily@grandviewgardens.com",
     role: "Coordinator",
+    userType: "Service Provider",
     phone: "(555) 987-6543",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+  }
+]
+
+// Mock authentication users (includes passwords for login testing)
+export const mockAuthUsers = [
+  {
+    id: "auth-001",
+    name: "John Customer",
+    email: "customer@example.com",
+    password: "password123",
+    role: "Premium Customer",
+    userType: "Customer" as const,
+    phone: "(555) 123-4567"
+  },
+  {
+    id: "auth-002",
+    name: "Jane Vendor",
+    email: "vendor@example.com",
+    password: "password123",
+    role: "Catering Vendor",
+    userType: "Vendor" as const,
+    phone: "(555) 234-5678"
+  },
+  {
+    id: "auth-003",
+    name: "Bob Service",
+    email: "service@example.com",
+    password: "password123",
+    role: "Event Coordinator",
+    userType: "Service Provider" as const,
+    phone: "(555) 345-6789"
+  },
+  {
+    id: "auth-004",
+    name: "Alice Admin",
+    email: "admin@example.com",
+    password: "password123",
+    role: "System Administrator",
+    userType: "Admin" as const,
+    phone: "(555) 456-7890"
   }
 ]
 

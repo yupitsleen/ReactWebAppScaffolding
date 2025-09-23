@@ -1,29 +1,40 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Container, Paper, TextField, Button, Typography, Box, Alert } from '@mui/material'
+import { Container, Paper, TextField, Button, Typography, Box, Alert, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { useAppContext } from '../context/AppContext'
-import { authService } from '../services/auth'
+import { useAuthService } from '../context/MockContext'
+import type { UserType } from '../types/portal'
+import { USER_TYPES } from '../data/configurableData'
 
-interface RegisterData {
+interface RegisterFormData {
   name: string
   email: string
   password: string
   confirmPassword: string
+  userType: UserType
+  role: string
 }
 
 function Register() {
   const navigate = useNavigate()
   const { setUser } = useAppContext()
-  const [formData, setFormData] = useState<RegisterData>({
+  const authService = useAuthService()
+  const [formData, setFormData] = useState<RegisterFormData>({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    userType: 'Customer',
+    role: ''
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleInputChange = (field: keyof RegisterData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (field: keyof RegisterFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }))
+  }
+
+  const handleSelectChange = (field: keyof RegisterFormData) => (e: any) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }))
   }
 
@@ -48,8 +59,16 @@ function Register() {
     setLoading(true)
 
     try {
-      // TODO: Implement registration when backend is ready
-      throw new Error('Registration not yet implemented - backend API required')
+      const { user } = await authService.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        userType: formData.userType,
+        role: formData.role || undefined
+      })
+
+      setUser(user)
+      navigate('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed')
     } finally {
@@ -57,20 +76,6 @@ function Register() {
     }
   }
 
-  const handleAzureSignup = async () => {
-    setError('')
-    setLoading(true)
-
-    try {
-      const { user } = await authService.loginWithAzure()
-      setUser(user)
-      navigate('/')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Azure signup failed')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <Container component="main" maxWidth="sm">
@@ -133,6 +138,32 @@ function Register() {
               value={formData.confirmPassword}
               onChange={handleInputChange('confirmPassword')}
             />
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="userType-label">User Type</InputLabel>
+              <Select
+                labelId="userType-label"
+                id="userType"
+                value={formData.userType}
+                label="User Type"
+                onChange={handleSelectChange('userType')}
+              >
+                {USER_TYPES.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              margin="normal"
+              fullWidth
+              id="role"
+              label="Role (Optional)"
+              name="role"
+              value={formData.role}
+              onChange={handleInputChange('role')}
+              helperText="e.g., Premium Customer, Catering Vendor, Event Coordinator"
+            />
             <Button
               type="submit"
               fullWidth
@@ -143,15 +174,6 @@ function Register() {
               {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
 
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={handleAzureSignup}
-              disabled={loading}
-              sx={{ mb: 2 }}
-            >
-              Sign up with Azure AD
-            </Button>
 
             <Box textAlign="center">
               <Typography variant="body2">

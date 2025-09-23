@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo } from "react";
 import {
   Typography,
   Grid,
@@ -9,80 +9,102 @@ import {
   List,
   ListItem,
   ListItemText,
-  LinearProgress
-} from '@mui/material'
-import * as Icons from '@mui/icons-material'
-import { dashboardSummary, todoItems, payments, discussions, serviceInfo } from '../data/sampleData'
-import { appConfig } from '../data/configurableData'
-import PageLayout from '../components/PageLayout'
-import LoadingWrapper from '../components/LoadingWrapper'
-import { usePageLoading } from '../hooks/usePageLoading'
+  LinearProgress,
+} from "@mui/material";
+import * as Icons from "@mui/icons-material";
+import {
+  dashboardSummary,
+  todoItems,
+  discussions,
+  serviceInfo,
+} from "../data/sampleData";
+import { appConfig } from "../data/configurableData";
+import PageLayout from "../components/PageLayout";
+import LoadingWrapper from "../components/LoadingWrapper";
+import { usePageLoading } from "../hooks/usePageLoading";
 
 const Home = memo(() => {
-  const [loading] = usePageLoading(false)
+  const [loading] = usePageLoading(false);
 
   const completionRate = useMemo(
-    () => Math.round((dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100),
-    [dashboardSummary.completedTodos, dashboardSummary.totalTodos]
-  )
+    () =>
+      Math.round(
+        (dashboardSummary.completedTodos / dashboardSummary.totalTodos) * 100
+      ),
+    []
+  );
 
-  const iconMap = useMemo(() => ({
-    AssignmentTurnedIn: <Icons.AssignmentTurnedIn />,
-    Payment: <Icons.Payment />,
-    Description: <Icons.Description />,
-    Forum: <Icons.Forum />,
-    Warning: <Icons.Warning />,
-    CheckCircle: <Icons.CheckCircle />
-  }), [])
+  const iconMap = useMemo(
+    () => ({
+      AssignmentTurnedIn: <Icons.AssignmentTurnedIn />,
+      Payment: <Icons.Payment />,
+      Description: <Icons.Description />,
+      Forum: <Icons.Forum />,
+      Warning: <Icons.Warning />,
+      CheckCircle: <Icons.CheckCircle />,
+    }),
+    []
+  );
 
   const getCardValue = (card: any) => {
     switch (card.dataSource) {
-      case 'todoItems':
-        return card.valueType === 'ratio'
+      case "todoItems":
+        return card.valueType === "ratio"
           ? `${dashboardSummary.completedTodos}/${dashboardSummary.totalTodos}`
-          : dashboardSummary.totalTodos
-      case 'payments':
-        return dashboardSummary.pendingPayments
-      case 'documents':
-        return dashboardSummary.totalDocuments
-      case 'discussions':
-        return dashboardSummary.unreadDiscussions
+          : dashboardSummary.totalTodos;
+      case "payments":
+        return dashboardSummary.pendingPayments;
+      case "documents":
+        return dashboardSummary.totalDocuments;
+      case "discussions":
+        return dashboardSummary.unreadDiscussions;
       default:
-        return 0
+        return 0;
     }
-  }
+  };
 
   const getSectionData = (section: any) => {
-    const { dataSource, filterCriteria, maxItems } = section
-    let data: any[] = []
+    const { dataSource, filterCriteria, maxItems } = section;
+    let data: any[] = [];
 
     switch (dataSource) {
-      case 'todoItems':
-        data = todoItems.filter(item => {
-          if (filterCriteria?.priority && item.priority !== filterCriteria.priority) return false
-          if (filterCriteria?.status === '!completed' && item.status === 'completed') return false
-          return true
-        })
-        break
-      case 'discussions':
-        data = discussions.filter(item => {
-          if (filterCriteria?.resolved !== undefined && item.resolved !== filterCriteria.resolved) return false
-          return true
-        })
-        break
+      case "todoItems":
+        data = todoItems.filter((item) => {
+          if (
+            filterCriteria?.priority &&
+            item.priority !== filterCriteria.priority
+          )
+            return false;
+          if (
+            filterCriteria?.status === "!completed" &&
+            item.status === "completed"
+          )
+            return false;
+          return true;
+        });
+        break;
+      case "discussions":
+        data = discussions.filter((item) => {
+          if (
+            filterCriteria?.resolved !== undefined &&
+            item.resolved !== filterCriteria.resolved
+          )
+            return false;
+          return true;
+        });
+        break;
       default:
-        data = []
+        data = [];
     }
 
-    return maxItems ? data.slice(0, maxItems) : data
-  }
+    return maxItems ? data.slice(0, maxItems) : data;
+  };
 
   return (
     <PageLayout
       title={appConfig.pageTitle}
       description={`Welcome to ${serviceInfo.name} - ${serviceInfo.tagline}`}
     >
-
       {/* Summary Cards Section */}
       <LoadingWrapper loading={loading} minHeight="200px">
         <Box className="dashboard-section">
@@ -95,14 +117,25 @@ const Home = memo(() => {
                 <Card>
                   <CardContent>
                     <Box className="card-header">
-                      <Box className="card-icon" sx={{ color: `${card.color}.main` }}>
-                        {card.icon && iconMap[card.icon as keyof typeof iconMap]}
+                      <Box
+                        className="card-icon"
+                        sx={{ color: `${card.color}.main` }}
+                      >
+                        {card.icon &&
+                          iconMap[card.icon as keyof typeof iconMap]}
                       </Box>
-                      <Typography variant="h4" component="div" className="card-value">
+                      <Typography
+                        variant="h4"
+                        component="div"
+                        className="card-value"
+                      >
                         {getCardValue(card)}
                       </Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 500, mb: 0.5 }}
+                    >
                       {card.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -124,9 +157,12 @@ const Home = memo(() => {
               <Typography variant="h6" gutterBottom>
                 Overall Progress
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Box sx={{ width: '100%', mr: 1 }}>
-                  <LinearProgress variant="determinate" value={completionRate} />
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Box sx={{ width: "100%", mr: 1 }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={completionRate}
+                  />
                 </Box>
                 <Box sx={{ minWidth: 35 }}>
                   <Typography variant="body2" color="text.secondary">
@@ -135,7 +171,8 @@ const Home = memo(() => {
                 </Box>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                {dashboardSummary.completedTodos} of {dashboardSummary.totalTodos} tasks completed
+                {dashboardSummary.completedTodos} of{" "}
+                {dashboardSummary.totalTodos} tasks completed
               </Typography>
             </CardContent>
           </Card>
@@ -147,9 +184,9 @@ const Home = memo(() => {
         <Box className="dashboard-section">
           <Grid container spacing={3}>
             {appConfig.dashboardSections
-              .filter(section => section.enabled)
+              .filter((section) => section.enabled)
               .map((section) => {
-                const sectionData = getSectionData(section)
+                const sectionData = getSectionData(section);
                 return (
                   <Grid item xs={12} md={6} key={section.id}>
                     <Card>
@@ -161,12 +198,17 @@ const Home = memo(() => {
                           <List dense>
                             {sectionData.map((item: any) => (
                               <ListItem key={item.id}>
-                                {section.dataSource === 'todoItems' && (
+                                {section.dataSource === "todoItems" && (
                                   <>
-                                    <Icons.Warning color="error" sx={{ mr: 1 }} />
+                                    <Icons.Warning
+                                      color="error"
+                                      sx={{ mr: 1 }}
+                                    />
                                     <ListItemText
                                       primary={item.title}
-                                      secondary={`Due: ${new Date(item.dueDate).toLocaleDateString()}`}
+                                      secondary={`Due: ${new Date(
+                                        item.dueDate
+                                      ).toLocaleDateString()}`}
                                     />
                                     <Chip
                                       label={item.priority}
@@ -175,16 +217,22 @@ const Home = memo(() => {
                                     />
                                   </>
                                 )}
-                                {section.dataSource === 'discussions' && (
+                                {section.dataSource === "discussions" && (
                                   <>
                                     <ListItemText
                                       primary={item.title}
-                                      secondary={`${item.author} · ${new Date(item.createdAt).toLocaleDateString()}`}
+                                      secondary={`${item.author} · ${new Date(
+                                        item.createdAt
+                                      ).toLocaleDateString()}`}
                                     />
                                     <Chip
                                       label={item.priority}
                                       size="small"
-                                      color={item.priority === 'urgent' ? 'error' : 'default'}
+                                      color={
+                                        item.priority === "urgent"
+                                          ? "error"
+                                          : "default"
+                                      }
                                     />
                                   </>
                                 )}
@@ -192,23 +240,31 @@ const Home = memo(() => {
                             ))}
                           </List>
                         ) : (
-                          <Box sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              py: 2,
+                            }}
+                          >
                             <CheckCircle color="success" sx={{ mr: 1 }} />
                             <Typography variant="body2" color="text.secondary">
-                              {section.dataSource === 'todoItems' ? 'No urgent tasks at this time' : 'All discussions resolved'}
+                              {section.dataSource === "todoItems"
+                                ? "No urgent tasks at this time"
+                                : "All discussions resolved"}
                             </Typography>
                           </Box>
                         )}
                       </CardContent>
                     </Card>
                   </Grid>
-                )
+                );
               })}
           </Grid>
         </Box>
       </LoadingWrapper>
     </PageLayout>
-  )
-})
+  );
+});
 
-export default Home
+export default Home;

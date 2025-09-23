@@ -5,8 +5,23 @@ import Layout from './Layout'
 
 vi.mock('../context/AppContext', () => ({
   useAppContext: () => ({
-    state: { user: null },
+    state: {
+      user: {
+        id: 'test-user',
+        name: 'Test User',
+        email: 'test@example.com',
+        userType: 'Customer',
+        role: 'Test Role',
+        isAuthenticated: true
+      }
+    },
     setUser: vi.fn()
+  })
+}))
+
+vi.mock('../context/MockContext', () => ({
+  useAuthService: () => ({
+    logout: vi.fn()
   })
 }))
 
@@ -46,7 +61,7 @@ describe('Layout Feature Flags', () => {
     expect(navigationLinks).toHaveLength(3)
   })
 
-  it('shows logout button', () => {
+  it('shows account dropdown when user is logged in', () => {
     render(
       <MemoryRouter>
         <Layout>
@@ -55,7 +70,7 @@ describe('Layout Feature Flags', () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByText('Logout')).toBeInTheDocument()
+    expect(screen.getByText('Account ▼')).toBeInTheDocument()
   })
 
   it('shows app name in header', () => {
