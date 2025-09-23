@@ -21,6 +21,14 @@ interface AppProviderProps {
 export function AppProvider({ children }: AppProviderProps) {
   const [state, setState] = useState<AppState>(getInitialState)
 
+  // Initialize user from localStorage on mount
+  useEffect(() => {
+    const storedUser = getFromStorage<AuthUser | null>('auth_user', null)
+    if (storedUser && storedUser.isAuthenticated) {
+      setState(prev => ({ ...prev, user: storedUser }))
+    }
+  }, [])
+
   // Memoize callbacks to prevent recreation on every render
   const setUser = useCallback((user: AuthUser | null) => {
     setState(prev => ({ ...prev, user }))

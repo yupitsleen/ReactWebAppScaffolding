@@ -225,4 +225,82 @@ describe('Login Page', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/')
     })
   })
+
+  describe('Password Visibility Toggle', () => {
+    it('toggles password visibility when eye icon is clicked', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <TestWrapper>
+          <Login />
+        </TestWrapper>
+      )
+
+      const passwordInput = screen.getByLabelText(/password/i)
+      const toggleButton = screen.getByLabelText(/toggle password visibility/i)
+
+      // Initially password should be hidden
+      expect(passwordInput).toHaveAttribute('type', 'password')
+
+      // Click to show password
+      await user.click(toggleButton)
+      expect(passwordInput).toHaveAttribute('type', 'text')
+
+      // Click again to hide password
+      await user.click(toggleButton)
+      expect(passwordInput).toHaveAttribute('type', 'password')
+    })
+
+    it('password toggle button is accessible and functional', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <TestWrapper>
+          <Login />
+        </TestWrapper>
+      )
+
+      const toggleButton = screen.getByLabelText(/toggle password visibility/i)
+      const passwordInput = screen.getByLabelText(/password/i)
+
+      // Button should be present and clickable
+      expect(toggleButton).toBeInTheDocument()
+      expect(toggleButton).toBeEnabled()
+
+      // Should toggle password type when clicked
+      expect(passwordInput).toHaveAttribute('type', 'password')
+      await user.click(toggleButton)
+      expect(passwordInput).toHaveAttribute('type', 'text')
+      await user.click(toggleButton)
+      expect(passwordInput).toHaveAttribute('type', 'password')
+    })
+
+    it('maintains password value when toggling visibility', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <TestWrapper>
+          <Login />
+        </TestWrapper>
+      )
+
+      const passwordInput = screen.getByLabelText(/password/i)
+      const toggleButton = screen.getByLabelText(/toggle password visibility/i)
+      const testPassword = 'mySecretPassword123'
+
+      // Type password
+      await user.type(passwordInput, testPassword)
+      expect(passwordInput).toHaveValue(testPassword)
+
+      // Toggle visibility and verify value is maintained
+      await user.click(toggleButton)
+      expect(passwordInput).toHaveValue(testPassword)
+      expect(passwordInput).toHaveAttribute('type', 'text')
+
+      // Toggle back and verify value is still maintained
+      await user.click(toggleButton)
+      expect(passwordInput).toHaveValue(testPassword)
+      expect(passwordInput).toHaveAttribute('type', 'password')
+    })
+  })
 })

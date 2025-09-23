@@ -150,9 +150,9 @@ interface MockProviderProps {
 export const MockProvider = ({ children, forceMock }: MockProviderProps) => {
   const isMockMode = forceMock ?? (
     import.meta.env.VITE_USE_MOCK === 'true' ||
-    import.meta.env.NODE_ENV === 'development'
+    import.meta.env.NODE_ENV === 'development' ||
+    import.meta.env.DEV === true
   )
-
 
   const selectedAuthService = isMockMode ? new MockAuthService() : authService
 
