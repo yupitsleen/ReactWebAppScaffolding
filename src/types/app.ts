@@ -18,4 +18,5 @@ export interface AppContextValue {
   updateDiscussionStatus: (discussionId: string, resolved: boolean) => void
   updateDocumentSharing: (documentId: string, shared: boolean) => void
   refreshData: () => Promise<void>
+  clearPersistedData: () => void
 }
