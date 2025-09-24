@@ -14,7 +14,8 @@ export interface AppContextValue {
   setUser: (user: AuthUser | null) => void
   setTheme: (theme: 'light' | 'dark') => void
   setLoading: (loading: boolean) => void
-  updateTodoStatus: (todoId: string, status: string) => void
+  createTodo: (todoData: Omit<TodoItem, 'id'>) => Promise<TodoItem>
+  updateTodoStatus: (todoId: string, status: 'pending' | 'in-progress' | 'completed') => void
   updateDiscussionStatus: (discussionId: string, resolved: boolean) => void
   updateDocumentSharing: (documentId: string, shared: boolean) => void
   refreshData: () => Promise<void>

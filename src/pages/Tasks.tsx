@@ -1,15 +1,18 @@
-import { memo } from 'react'
-import { Typography, Card, CardContent, Chip, Box, Checkbox, FormControlLabel } from '@mui/material'
+import { memo, useState } from 'react'
+import { Typography, Card, CardContent, Chip, Box, Checkbox, FormControlLabel, Fab } from '@mui/material'
+import { Add as AddIcon } from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useAppContext } from '../context/AppContext'
+import CreateTodoDialog from '../components/CreateTodoDialog'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
   const { state, updateTodoStatus } = useAppContext()
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const handleTaskToggle = (taskId: string) => {
     const currentTodo = state.todos.find(todo => todo.id === taskId)
@@ -22,7 +25,17 @@ const Tasks = memo(() => {
   return (
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
-        {state.todos.map(todo => {
+        {state.todos.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No tasks yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Create your first task to get started!
+            </Typography>
+          </Box>
+        ) : (
+          state.todos.map(todo => {
           const isCompleted = todo.status === 'completed'
 
           return (
@@ -122,7 +135,30 @@ const Tasks = memo(() => {
               </CardContent>
             </Card>
           )
-        })}
+        }))}
+
+      {/* Floating Action Button */}
+      <Fab
+        color="primary"
+        aria-label="add task"
+        sx={{
+          position: 'fixed',
+          bottom: 16,
+          right: 16,
+        }}
+        onClick={() => setCreateDialogOpen(true)}
+      >
+        <AddIcon />
+      </Fab>
+
+      {/* Create Task Dialog */}
+      <CreateTodoDialog
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        onSuccess={() => {
+          // Optional: Show success message or scroll to new task
+        }}
+      />
       </Box>
     </PageLayout>
   )

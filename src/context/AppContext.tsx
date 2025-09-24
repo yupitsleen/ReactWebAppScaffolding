@@ -87,7 +87,26 @@ export function AppProvider({ children }: AppProviderProps) {
     setState(prev => ({ ...prev, loading }))
   }, [])
 
-  const updateTodoStatus = useCallback(async (todoId: string, status: string) => {
+  const createTodo = useCallback(async (todoData: Omit<import('../types/portal').TodoItem, 'id'>) => {
+    try {
+      const newTodo = await todosService.create(todoData)
+      const updatedTodos = [...state.todos, newTodo]
+
+      setState(prev => ({
+        ...prev,
+        todos: updatedTodos
+      }))
+
+      // Persist the updated todos
+      setToStorage('app_todos', updatedTodos)
+      return newTodo
+    } catch (error) {
+      console.error('Failed to create todo:', error)
+      throw error
+    }
+  }, [state.todos])
+
+  const updateTodoStatus = useCallback(async (todoId: string, status: 'pending' | 'in-progress' | 'completed') => {
     try {
       const updatedTodo = await todosService.update(todoId, { status })
       const updatedTodos = state.todos.map(todo => todo.id === todoId ? updatedTodo : todo)
@@ -171,12 +190,13 @@ export function AppProvider({ children }: AppProviderProps) {
     setUser,
     setTheme,
     setLoading,
+    createTodo,
     updateTodoStatus,
     updateDiscussionStatus,
     updateDocumentSharing,
     refreshData,
     clearPersistedData,
-  }), [state, setUser, setTheme, setLoading, updateTodoStatus, updateDiscussionStatus, updateDocumentSharing, refreshData, clearPersistedData])
+  }), [state, setUser, setTheme, setLoading, createTodo, updateTodoStatus, updateDiscussionStatus, updateDocumentSharing, refreshData, clearPersistedData])
 
   return (
     <AppContext.Provider value={value}>
