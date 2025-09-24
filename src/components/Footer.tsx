@@ -1,25 +1,24 @@
-import { Box, Typography, Container } from '@mui/material'
-import { serviceInfo } from '../data/sampleData'
-import { appConfig } from '../data/configurableData'
+import { Box, Typography } from "@mui/material";
+import { appConfig } from "../data/configurableData";
 
 function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <Box
       component="footer"
       sx={{
-        mt: 'auto',
+        mt: "auto",
         py: 0.5,
-        backgroundColor: 'primary.main',
-        color: 'primary.contrastText'
+        backgroundColor: "primary.main",
+        color: "primary.contrastText",
       }}
     >
       <Typography variant="caption" align="center" display="block">
         © {currentYear} {appConfig.appName}
       </Typography>
     </Box>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

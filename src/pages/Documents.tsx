@@ -8,7 +8,7 @@ import { usePageLoading } from '../hooks/usePageLoading'
 
 const Documents = memo(() => {
   const [loading] = usePageLoading(false)
-  const { actions, statusConfig, fieldConfig, theme } = appConfig
+  const { actions, statusConfig, fieldConfig } = appConfig
   const documentActions = actions.document
   const documentFields = fieldConfig.document
 

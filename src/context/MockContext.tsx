@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, type ReactNode } from 'react'
 import type { AuthUser } from '../types/portal'
 import type { AuthTokens, LoginCredentials, RegisterData } from '../services/auth'
