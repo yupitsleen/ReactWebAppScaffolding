@@ -1,6 +1,6 @@
 import { env } from '../utils/env'
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T
   message?: string
   success: boolean
@@ -75,14 +75,14 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' })
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     })
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
@@ -95,6 +95,8 @@ class ApiClient {
 
   setAuthToken(token: string) {
     // This will be used for authentication headers when Azure auth is implemented
+    // TODO: Store token for use in request headers
+    console.log('Auth token set:', token ? 'token provided' : 'no token')
   }
 
   clearAuthToken() {

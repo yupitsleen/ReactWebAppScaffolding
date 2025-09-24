@@ -1,31 +1,29 @@
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import { Typography, Card, CardContent, Chip, Box, Checkbox, FormControlLabel } from '@mui/material'
-import { todoItems } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
+import { useAppContext } from '../context/AppContext'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
+  const { state, updateTodoStatus } = useAppContext()
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
-  const [taskStatuses, setTaskStatuses] = useState<Record<string, string>>(
-    todoItems.reduce((acc, todo) => ({ ...acc, [todo.id]: todo.status }), {})
-  )
 
   const handleTaskToggle = (taskId: string) => {
-    setTaskStatuses(prev => ({
-      ...prev,
-      [taskId]: prev[taskId] === 'completed' ? 'pending' : 'completed'
-    }))
+    const currentTodo = state.todos.find(todo => todo.id === taskId)
+    if (currentTodo) {
+      const newStatus = currentTodo.status === 'completed' ? 'pending' : 'completed'
+      updateTodoStatus(taskId, newStatus)
+    }
   }
 
   return (
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
-        {todoItems.map(todo => {
-          const currentStatus = taskStatuses[todo.id]
-          const isCompleted = currentStatus === 'completed'
+        {state.todos.map(todo => {
+          const isCompleted = todo.status === 'completed'
 
           return (
             <Card key={todo.id} sx={{
@@ -84,7 +82,7 @@ const Tasks = memo(() => {
                         }
 
                         if (field === 'status') {
-                          const taskStatus = statusConfig.status[currentStatus]
+                          const taskStatus = statusConfig.status[todo.status]
                           return (
                             <Chip
                               key={field}

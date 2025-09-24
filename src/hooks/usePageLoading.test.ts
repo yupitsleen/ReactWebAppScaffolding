@@ -32,7 +32,7 @@ describe('usePageLoading', () => {
 })
 
 describe('useAsyncLoading', () => {
-  it('starts in loading state', () => {
+  it('starts in loading state', async () => {
     const mockAsyncFn = vi.fn(() => Promise.resolve('data'))
     const { result } = renderHook(() => useAsyncLoading(mockAsyncFn))
 
@@ -48,9 +48,9 @@ describe('useAsyncLoading', () => {
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
+      expect(result.current.data).toBe(configurableData)
     })
 
-    expect(result.current.data).toBe(configurableData)
     expect(result.current.error).toBe(null)
     expect(mockAsyncFn).toHaveBeenCalledTimes(1)
   })
@@ -62,9 +62,9 @@ describe('useAsyncLoading', () => {
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
+      expect(result.current.error).toBe(mockError)
     })
 
     expect(result.current.data).toBe(null)
-    expect(result.current.error).toBe(mockError)
   })
 })

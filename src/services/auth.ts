@@ -28,11 +28,13 @@ class AuthService {
 
   async login(credentials: LoginCredentials): Promise<{ user: AuthUser; tokens: AuthTokens }> {
     // TODO: Implement actual authentication when backend is ready
+    console.log('Login attempt for:', credentials.email)
     throw new Error('Authentication not yet implemented - backend API required')
   }
 
   async register(data: RegisterData): Promise<{ user: AuthUser; tokens: AuthTokens }> {
     // TODO: Implement actual registration when backend is ready
+    console.log('Registration attempt for:', data.email)
     throw new Error('Registration not yet implemented - backend API required')
   }
 

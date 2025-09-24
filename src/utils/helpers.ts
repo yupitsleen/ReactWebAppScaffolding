@@ -3,6 +3,7 @@ export function formatDate(date: Date | string, options?: Intl.DateTimeFormatOpt
   return dateObj.toLocaleDateString(undefined, options)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   delay: number
@@ -10,7 +11,7 @@ export function debounce<T extends (...args: any[]) => any>(
   let timeoutId: number
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId)
-    timeoutId = window.setTimeout(() => func.apply(null, args), delay)
+    timeoutId = window.setTimeout(() => func(...args), delay)
   }
 }
 

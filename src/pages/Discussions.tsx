@@ -1,13 +1,21 @@
 import { memo } from 'react'
-import { Typography, Card, CardContent, Chip, Box, Avatar } from '@mui/material'
-import { discussions } from '../data/sampleData'
+import { Typography, Card, CardContent, Chip, Box, Avatar, Button } from '@mui/material'
 import PageLayout from '../components/PageLayout'
+import { useAppContext } from '../context/AppContext'
+import { usePageLoading } from '../hooks/usePageLoading'
 
 const Discussions = memo(() => {
+  const [loading] = usePageLoading(false)
+  const { state, updateDiscussionStatus } = useAppContext()
+
+  const handleToggleResolved = async (discussionId: string, currentStatus: boolean) => {
+    await updateDiscussionStatus(discussionId, !currentStatus)
+  }
+
   return (
-    <PageLayout>
+    <PageLayout loading={loading}>
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {discussions.map(discussion => (
+        {state.discussions.map(discussion => (
           <Card key={discussion.id} sx={{ mb: 2, width: '100%', maxWidth: '600px' }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2, flexDirection: 'column', gap: 1 }}>
@@ -25,6 +33,14 @@ const Discussions = memo(() => {
                     size="small"
                     color={discussion.resolved ? 'success' : 'warning'}
                   />
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color={discussion.resolved ? 'warning' : 'success'}
+                    onClick={() => handleToggleResolved(discussion.id, discussion.resolved)}
+                  >
+                    {discussion.resolved ? 'Reopen' : 'Resolve'}
+                  </Button>
                 </Box>
               </Box>
 
