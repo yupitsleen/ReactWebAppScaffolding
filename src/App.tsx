@@ -4,7 +4,8 @@ import CssBaseline from '@mui/material/CssBaseline'
 import createPortalTheme from './theme/portalTheme'
 import { appConfig } from './data/configurableData'
 import { AppProvider, useAppContext } from './context/AppContext'
-import { MockProvider } from './context/MockContext'
+import { MockProvider, MockNotificationHandler } from './context/MockContext'
+import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
@@ -59,15 +60,24 @@ function UnauthenticatedApp() {
   )
 }
 
-// Main app router component
-function AppRouter() {
+// Themed App Router component that has access to AppContext
+function ThemedAppRouter() {
   const { state } = useAppContext()
   const isAuthenticated = state.user?.isAuthenticated
 
+  // Create dynamic theme based on current theme state
+  const dynamicTheme = createPortalTheme({
+    ...appConfig.theme,
+    mode: state.theme
+  })
+
   return (
-    <Router>
-      {isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
-    </Router>
+    <ThemeProvider theme={dynamicTheme}>
+      <CssBaseline />
+      <Router>
+        {isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+      </Router>
+    </ThemeProvider>
   )
 }
 
@@ -75,16 +85,16 @@ function App() {
   useDocumentTitle(appConfig.appName)
 
   return (
-    <ThemeProvider theme={createPortalTheme(appConfig.theme)}>
-      <CssBaseline />
-      <ErrorBoundary>
-        <MockProvider forceMock={true}>
-          <AppProvider>
-            <AppRouter />
-          </AppProvider>
-        </MockProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <MockProvider forceMock={true}>
+        <AppProvider>
+          <NotificationProvider>
+            <MockNotificationHandler />
+            <ThemedAppRouter />
+          </NotificationProvider>
+        </AppProvider>
+      </MockProvider>
+    </ErrorBoundary>
   )
 }
 

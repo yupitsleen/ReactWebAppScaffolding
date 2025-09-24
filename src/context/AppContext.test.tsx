@@ -40,5 +40,26 @@ describe('AppContext', () => {
     expect(typeof result.current.updateTodoStatus).toBe('function')
     expect(typeof result.current.updateDiscussionStatus).toBe('function')
     expect(typeof result.current.updateDocumentSharing).toBe('function')
+    expect(typeof result.current.setTheme).toBe('function')
+  })
+
+  it('toggles theme state', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any
+
+    await act(async () => {
+      const hookResult = renderHook(() => useAppContext(), {
+        wrapper: AppProvider
+      })
+      result = hookResult.result
+    })
+
+    const initialTheme = result.current.state.theme
+
+    await act(async () => {
+      result.current.setTheme(initialTheme === 'light' ? 'dark' : 'light')
+    })
+
+    expect(result.current.state.theme).toBe(initialTheme === 'light' ? 'dark' : 'light')
   })
 })

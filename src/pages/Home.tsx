@@ -1,4 +1,5 @@
 import { memo, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Grid,
@@ -22,6 +23,7 @@ import { useAppContext } from "../context/AppContext";
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
   const { state } = useAppContext();
+  const navigate = useNavigate();
 
   const dashboardStats = useMemo(() => {
     const completedTodos = state.todos.filter(todo => todo.status === 'completed').length;
@@ -70,6 +72,21 @@ const Home = memo(() => {
         return 0;
     }
   };
+
+  const getNavigationPath = (dataSource: string): string => {
+    const dataSourceToPath: Record<string, string> = {
+      todoItems: '/todos',
+      payments: '/payments',
+      documents: '/documents',
+      discussions: '/discussions'
+    }
+    return dataSourceToPath[dataSource] || '/'
+  }
+
+  const handleNavigateToPage = (dataSource: string) => {
+    const path = getNavigationPath(dataSource)
+    navigate(path)
+  }
 
   const getSectionData = useMemo(() => (section: { dataSource: string; filterCriteria?: Record<string, unknown>; maxItems?: number }) => {
     const { dataSource, filterCriteria, maxItems } = section;
@@ -122,7 +139,17 @@ const Home = memo(() => {
           <Grid container spacing={3}>
             {appConfig.dashboardCards.map((card) => (
               <Grid item xs={12} sm={6} lg={3} key={card.id}>
-                <Card>
+                <Card
+                  sx={{
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: (theme) => theme.shadows[4],
+                    }
+                  }}
+                  onClick={() => handleNavigateToPage(card.dataSource)}
+                >
                   <CardContent>
                     <Box className="card-header">
                       <Box
@@ -148,6 +175,19 @@ const Home = memo(() => {
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {card.subtitle}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="primary"
+                      sx={{
+                        mt: 0.5,
+                        display: 'block',
+                        fontWeight: 500,
+                        opacity: 0.7,
+                        transition: 'opacity 0.2s ease-in-out'
+                      }}
+                    >
+                      Click to view details
                     </Typography>
                   </CardContent>
                 </Card>
@@ -197,7 +237,17 @@ const Home = memo(() => {
                 const sectionData = getSectionData(section);
                 return (
                   <Grid item xs={12} md={6} key={section.id}>
-                    <Card>
+                    <Card
+                      sx={{
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: (theme) => theme.shadows[4],
+                        }
+                      }}
+                      onClick={() => handleNavigateToPage(section.dataSource)}
+                    >
                       <CardContent>
                         <Typography variant="h6" gutterBottom>
                           {section.title}
@@ -263,6 +313,19 @@ const Home = memo(() => {
                             </Typography>
                           </Box>
                         )}
+                        <Typography
+                          variant="caption"
+                          color="primary"
+                          sx={{
+                            mt: 1,
+                            display: 'block',
+                            fontWeight: 500,
+                            opacity: 0.7,
+                            transition: 'opacity 0.2s ease-in-out'
+                          }}
+                        >
+                          Click to view all
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Grid>

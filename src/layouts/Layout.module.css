@@ -123,6 +123,48 @@
   background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
 }
 
+/* Theme toggle styles */
+.themeToggle {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 42px;
+}
+
+.themeToggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .themeToggle {
+    padding: 0.4rem;
+    font-size: 1rem;
+    min-width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .themeToggle {
+    padding: 0.3rem;
+    font-size: 0.9rem;
+    min-width: 34px;
+    height: 34px;
+  }
+}
+
 /* Account dropdown styles */
 .accountMenu {
   position: relative;

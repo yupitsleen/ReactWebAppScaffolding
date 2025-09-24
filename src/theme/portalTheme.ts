@@ -10,6 +10,8 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
   root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB');
   root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF');
   root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#374151');
+  root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
+  root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
 };
 
 // Create theme based on configuration
@@ -60,12 +62,12 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       dark: '#7C3AED',
     },
     background: {
-      default: '#E8E3EB',
-      paper: '#FFFFFF',
+      default: themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937',
+      paper: themeConfig.mode === 'light' ? '#FFFFFF' : '#374151',
     },
     text: {
-      primary: '#1F2937',
-      secondary: '#6B7280',
+      primary: themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB',
+      secondary: themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF',
     },
   },
   typography: {
@@ -130,7 +132,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       styleOverrides: {
         root: {
           borderRadius: 0,
-          border: '1px solid #F3F4F6',
+          border: `1px solid var(--border-color)`,
           boxShadow: 'none',
           transition: 'all 0.3s ease-in-out',
           marginBottom: '24px',
@@ -138,7 +140,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           '&.clickable:hover, &[role="button"]:hover': {
             boxShadow: 'none',
             borderColor: 'var(--primary-color)',
-            backgroundColor: 'rgba(49, 46, 129, 0.02)',
+            backgroundColor: themeConfig.mode === 'light' ? 'rgba(49, 46, 129, 0.02)' : 'rgba(49, 46, 129, 0.1)',
           },
         },
       },
@@ -291,7 +293,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         h5: {
           fontWeight: 500,
           marginBottom: '12px',
-          color: '#1F2937',
+          color: 'var(--text-primary)',
           textAlign: 'center',
         },
         h6: {
@@ -440,7 +442,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
         head: {
           fontWeight: 600,
-          backgroundColor: '#f5f5f5',
+          backgroundColor: themeConfig.mode === 'light' ? '#f5f5f5' : '#4B5563',
         },
       },
     },
