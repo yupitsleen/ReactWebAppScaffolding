@@ -1,8 +1,10 @@
-import { createContext, useContext, type ReactNode } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useEffect, type ReactNode } from 'react'
 import type { AuthUser } from '../types/portal'
 import type { AuthTokens, LoginCredentials, RegisterData } from '../services/auth'
 import { authService } from '../services/auth'
 import { mockAuthUsers } from '../data/sampleData'
+import { useNotifications } from './NotificationContext'
 
 // Mock auth service that overrides the real one
 class MockAuthService {
@@ -133,9 +135,67 @@ class MockAuthService {
   }
 }
 
+// Mock notification service for demo functionality
+class MockNotificationService {
+  private addNotification: ((notification: Parameters<typeof useNotifications>['0']['addNotification'][0]) => void) | null = null
+
+  setNotificationHandler(handler: (notification: Parameters<typeof useNotifications>['0']['addNotification'][0]) => void) {
+    this.addNotification = handler
+  }
+
+  // Demo notification triggers
+  triggerTaskCompleted(taskName: string = 'Sample Task') {
+    this.addNotification?.({
+      type: 'success',
+      title: 'Task Completed!',
+      message: `You have successfully completed "${taskName}"`,
+      autoHide: true
+    })
+  }
+
+  triggerNewMessage(from: string = 'John Doe') {
+    this.addNotification?.({
+      type: 'info',
+      title: 'New Message',
+      message: `You have received a new message from ${from}`,
+      autoHide: false
+    })
+  }
+
+  triggerTaskDueSoon(taskName: string = 'Sample Task', timeLeft: string = '2 hours') {
+    this.addNotification?.({
+      type: 'warning',
+      title: 'Task Due Soon',
+      message: `Your task "${taskName}" is due in ${timeLeft}`,
+      autoHide: false
+    })
+  }
+
+  triggerUploadError() {
+    this.addNotification?.({
+      type: 'error',
+      title: 'Upload Failed',
+      message: 'Could not upload document. Please check your connection and try again.',
+      autoHide: false
+    })
+  }
+
+  triggerRandomDemo() {
+    const demos = [
+      () => this.triggerTaskCompleted(),
+      () => this.triggerNewMessage(),
+      () => this.triggerTaskDueSoon(),
+      () => this.triggerUploadError()
+    ]
+    const randomDemo = demos[Math.floor(Math.random() * demos.length)]
+    randomDemo()
+  }
+}
+
 // Context
 interface MockContextType {
   authService: MockAuthService | typeof authService
+  notificationService: MockNotificationService | null
   isMockMode: boolean
 }
 
@@ -147,6 +207,32 @@ interface MockProviderProps {
   forceMock?: boolean
 }
 
+// Export this component to be used inside NotificationProvider
+export const MockNotificationHandler = () => {
+  const { notificationService } = useMockContext()
+  const { addNotification } = useNotifications()
+
+  useEffect(() => {
+    if (notificationService && addNotification) {
+      notificationService.setNotificationHandler(addNotification)
+
+      // Set up global console testing functions
+      if (typeof window !== 'undefined') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(window as any).mockNotifications = {
+          success: (task?: string) => notificationService.triggerTaskCompleted(task),
+          info: (from?: string) => notificationService.triggerNewMessage(from),
+          warning: (task?: string, time?: string) => notificationService.triggerTaskDueSoon(task, time),
+          error: () => notificationService.triggerUploadError(),
+          random: () => notificationService.triggerRandomDemo(),
+        }
+      }
+    }
+  }, [notificationService, addNotification])
+
+  return null
+}
+
 export const MockProvider = ({ children, forceMock }: MockProviderProps) => {
   const isMockMode = forceMock ?? (
     import.meta.env.VITE_USE_MOCK === 'true' ||
@@ -155,9 +241,14 @@ export const MockProvider = ({ children, forceMock }: MockProviderProps) => {
   )
 
   const selectedAuthService = isMockMode ? new MockAuthService() : authService
+  const mockNotificationService = isMockMode ? new MockNotificationService() : null
 
   return (
-    <MockContext.Provider value={{ authService: selectedAuthService, isMockMode }}>
+    <MockContext.Provider value={{
+      authService: selectedAuthService,
+      notificationService: mockNotificationService,
+      isMockMode
+    }}>
       {children}
     </MockContext.Provider>
   )
@@ -175,4 +266,25 @@ export const useMockContext = () => {
 export const useAuthService = () => {
   const { authService } = useMockContext()
   return authService
+}
+
+export const useMockNotificationService = () => {
+  const { notificationService, isMockMode } = useMockContext()
+  if (!isMockMode || !notificationService) {
+    return null
+  }
+  return notificationService
+}
+
+// Make mock notification service available globally for console testing (similar to colorManager)
+if (typeof window !== 'undefined') {
+  // This will be set up by the MockNotificationHandler when available
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(window as any).mockNotifications = {
+    success: () => console.log('Mock notifications not yet initialized'),
+    info: () => console.log('Mock notifications not yet initialized'),
+    warning: () => console.log('Mock notifications not yet initialized'),
+    error: () => console.log('Mock notifications not yet initialized'),
+    random: () => console.log('Mock notifications not yet initialized'),
+  }
 }

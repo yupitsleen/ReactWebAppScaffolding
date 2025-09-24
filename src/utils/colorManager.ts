@@ -31,7 +31,10 @@ export const applyColorPreset = (preset: 'dark-purple' | 'blue' | 'green' | 'red
 
 // Make available globally for console testing
 if (typeof window !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).setThemeColor = setThemeColor;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).applyColorPreset = applyColorPreset;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).getThemeColor = getThemeColor;
 }

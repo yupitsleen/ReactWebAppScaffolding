@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import { useAuthService } from '../context/MockContext'
 import Footer from '../components/Footer'
+import NotificationBell from '../components/NotificationBell'
 import { appConfig } from '../data/configurableData'
 import styles from './Layout.module.css'
 
@@ -14,11 +15,28 @@ interface LayoutProps {
 function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const navigate = useNavigate()
-  const { state, setUser } = useAppContext()
+  const { state, setUser, setTheme } = useAppContext()
   const authService = useAuthService()
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const accountMenuRef = useRef<HTMLDivElement>(null)
 
   const isPageActive = (path: string) => location.pathname === path
+
+  // Close account menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setAccountMenuOpen(false)
+      }
+    }
+
+    if (accountMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [accountMenuOpen])
 
   const handleLogout = async () => {
     try {
@@ -31,6 +49,10 @@ function Layout({ children }: LayoutProps) {
       setUser(null)
       navigate('/login')
     }
+  }
+
+  const toggleTheme = () => {
+    setTheme(state.theme === 'light' ? 'dark' : 'light')
   }
 
   return (
@@ -50,7 +72,7 @@ function Layout({ children }: LayoutProps) {
                   {nav.label}
                 </Link>
               ))}
-            <div className={styles.accountMenu}>
+            <div className={styles.accountMenu} ref={accountMenuRef}>
               <button
                 className={styles.accountButton}
                 onClick={() => setAccountMenuOpen(!accountMenuOpen)}
@@ -99,6 +121,14 @@ function Layout({ children }: LayoutProps) {
                 </div>
               )}
             </div>
+            <button
+              className={styles.themeToggle}
+              onClick={toggleTheme}
+              title={`Switch to ${state.theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {state.theme === 'light' ? '🌙' : '☀️'}
+            </button>
+            <NotificationBell />
           </nav>
         </div>
       </header>

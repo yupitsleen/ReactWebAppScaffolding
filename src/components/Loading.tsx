@@ -1,19 +1,19 @@
-import { CircularProgress, Box, Typography } from '@mui/material'
+import { CircularProgress, Box, Typography } from "@mui/material";
 
 interface LoadingProps {
-  text?: string
+  text?: string;
 }
 
-export default function Loading({ text = 'Loading...' }: LoadingProps) {
+export default function Loading({ text = "Loading..." }: LoadingProps) {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '2rem',
-        gap: 2
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2rem",
+        gap: 2,
       }}
     >
       <CircularProgress size={40} />
@@ -21,5 +21,5 @@ export default function Loading({ text = 'Loading...' }: LoadingProps) {
         {text}
       </Typography>
     </Box>
-  )
+  );
 }

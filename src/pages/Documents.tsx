@@ -1,21 +1,26 @@
 import { memo } from 'react'
 import { Typography, Card, CardContent, Chip, Box, Button } from '@mui/material'
 import * as Icons from '@mui/icons-material'
-import { documents } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
+import { useAppContext } from '../context/AppContext'
 
 const Documents = memo(() => {
   const [loading] = usePageLoading(false)
-  const { actions, statusConfig, fieldConfig, theme } = appConfig
+  const { state, updateDocumentSharing } = useAppContext()
+  const { actions, statusConfig, fieldConfig } = appConfig
   const documentActions = actions.document
   const documentFields = fieldConfig.document
+
+  const handleToggleSharing = async (documentId: string, currentShared: boolean) => {
+    await updateDocumentSharing(documentId, !currentShared)
+  }
 
   return (
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
-        {documents.map(document => (
+        {state.documents.map(document => (
           <Card key={document.id} sx={{ mb: 2 }}>
             <CardContent sx={{ padding: '16px !important' }}>
               <Typography variant="h6" component="h3" gutterBottom>
@@ -32,6 +37,8 @@ const Documents = memo(() => {
                         size="small"
                         color={sharedStatus.color}
                         variant={sharedStatus.variant || 'filled'}
+                        onClick={() => handleToggleSharing(document.id, document.shared)}
+                        sx={{ cursor: 'pointer' }}
                       />
                     )
                   }

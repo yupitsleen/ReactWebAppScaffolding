@@ -1,16 +1,14 @@
-import { ReactNode } from 'react'
-import Loading from './Loading'
+import type { ReactNode } from "react";
+import Loading from "./Loading";
 
 interface LoadingWrapperProps {
-  loading: boolean
-  children: ReactNode
-  fallback?: ReactNode
-  /** Maintain the exact dimensions of the wrapped content during loading */
-  preserveLayout?: boolean
-  /** Custom loading text */
-  loadingText?: string
+  loading: boolean;
+  children: ReactNode;
+  fallback?: ReactNode;
+  preserveLayout?: boolean;
+  loadingText?: string;
   /** Custom minimum height to prevent layout shift */
-  minHeight?: string | number
+  minHeight?: string | number;
 }
 
 export default function LoadingWrapper({
@@ -18,30 +16,30 @@ export default function LoadingWrapper({
   children,
   fallback,
   preserveLayout = true,
-  loadingText = 'Loading...',
-  minHeight
+  loadingText = "Loading...",
+  minHeight,
 }: LoadingWrapperProps) {
   if (loading) {
     if (fallback) {
-      return <>{fallback}</>
+      return <>{fallback}</>;
     }
 
     const loadingStyles: React.CSSProperties = {
       ...(minHeight && { minHeight }),
       ...(preserveLayout && {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%'
-      })
-    }
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+      }),
+    };
 
     return (
       <div style={loadingStyles}>
         <Loading text={loadingText} />
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

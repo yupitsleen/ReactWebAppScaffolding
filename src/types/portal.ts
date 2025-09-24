@@ -121,7 +121,7 @@ export interface DashboardSection {
   id: string
   title: string
   dataSource: string
-  filterCriteria?: any
+  filterCriteria?: unknown
   maxItems?: number
   enabled: boolean
 }

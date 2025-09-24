@@ -46,6 +46,7 @@ function Register() {
     setFormData(prev => ({ ...prev, [field]: e.target.value }))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSelectChange = (field: keyof RegisterFormData) => (e: any) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }))
   }
