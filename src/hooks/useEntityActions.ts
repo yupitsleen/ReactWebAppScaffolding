@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useAppContext } from '../context/AppContext'
+import { useData } from '../context/ContextProvider'
 import { useNavigation } from './useNavigation'
 import type { ActionButton } from '../types/portal'
 
@@ -11,7 +11,7 @@ interface UseEntityActionsReturn {
 
 export const useEntityActions = (): UseEntityActionsReturn => {
   const { navigateToPage, navigateBack, navigateTo } = useNavigation()
-  const { updateTodoStatus, updateDiscussionStatus, updateDocumentSharing } = useAppContext()
+  const { updateTodoStatus, updateDiscussionStatus, updateDocumentSharing } = useData()
 
   // Define all available action handlers
   const actionHandlers = useCallback(() => ({
