@@ -1,5 +1,4 @@
 import { memo, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Grid,
@@ -20,12 +19,13 @@ import LoadingWrapper from "../components/LoadingWrapper";
 import DataCard from "../components/DataCard";
 import StatusChip from "../components/StatusChip";
 import { usePageLoading } from "../hooks/usePageLoading";
+import { useEntityActions } from "../hooks/useEntityActions";
 import { useAppContext } from "../context/AppContext";
 
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
   const { state } = useAppContext();
-  const navigate = useNavigate();
+  const { getActionHandler } = useEntityActions();
 
   const dashboardStats = useMemo(() => {
     const completedTodos = state.todos.filter(todo => todo.status === 'completed').length;
@@ -64,19 +64,20 @@ const Home = memo(() => {
     }
   };
 
-  const getNavigationPath = (dataSource: string): string => {
-    const dataSourceToPath: Record<string, string> = {
-      todoItems: '/todos',
-      payments: '/payments',
-      documents: '/documents',
-      discussions: '/discussions'
-    }
-    return dataSourceToPath[dataSource] || '/'
-  }
-
   const handleNavigateToPage = (dataSource: string) => {
-    const path = getNavigationPath(dataSource)
-    navigate(path)
+    const navigationMap: Record<string, string> = {
+      todoItems: 'navigateToTasks',
+      payments: 'navigateToPayments',
+      documents: 'navigateToDocuments',
+      discussions: 'navigateToDiscussions'
+    }
+
+    const actionId = navigationMap[dataSource]
+    const handler = getActionHandler(actionId)
+
+    if (handler) {
+      handler()
+    }
   }
 
   const getSectionData = useMemo(() => (section: { dataSource: string; filterCriteria?: Record<string, unknown>; maxItems?: number }) => {
