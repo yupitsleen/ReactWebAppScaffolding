@@ -17,6 +17,7 @@ import { serviceInfo } from "../data/sampleData";
 import { appConfig } from "../data/configurableData";
 import PageLayout from "../components/PageLayout";
 import LoadingWrapper from "../components/LoadingWrapper";
+import DataCard from "../components/DataCard";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useAppContext } from "../context/AppContext";
 
@@ -44,17 +45,6 @@ const Home = memo(() => {
     };
   }, [state.todos, state.discussions, state.documents]);
 
-  const iconMap = useMemo(
-    () => ({
-      AssignmentTurnedIn: <Icons.AssignmentTurnedIn />,
-      Payment: <Icons.Payment />,
-      Description: <Icons.Description />,
-      Forum: <Icons.Forum />,
-      Warning: <Icons.Warning />,
-      CheckCircle: <Icons.CheckCircle />,
-    }),
-    []
-  );
 
   const getCardValue = (card: { dataSource: string; valueType?: string }) => {
     switch (card.dataSource) {
@@ -139,58 +129,11 @@ const Home = memo(() => {
           <Grid container spacing={3}>
             {appConfig.dashboardCards.map((card) => (
               <Grid item xs={12} sm={6} lg={3} key={card.id}>
-                <Card
-                  sx={{
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease-in-out',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: (theme) => theme.shadows[4],
-                    }
-                  }}
+                <DataCard
+                  card={card}
+                  value={getCardValue(card)}
                   onClick={() => handleNavigateToPage(card.dataSource)}
-                >
-                  <CardContent>
-                    <Box className="card-header">
-                      <Box
-                        className="card-icon"
-                        sx={{ color: `${card.color}.main` }}
-                      >
-                        {card.icon &&
-                          iconMap[card.icon as keyof typeof iconMap]}
-                      </Box>
-                      <Typography
-                        variant="h4"
-                        component="div"
-                        className="card-value"
-                      >
-                        {getCardValue(card)}
-                      </Typography>
-                    </Box>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, mb: 0.5 }}
-                    >
-                      {card.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {card.subtitle}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      color="primary"
-                      sx={{
-                        mt: 0.5,
-                        display: 'block',
-                        fontWeight: 500,
-                        opacity: 0.7,
-                        transition: 'opacity 0.2s ease-in-out'
-                      }}
-                    >
-                      Click to view details
-                    </Typography>
-                  </CardContent>
-                </Card>
+                />
               </Grid>
             ))}
           </Grid>
