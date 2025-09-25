@@ -1,6 +1,7 @@
 import { memo, type ReactNode } from 'react'
 import { Typography, Chip } from '@mui/material'
 import type { StatusConfig } from '../types/portal'
+import StatusChip from './StatusChip'
 
 interface FieldRendererProps {
   field: string
@@ -27,34 +28,32 @@ const FieldRenderer = memo<FieldRendererProps>(({
   const renderFieldValue = (): ReactNode => {
     switch (field) {
       case 'priority':
-        if (statusConfig?.priority && typeof value === 'string') {
-          const priorityStatus = statusConfig.priority[value]
-          if (priorityStatus) {
-            return (
-              <Chip
-                label={`Priority: ${priorityStatus.label}`}
-                size="small"
-                color={priorityStatus.color}
-                sx={{ opacity }}
-              />
-            )
-          }
+        if (statusConfig && typeof value === 'string') {
+          return (
+            <StatusChip
+              type="priority"
+              value={value}
+              statusConfig={statusConfig}
+              size="small"
+              showLabel={true}
+              sx={{ opacity }}
+            />
+          )
         }
         break
 
       case 'status':
-        if (statusConfig?.status && typeof value === 'string') {
-          const taskStatus = statusConfig.status[value]
-          if (taskStatus) {
-            return (
-              <Chip
-                label={`Status: ${taskStatus.label}`}
-                size="small"
-                color={taskStatus.color}
-                sx={{ opacity }}
-              />
-            )
-          }
+        if (statusConfig && typeof value === 'string') {
+          return (
+            <StatusChip
+              type="status"
+              value={value}
+              statusConfig={statusConfig}
+              size="small"
+              showLabel={true}
+              sx={{ opacity }}
+            />
+          )
         }
         break
 
@@ -90,13 +89,13 @@ const FieldRenderer = memo<FieldRendererProps>(({
         break
 
       case 'shared':
-        if (typeof value === 'boolean') {
+        if (statusConfig && typeof value === 'boolean') {
           return (
-            <Chip
-              label={value ? 'Shared' : 'Private'}
+            <StatusChip
+              type="documentShared"
+              value={value}
+              statusConfig={statusConfig}
               size="small"
-              color={value ? 'success' : 'default'}
-              variant="outlined"
               sx={{ opacity }}
             />
           )

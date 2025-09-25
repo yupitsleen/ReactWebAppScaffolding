@@ -18,6 +18,7 @@ import { appConfig } from "../data/configurableData";
 import PageLayout from "../components/PageLayout";
 import LoadingWrapper from "../components/LoadingWrapper";
 import DataCard from "../components/DataCard";
+import StatusChip from "../components/StatusChip";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useAppContext } from "../context/AppContext";
 
@@ -211,10 +212,11 @@ const Home = memo(() => {
                                         item.dueDate
                                       ).toLocaleDateString()}`}
                                     />
-                                    <Chip
-                                      label={item.priority}
+                                    <StatusChip
+                                      type="priority"
+                                      value={item.priority as string}
+                                      statusConfig={appConfig.statusConfig}
                                       size="small"
-                                      color="error"
                                     />
                                   </>
                                 )}
@@ -226,14 +228,11 @@ const Home = memo(() => {
                                         item.createdAt
                                       ).toLocaleDateString()}`}
                                     />
-                                    <Chip
-                                      label={item.priority}
+                                    <StatusChip
+                                      type="priority"
+                                      value={item.priority as string}
+                                      statusConfig={appConfig.statusConfig}
                                       size="small"
-                                      color={
-                                        item.priority === "urgent"
-                                          ? "error"
-                                          : "default"
-                                      }
                                     />
                                   </>
                                 )}
