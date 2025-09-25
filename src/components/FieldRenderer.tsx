@@ -6,7 +6,7 @@ import StatusChip from './StatusChip'
 interface FieldRendererProps {
   field: string
   value: unknown
-  entity: Record<string, unknown>
+  entity?: Record<string, unknown>
   statusConfig?: StatusConfig
   variant?: 'primary' | 'secondary' | 'chip'
   isCompleted?: boolean
@@ -16,7 +16,6 @@ interface FieldRendererProps {
 const FieldRenderer = memo<FieldRendererProps>(({
   field,
   value,
-  entity,
   statusConfig,
   variant = 'secondary',
   isCompleted = false,

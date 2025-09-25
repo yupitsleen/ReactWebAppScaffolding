@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Box,
-  Chip,
   List,
   ListItem,
   ListItemText,

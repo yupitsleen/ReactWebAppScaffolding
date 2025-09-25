@@ -1,5 +1,5 @@
 import { memo, useState, useMemo } from 'react'
-import { Typography, Card, CardContent, Chip, Box, Checkbox, FormControlLabel, Fab, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Typography, Card, CardContent, Box, Checkbox, FormControlLabel, Fab, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { Add as AddIcon, Sort as SortIcon } from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
