@@ -3,6 +3,7 @@ import { Typography, Card, CardContent, Chip, Box, Checkbox, FormControlLabel, F
 import { Add as AddIcon, Sort as SortIcon } from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
+import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useAppContext } from '../context/AppContext'
 import CreateTodoDialog from '../components/CreateTodoDialog'
@@ -133,77 +134,32 @@ const Tasks = memo(() => {
                     sx={{ m: 0, alignSelf: 'flex-start' }}
                   />
                   <Box sx={{ flex: 1 }}>
-                    <Typography
-                      variant="h6"
-                      component="h3"
-                      gutterBottom
-                      sx={{
-                        textDecoration: isCompleted ? 'line-through' : 'none',
-                        color: isCompleted ? 'text.disabled' : 'text.primary'
-                      }}
-                    >
-                      {todo[todoFields.primary as keyof typeof todo] as string}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color={isCompleted ? 'text.disabled' : 'text.secondary'}
-                      paragraph
-                      sx={{
-                        textDecoration: isCompleted ? 'line-through' : 'none'
-                      }}
-                    >
-                      {todo.description}
-                    </Typography>
+                    <FieldRenderer
+                      field={todoFields.primary}
+                      value={todo[todoFields.primary as keyof typeof todo]}
+                      entity={todo}
+                      variant="primary"
+                      isCompleted={isCompleted}
+                    />
+                    <FieldRenderer
+                      field="description"
+                      value={todo.description}
+                      entity={todo}
+                      variant="secondary"
+                      isCompleted={isCompleted}
+                    />
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-                      {todoFields.secondary.map(field => {
-                        if (field === 'priority') {
-                          const priorityStatus = statusConfig.priority[todo.priority]
-                          return (
-                            <Chip
-                              key={field}
-                              label={`Priority: ${priorityStatus.label}`}
-                              size="small"
-                              color={priorityStatus.color}
-                              sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                            />
-                          )
-                        }
-
-                        if (field === 'status') {
-                          const taskStatus = statusConfig.status[todo.status]
-                          return (
-                            <Chip
-                              key={field}
-                              label={`Status: ${taskStatus.label}`}
-                              size="small"
-                              color={taskStatus.color}
-                              sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                            />
-                          )
-                        }
-
-                        if (field === 'dueDate') {
-                          return (
-                            <Chip
-                              key={field}
-                              label={`Due: ${new Date(todo.dueDate).toLocaleDateString()}`}
-                              size="small"
-                              variant="outlined"
-                              sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                            />
-                          )
-                        }
-
-                        return (
-                          <Chip
-                            key={field}
-                            label={`${field}: ${todo[field as keyof typeof todo]}`}
-                            size="small"
-                            variant="outlined"
-                            sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                          />
-                        )
-                      })}
+                      {todoFields.secondary.map(field => (
+                        <FieldRenderer
+                          key={field}
+                          field={field}
+                          value={todo[field as keyof typeof todo]}
+                          entity={todo}
+                          statusConfig={statusConfig}
+                          variant="chip"
+                          isCompleted={isCompleted}
+                        />
+                      ))}
                     </Box>
                   </Box>
                 </Box>
