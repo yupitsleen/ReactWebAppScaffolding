@@ -5,12 +5,12 @@ import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
-import { useAppContext } from '../context/AppContext'
+import { useData } from '../context/ContextProvider'
 import CreateTodoDialog from '../components/CreateTodoDialog'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
-  const { state, updateTodoStatus } = useAppContext()
+  const { todos, updateTodoStatus } = useData()
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -18,9 +18,9 @@ const Tasks = memo(() => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   const sortedTodos = useMemo(() => {
-    const todos = [...state.todos]
+    const todosList = [...todos]
 
-    return todos.sort((a, b) => {
+    return todosList.sort((a, b) => {
       let aValue: string | number | Date
       let bValue: string | number | Date
 
@@ -55,10 +55,10 @@ const Tasks = memo(() => {
 
       return sortDirection === 'desc' ? -comparison : comparison
     })
-  }, [state.todos, sortBy, sortDirection])
+  }, [todos, sortBy, sortDirection])
 
   const handleTaskToggle = (taskId: string) => {
-    const currentTodo = state.todos.find(todo => todo.id === taskId)
+    const currentTodo = todos.find(todo => todo.id === taskId)
     if (currentTodo) {
       const newStatus = currentTodo.status === 'completed' ? 'pending' : 'completed'
       updateTodoStatus(taskId, newStatus)
@@ -69,7 +69,7 @@ const Tasks = memo(() => {
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
         {/* Sort Controls */}
-        {state.todos.length > 0 && (
+        {todos.length > 0 && (
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <SortIcon color="action" />
             <FormControl size="small" sx={{ minWidth: 150 }}>
@@ -101,7 +101,7 @@ const Tasks = memo(() => {
           </Box>
         )}
 
-        {state.todos.length === 0 ? (
+        {todos.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No tasks yet

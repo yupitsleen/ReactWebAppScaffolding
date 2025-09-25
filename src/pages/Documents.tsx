@@ -5,11 +5,11 @@ import PageLayout from '../components/PageLayout'
 import ActionMenu from '../components/ActionMenu'
 import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
-import { useAppContext } from '../context/AppContext'
+import { useData } from '../context/ContextProvider'
 
 const Documents = memo(() => {
   const [loading] = usePageLoading(false)
-  const { state } = useAppContext()
+  const { documents } = useData()
   const { actions, statusConfig, fieldConfig } = appConfig
   const documentActions = actions.document
   const documentFields = fieldConfig.document
@@ -17,7 +17,7 @@ const Documents = memo(() => {
   return (
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
-        {state.documents.map(document => (
+        {documents.map(document => (
           <Card key={document.id} sx={{ mb: 2 }}>
             <CardContent sx={{ padding: '16px !important' }}>
               <FieldRenderer

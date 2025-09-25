@@ -13,7 +13,7 @@ import {
   Box,
   Alert,
 } from '@mui/material'
-import { useAppContext } from '../context/AppContext'
+import { useData, useUser } from '../context/ContextProvider'
 import type { TodoItem } from '../types/portal'
 
 interface CreateTodoDialogProps {
@@ -25,7 +25,8 @@ interface CreateTodoDialogProps {
 type TodoFormData = Omit<TodoItem, 'id' | 'createdAt' | 'createdBy'>
 
 const CreateTodoDialog = ({ open, onClose, onSuccess }: CreateTodoDialogProps) => {
-  const { createTodo, state } = useAppContext()
+  const { createTodo } = useData()
+  const { user } = useUser()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -73,7 +74,7 @@ const CreateTodoDialog = ({ open, onClose, onSuccess }: CreateTodoDialogProps) =
     try {
       const todoData: Omit<TodoItem, 'id'> = {
         ...formData,
-        createdBy: state.user?.name || 'Current User',
+        createdBy: user?.name || 'Current User',
         createdAt: new Date().toISOString(),
       }
 

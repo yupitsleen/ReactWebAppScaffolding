@@ -1,39 +1,32 @@
-import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
+import { createContext, useContext, useMemo, useCallback, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { TodoItem, Discussion, Document } from '../types/portal'
-import { getFromStorage, setToStorage } from '../utils/helpers'
 import { todosService, discussionsService, documentsService } from '../services'
-
-interface DataState {
-  todos: TodoItem[]
-  discussions: Discussion[]
-  documents: Document[]
-  loading: boolean
-}
+import { useEntityState } from '../hooks/useEntityState'
 
 interface DataContextValue {
-  // State
+  // Todos
   todos: TodoItem[]
-  discussions: Discussion[]
-  documents: Document[]
-  loading: boolean
-
-  // Actions
-  setLoading: (loading: boolean) => void
+  todosLoading: boolean
   createTodo: (todoData: Omit<TodoItem, 'id'>) => Promise<TodoItem>
   updateTodoStatus: (todoId: string, status: 'pending' | 'in-progress' | 'completed') => Promise<void>
+
+  // Discussions
+  discussions: Discussion[]
+  discussionsLoading: boolean
   updateDiscussionStatus: (discussionId: string, resolved: boolean) => Promise<void>
+
+  // Documents
+  documents: Document[]
+  documentsLoading: boolean
   updateDocumentSharing: (documentId: string, shared: boolean) => Promise<void>
+
+  // Global actions
+  loading: boolean
+  setLoading: (loading: boolean) => void
   refreshData: () => Promise<void>
   clearPersistedData: () => void
 }
-
-const getInitialDataState = (): DataState => ({
-  todos: getFromStorage('app_todos', []),
-  discussions: getFromStorage('app_discussions', []),
-  documents: getFromStorage('app_documents', []),
-  loading: false,
-})
 
 const DataContext = createContext<DataContextValue | undefined>(undefined)
 
@@ -42,164 +35,106 @@ interface DataProviderProps {
 }
 
 export function DataProvider({ children }: DataProviderProps) {
-  const [state, setState] = useState<DataState>(getInitialDataState)
+  // Use the reusable entity state hook for each entity type
+  const todosState = useEntityState({
+    service: todosService,
+    storageKey: 'app_todos',
+  })
 
-  const loadAllData = useCallback(async () => {
-    try {
-      // Only load from services if no persisted data exists
-      if (state.todos.length === 0 && state.discussions.length === 0 && state.documents.length === 0) {
-        setState(prev => ({ ...prev, loading: true }))
+  const discussionsState = useEntityState({
+    service: discussionsService,
+    storageKey: 'app_discussions',
+  })
 
-        const [todosData, discussionsData, documentsData] = await Promise.all([
-          todosService.getAll(),
-          discussionsService.getAll(),
-          documentsService.getAll(),
-        ])
+  const documentsState = useEntityState({
+    service: documentsService,
+    storageKey: 'app_documents',
+  })
 
-        setState(prev => ({
-          ...prev,
-          todos: todosData,
-          discussions: discussionsData,
-          documents: documentsData,
-          loading: false,
-        }))
+  // Global loading state (true if any entity is loading)
+  const loading = useMemo(() =>
+    todosState.loading || discussionsState.loading || documentsState.loading,
+    [todosState.loading, discussionsState.loading, documentsState.loading]
+  )
 
-        // Persist the loaded data
-        setToStorage('app_todos', todosData)
-        setToStorage('app_discussions', discussionsData)
-        setToStorage('app_documents', documentsData)
-      }
-    } catch (error) {
-      console.error('Failed to load data:', error)
-      setState(prev => ({ ...prev, loading: false }))
-    }
-  }, [state.todos.length, state.discussions.length, state.documents.length])
+  // Global loading setter (affects all entities)
+  const setLoading = useCallback((isLoading: boolean) => {
+    todosState.setLoading(isLoading)
+    discussionsState.setLoading(isLoading)
+    documentsState.setLoading(isLoading)
+  }, [todosState.setLoading, discussionsState.setLoading, documentsState.setLoading])
 
-  useEffect(() => {
-    loadAllData()
-  }, []) // Only run once on mount
-
-  const setLoading = useCallback((loading: boolean) => {
-    setState(prev => ({ ...prev, loading }))
-  }, [])
-
-  const createTodo = useCallback(async (todoData: Omit<TodoItem, 'id'>): Promise<TodoItem> => {
-    try {
-      const newTodo = await todosService.create(todoData)
-
-      setState(prev => {
-        const updatedTodos = [...prev.todos, newTodo]
-        setToStorage('app_todos', updatedTodos)
-        return {
-          ...prev,
-          todos: updatedTodos
-        }
-      })
-
-      return newTodo
-    } catch (error) {
-      console.error('Failed to create todo:', error)
-      throw error
-    }
-  }, [])
-
+  // Specialized update methods that maintain backward compatibility
   const updateTodoStatus = useCallback(async (todoId: string, status: 'pending' | 'in-progress' | 'completed') => {
-    try {
-      const updatedTodo = await todosService.update(todoId, { status })
-
-      setState(prev => {
-        const updatedTodos = prev.todos.map(todo => todo.id === todoId ? updatedTodo : todo)
-        setToStorage('app_todos', updatedTodos)
-        return {
-          ...prev,
-          todos: updatedTodos
-        }
-      })
-    } catch (error) {
-      console.error('Failed to update todo status:', error)
-    }
-  }, [])
+    await todosState.updateEntity(todoId, { status })
+  }, [todosState.updateEntity])
 
   const updateDiscussionStatus = useCallback(async (discussionId: string, resolved: boolean) => {
-    try {
-      const updatedDiscussion = await discussionsService.update(discussionId, { resolved })
-
-      setState(prev => {
-        const updatedDiscussions = prev.discussions.map(discussion =>
-          discussion.id === discussionId ? updatedDiscussion : discussion
-        )
-        setToStorage('app_discussions', updatedDiscussions)
-        return {
-          ...prev,
-          discussions: updatedDiscussions
-        }
-      })
-    } catch (error) {
-      console.error('Failed to update discussion status:', error)
-    }
-  }, [])
+    await discussionsState.updateEntity(discussionId, { resolved })
+  }, [discussionsState.updateEntity])
 
   const updateDocumentSharing = useCallback(async (documentId: string, shared: boolean) => {
-    try {
-      const updatedDocument = await documentsService.update(documentId, { shared })
+    await documentsState.updateEntity(documentId, { shared })
+  }, [documentsState.updateEntity])
 
-      setState(prev => {
-        const updatedDocuments = prev.documents.map(document =>
-          document.id === documentId ? updatedDocument : document
-        )
-        setToStorage('app_documents', updatedDocuments)
-        return {
-          ...prev,
-          documents: updatedDocuments
-        }
-      })
-    } catch (error) {
-      console.error('Failed to update document sharing:', error)
-    }
-  }, [])
-
+  // Refresh all data
   const refreshData = useCallback(async () => {
-    await loadAllData()
-  }, [loadAllData])
+    await Promise.all([
+      todosState.refreshEntities(),
+      discussionsState.refreshEntities(),
+      documentsState.refreshEntities(),
+    ])
+  }, [todosState.refreshEntities, discussionsState.refreshEntities, documentsState.refreshEntities])
 
+  // Clear all persisted data
   const clearPersistedData = useCallback(() => {
-    setToStorage('app_todos', [])
-    setToStorage('app_discussions', [])
-    setToStorage('app_documents', [])
-
-    setState({
-      todos: [],
-      discussions: [],
-      documents: [],
-      loading: false,
-    })
-  }, [])
+    todosState.clearEntities()
+    discussionsState.clearEntities()
+    documentsState.clearEntities()
+  }, [todosState.clearEntities, discussionsState.clearEntities, documentsState.clearEntities])
 
   const value = useMemo<DataContextValue>(() => ({
-    // State
-    todos: state.todos,
-    discussions: state.discussions,
-    documents: state.documents,
-    loading: state.loading,
-
-    // Actions
-    setLoading,
-    createTodo,
+    // Todos
+    todos: todosState.entities,
+    todosLoading: todosState.loading,
+    createTodo: todosState.createEntity,
     updateTodoStatus,
+
+    // Discussions
+    discussions: discussionsState.entities,
+    discussionsLoading: discussionsState.loading,
     updateDiscussionStatus,
+
+    // Documents
+    documents: documentsState.entities,
+    documentsLoading: documentsState.loading,
     updateDocumentSharing,
+
+    // Global
+    loading,
+    setLoading,
     refreshData,
     clearPersistedData,
   }), [
-    state.todos,
-    state.discussions,
-    state.documents,
-    state.loading,
-    setLoading,
-    createTodo,
+    // Todos
+    todosState.entities,
+    todosState.loading,
+    todosState.createEntity,
     updateTodoStatus,
+
+    // Discussions
+    discussionsState.entities,
+    discussionsState.loading,
     updateDiscussionStatus,
+
+    // Documents
+    documentsState.entities,
+    documentsState.loading,
     updateDocumentSharing,
+
+    // Global
+    loading,
+    setLoading,
     refreshData,
     clearPersistedData,
   ])

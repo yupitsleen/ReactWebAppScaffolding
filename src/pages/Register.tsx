@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Container, Paper, TextField, Button, Typography, Box, Alert, FormControl, InputLabel, Select, MenuItem, IconButton, InputAdornment } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { useAppContext } from '../context/AppContext'
+import { useUser } from '../context/ContextProvider'
 import { useAuthService } from '../context/MockContext'
 import type { UserType } from '../types/portal'
 import { USER_TYPES } from '../data/configurableData'
@@ -19,7 +19,7 @@ interface RegisterFormData {
 
 function Register() {
   const navigate = useNavigate()
-  const { setUser } = useAppContext()
+  const { setUser } = useUser()
   const authService = useAuthService()
   const [formData, setFormData] = useState<RegisterFormData>({
     name: '',

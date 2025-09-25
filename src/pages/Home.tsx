@@ -19,21 +19,21 @@ import DataCard from "../components/DataCard";
 import StatusChip from "../components/StatusChip";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
-import { useAppContext } from "../context/AppContext";
+import { useData } from "../context/ContextProvider";
 
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
-  const { state } = useAppContext();
+  const { todos, discussions, documents } = useData();
   const { getActionHandler } = useEntityActions();
 
   const dashboardStats = useMemo(() => {
-    const completedTodos = state.todos.filter(todo => todo.status === 'completed').length;
-    const totalTodos = state.todos.length;
+    const completedTodos = todos.filter(todo => todo.status === 'completed').length;
+    const totalTodos = todos.length;
     const completionRate = totalTodos > 0 ? Math.round((completedTodos / totalTodos) * 100) : 0;
 
-    const unreadDiscussions = state.discussions.filter(d => !d.resolved).length;
-    const totalDocuments = state.documents.length;
-    const sharedDocuments = state.documents.filter(d => d.shared).length;
+    const unreadDiscussions = discussions.filter(d => !d.resolved).length;
+    const totalDocuments = documents.length;
+    const sharedDocuments = documents.filter(d => d.shared).length;
 
     return {
       completedTodos,
@@ -43,7 +43,7 @@ const Home = memo(() => {
       totalDocuments,
       sharedDocuments
     };
-  }, [state.todos, state.discussions, state.documents]);
+  }, [todos, discussions, documents]);
 
 
   const getCardValue = (card: { dataSource: string; valueType?: string }) => {
@@ -85,7 +85,7 @@ const Home = memo(() => {
 
     switch (dataSource) {
       case "todoItems":
-        data = state.todos.filter((item) => {
+        data = todos.filter((item) => {
           if (
             filterCriteria?.priority &&
             item.priority !== filterCriteria.priority
@@ -100,7 +100,7 @@ const Home = memo(() => {
         });
         break;
       case "discussions":
-        data = state.discussions.filter((item) => {
+        data = discussions.filter((item) => {
           if (
             filterCriteria?.resolved !== undefined &&
             item.resolved !== filterCriteria.resolved
@@ -114,7 +114,7 @@ const Home = memo(() => {
     }
 
     return maxItems ? data.slice(0, maxItems) : data;
-  }, [state.todos, state.discussions]);
+  }, [todos, discussions]);
 
   return (
     <PageLayout
