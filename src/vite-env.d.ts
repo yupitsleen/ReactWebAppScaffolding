@@ -7,7 +7,7 @@ declare global {
       setThemeColor?: (colorName: string, colorValue: string) => void
       applyColorPreset?: (preset: 'dark-purple' | 'blue' | 'green' | 'red') => void
       getThemeColor?: (colorName: string) => string
-      [key: string]: any
+      [key: string]: unknown
     }
   }
 }
