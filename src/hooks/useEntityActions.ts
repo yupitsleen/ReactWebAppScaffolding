@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
+import { useNavigation } from './useNavigation'
 import type { ActionButton } from '../types/portal'
 
 interface UseEntityActionsReturn {
@@ -10,22 +10,22 @@ interface UseEntityActionsReturn {
 }
 
 export const useEntityActions = (): UseEntityActionsReturn => {
-  const navigate = useNavigate()
+  const { navigateToPage, navigateBack, navigateTo } = useNavigation()
   const { updateTodoStatus, updateDiscussionStatus, updateDocumentSharing } = useAppContext()
 
   // Define all available action handlers
   const actionHandlers = useCallback(() => ({
-    // Navigation actions
-    navigateToTasks: () => navigate('/tasks'),
-    navigateToPayments: () => navigate('/payments'),
-    navigateToDocuments: () => navigate('/documents'),
-    navigateToDiscussions: () => navigate('/discussions'),
-    navigateToAccount: () => navigate('/account'),
-    navigateToLogin: () => navigate('/login'),
-    navigateToRegister: () => navigate('/register'),
-    navigateToProfile: () => navigate('/profile'),
-    navigateBack: () => navigate(-1),
-    navigateHome: () => navigate('/'),
+    // Navigation actions using smart navigation
+    navigateToTasks: () => navigateToPage('tasks'),
+    navigateToPayments: () => navigateToPage('payments'),
+    navigateToDocuments: () => navigateToPage('documents'),
+    navigateToDiscussions: () => navigateToPage('discussions'),
+    navigateToAccount: () => navigateToPage('account'),
+    navigateToLogin: () => navigateTo('/login'),
+    navigateToRegister: () => navigateTo('/register'),
+    navigateToProfile: () => navigateTo('/profile'),
+    navigateBack: () => navigateBack(),
+    navigateHome: () => navigateToPage('home'),
 
     // Entity status actions
     handleCompleteTask: (entity?: Record<string, unknown>) => {
@@ -75,7 +75,7 @@ export const useEntityActions = (): UseEntityActionsReturn => {
     },
     handleUpdateProfile: () => {
       console.log('Update profile action triggered')
-      navigate('/profile')
+      navigateTo('/profile')
     },
     handleContactSupport: () => {
       console.log('Contact support action triggered')
@@ -93,7 +93,7 @@ export const useEntityActions = (): UseEntityActionsReturn => {
       console.log('View action triggered', entity)
       // TODO: Implement view functionality
     },
-  }), [navigate, updateTodoStatus, updateDiscussionStatus, updateDocumentSharing])
+  }), [navigateToPage, navigateBack, navigateTo, updateTodoStatus, updateDiscussionStatus, updateDocumentSharing])
 
   const executeAction = useCallback((action: ActionButton, entity?: Record<string, unknown>) => {
     const handlers = actionHandlers()

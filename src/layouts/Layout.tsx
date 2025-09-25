@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { useState, useEffect, useRef } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import { useAuthService } from '../context/MockContext'
+import { useNavigation } from '../hooks/useNavigation'
 import Footer from '../components/Footer'
 import NotificationBell from '../components/NotificationBell'
 import { appConfig } from '../data/configurableData'
@@ -13,14 +14,12 @@ interface LayoutProps {
 }
 
 function Layout({ children }: LayoutProps) {
-  const location = useLocation()
   const navigate = useNavigate()
   const { state, setUser, setTheme } = useAppContext()
   const authService = useAuthService()
+  const { isCurrentPage, getEnabledPages } = useNavigation()
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef<HTMLDivElement>(null)
-
-  const isPageActive = (path: string) => location.pathname === path
 
   // Close account menu when clicking outside
   useEffect(() => {
@@ -61,17 +60,15 @@ function Layout({ children }: LayoutProps) {
         <div className={styles.headerContent}>
           <div className={styles.logo}>{appConfig.appName}</div>
           <nav className={styles.nav}>
-            {appConfig.navigation
-              .filter(nav => nav.enabled)
-              .map(nav => (
-                <Link
-                  key={nav.id}
-                  to={nav.path}
-                  className={`${styles.navLink} ${isPageActive(nav.path) ? styles.active : ''}`}
-                >
-                  {nav.label}
-                </Link>
-              ))}
+            {getEnabledPages().map(nav => (
+              <Link
+                key={nav.id}
+                to={nav.path}
+                className={`${styles.navLink} ${isCurrentPage(nav.path) ? styles.active : ''}`}
+              >
+                {nav.label}
+              </Link>
+            ))}
             <div className={styles.accountMenu} ref={accountMenuRef}>
               <button
                 className={styles.accountButton}
