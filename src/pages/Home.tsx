@@ -19,6 +19,7 @@ import DataCard from "../components/DataCard";
 import StatusChip from "../components/StatusChip";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
+import { useDataOperations } from "../hooks/useDataOperations";
 import { useData } from "../context/ContextProvider";
 
 const Home = memo(() => {
@@ -79,69 +80,38 @@ const Home = memo(() => {
     }
   }
 
+  const { processData } = useDataOperations();
+
   const getSectionData = useMemo(() => (section: { dataSource: string; filterCriteria?: Record<string, unknown>; maxItems?: number }) => {
     const { dataSource, filterCriteria, maxItems } = section;
-    let data: Array<{ id: string; [key: string]: unknown }> = [];
+    let sourceData: Array<{ id: string; [key: string]: unknown }> = [];
 
     switch (dataSource) {
       case "todoItems":
-        data = todos.filter((item) => {
-          if (
-            filterCriteria?.priority &&
-            item.priority !== filterCriteria.priority
-          )
-            return false;
-          if (
-            filterCriteria?.status === "!completed" &&
-            item.status === "completed"
-          )
-            return false;
-          return true;
-        });
+        sourceData = todos;
         break;
       case "discussions":
-        data = discussions.filter((item) => {
-          if (
-            filterCriteria?.resolved !== undefined &&
-            item.resolved !== filterCriteria.resolved
-          )
-            return false;
-          return true;
-        });
+        sourceData = discussions;
         break;
       default:
-        data = [];
+        sourceData = [];
     }
 
-    return maxItems ? data.slice(0, maxItems) : data;
-  }, [todos, discussions]);
+    const { processedData } = processData({
+      data: sourceData,
+      filterCriteria,
+      maxItems
+    });
+
+    return processedData;
+  }, [todos, discussions, processData]);
 
   return (
     <PageLayout
       title={appConfig.pageTitle}
-      description={`Welcome to ${serviceInfo.name} - ${serviceInfo.tagline}`}
+      description={`${serviceInfo.tagline}`}
     >
-      {/* Summary Cards Section */}
-      <LoadingWrapper loading={loading} minHeight="200px">
-        <Box className="dashboard-section">
-          <Typography variant="h5" component="h2">
-            Overview
-          </Typography>
-          <Grid container spacing={3}>
-            {appConfig.dashboardCards.map((card) => (
-              <Grid item xs={12} sm={6} lg={3} key={card.id}>
-                <DataCard
-                  card={card}
-                  value={getCardValue(card)}
-                  onClick={() => handleNavigateToPage(card.dataSource)}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </LoadingWrapper>
-
-      {/* Progress Section */}
+       {/* Progress Section */}
       <LoadingWrapper loading={loading} minHeight="120px">
         <Box className="dashboard-section">
           <Card>
@@ -170,6 +140,28 @@ const Home = memo(() => {
           </Card>
         </Box>
       </LoadingWrapper>
+      
+      {/* Summary Cards Section */}
+      <LoadingWrapper loading={loading} minHeight="200px">
+        <Box className="dashboard-section">
+          <Typography variant="h5" component="h2">
+            Overview
+          </Typography>
+          <Grid container spacing={3}>
+            {appConfig.dashboardCards.map((card) => (
+              <Grid item xs={12} sm={6} lg={3} key={card.id}>
+                <DataCard
+                  card={card}
+                  value={getCardValue(card)}
+                  onClick={() => handleNavigateToPage(card.dataSource)}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </LoadingWrapper>
+
+     
 
       {/* Dynamic Sections */}
       <LoadingWrapper loading={loading} minHeight="300px">

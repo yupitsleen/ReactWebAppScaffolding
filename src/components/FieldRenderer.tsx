@@ -1,7 +1,6 @@
 import { memo, type ReactNode } from 'react'
-import { Typography, Chip } from '@mui/material'
 import type { StatusConfig } from '../types/portal'
-import StatusChip from './StatusChip'
+import { getFieldRenderer } from '../config/fieldTypes'
 
 interface FieldRendererProps {
   field: string
@@ -23,129 +22,17 @@ const FieldRenderer = memo<FieldRendererProps>(({
 }) => {
   const opacity = isCompleted ? 0.7 : 1
 
-  // Handle different field types
   const renderFieldValue = (): ReactNode => {
-    switch (field) {
-      case 'priority':
-        if (statusConfig && typeof value === 'string') {
-          return (
-            <StatusChip
-              type="priority"
-              value={value}
-              statusConfig={statusConfig}
-              size="small"
-              showLabel={true}
-              sx={{ opacity }}
-            />
-          )
-        }
-        break
+    const renderer = getFieldRenderer(field, variant)
 
-      case 'status':
-        if (statusConfig && typeof value === 'string') {
-          return (
-            <StatusChip
-              type="status"
-              value={value}
-              statusConfig={statusConfig}
-              size="small"
-              showLabel={true}
-              sx={{ opacity }}
-            />
-          )
-        }
-        break
-
-      case 'dueDate':
-      case 'createdAt':
-      case 'paidDate':
-        if (typeof value === 'string') {
-          const label = field === 'dueDate' ? 'Due' :
-                       field === 'createdAt' ? 'Created' :
-                       field === 'paidDate' ? 'Paid' : 'Date'
-          return (
-            <Chip
-              label={`${label}: ${new Date(value).toLocaleDateString()}`}
-              size="small"
-              variant="outlined"
-              sx={{ opacity }}
-            />
-          )
-        }
-        break
-
-      case 'amount':
-        if (typeof value === 'number') {
-          return (
-            <Chip
-              label={`Amount: $${value.toFixed(2)}`}
-              size="small"
-              variant="outlined"
-              sx={{ opacity }}
-            />
-          )
-        }
-        break
-
-      case 'shared':
-        if (statusConfig && typeof value === 'boolean') {
-          return (
-            <StatusChip
-              type="documentShared"
-              value={value}
-              statusConfig={statusConfig}
-              size="small"
-              sx={{ opacity }}
-            />
-          )
-        }
-        break
-
-      default:
-        // Generic field display
-        if (variant === 'chip') {
-          return (
-            <Chip
-              label={`${field}: ${String(value)}`}
-              size="small"
-              variant="outlined"
-              sx={{ opacity }}
-            />
-          )
-        }
-        break
-    }
-
-    // Fallback for non-chip variants
-    if (variant === 'primary') {
-      return (
-        <Typography
-          variant="h6"
-          component="h3"
-          gutterBottom
-          sx={{
-            textDecoration: isCompleted ? 'line-through' : 'none',
-            color: isCompleted ? 'text.disabled' : 'text.primary'
-          }}
-        >
-          {String(value)}
-        </Typography>
-      )
-    }
-
-    if (variant === 'secondary') {
-      return (
-        <Typography
-          variant="body2"
-          color={isCompleted ? 'text.disabled' : 'text.secondary'}
-          paragraph
-          sx={{
-            textDecoration: isCompleted ? 'line-through' : 'none'
-          }}
-        >
-          {String(value)}
-        </Typography>
-      )
+    if (renderer) {
+      return renderer({
+        value,
+        statusConfig,
+        isCompleted,
+        variant,
+        sx: { opacity }
+      })
     }
 
     return <span>{String(value)}</span>

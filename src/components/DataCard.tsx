@@ -1,6 +1,7 @@
 import { memo, type ReactNode } from 'react'
 import { Card, CardContent, Box, Typography } from '@mui/material'
 import * as Icons from '@mui/icons-material'
+import { appConfig } from '../data/configurableData'
 import type { DashboardCard } from '../types/portal'
 
 interface DataCardProps {
@@ -20,16 +21,12 @@ const DataCard = memo<DataCardProps>(({
   showClickHint = true,
   children
 }) => {
-  const iconMap: Record<string, ReactNode> = {
-    AssignmentTurnedIn: <Icons.AssignmentTurnedIn />,
-    Payment: <Icons.Payment />,
-    Description: <Icons.Description />,
-    Forum: <Icons.Forum />,
-    Warning: <Icons.Warning />,
-    CheckCircle: <Icons.CheckCircle />,
+  const getIconComponent = (iconName: string): ReactNode => {
+    const IconComponent = Icons[iconName as keyof typeof Icons] as React.ComponentType
+    return IconComponent ? <IconComponent /> : null
   }
 
-  const displayIcon = icon || (card.icon && iconMap[card.icon as keyof typeof iconMap])
+  const displayIcon = icon || (card.icon && getIconComponent(appConfig.theme.iconMappings[card.icon] || card.icon))
 
   return (
     <Card
