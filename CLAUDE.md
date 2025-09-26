@@ -136,10 +136,19 @@ git remote prune origin
 1. **Plan** → Create todo list and assess scope
 2. **Branch** → Fresh feature branch from main
 3. **Implement** → Focused commits with clear messages
-4. **Test** → Verify functionality and run linting
-5. **PR** → Comprehensive summary and review
-6. **Merge** → Squash if needed, clean up branches
-7. **Repeat** → Start next feature from fresh main
+4. **Test & Lint** → Run `npm test` and `npm run lint` after each working change
+5. **Add Tests** → Write tests for crucial functionality before committing
+6. **Commit** → Only commit when tests pass and linting is clean
+7. **PR** → Comprehensive summary and review
+8. **Merge** → Squash if needed, clean up branches
+9. **Repeat** → Start next feature from fresh main
+
+### Quality Gates (#memorize)
+- **Always run tests and linter** after each working change
+- **No commits without passing tests** (40/40 ✓ required)
+- **Add unit tests** for any crucial general functionality
+- **Keep dev server running** on localhost:5173 for real-time feedback
+- **Test each abstraction incrementally** to maintain working state
 
 ## Design System & Architecture
 
