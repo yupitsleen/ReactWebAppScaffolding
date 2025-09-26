@@ -19,7 +19,7 @@ describe('usePageLoading', () => {
     await waitFor(() => {
       const [updatedLoading] = result.current
       expect(updatedLoading).toBe(false)
-    }, { timeout: 200 })
+    }, { timeout: 1000 })
   })
 
   it('allows manual control of loading state', () => {

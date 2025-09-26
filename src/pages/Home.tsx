@@ -20,12 +20,23 @@ import StatusChip from "../components/StatusChip";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { useDataOperations } from "../hooks/useDataOperations";
+import { useNavigation } from "../hooks/useNavigation";
 import { useData } from "../context/ContextProvider";
 
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
   const { todos, discussions, documents } = useData();
   const { getActionHandler } = useEntityActions();
+  const { getEnabledPages } = useNavigation();
+
+  const enabledDashboardCards = useMemo(() => {
+    const enabledPageIds = new Set(getEnabledPages().map(page => page.id));
+    return appConfig.dashboardCards.filter(card => enabledPageIds.has(card.pageId));
+  }, [getEnabledPages]);
+
+  const isTasksPageEnabled = useMemo(() => {
+    return getEnabledPages().some(page => page.id === 'tasks');
+  }, [getEnabledPages]);
 
   const dashboardStats = useMemo(() => {
     const completedTodos = todos.filter(todo => todo.status === 'completed').length;
@@ -111,35 +122,37 @@ const Home = memo(() => {
       title={appConfig.pageTitle}
       description={`${serviceInfo.tagline}`}
     >
-       {/* Progress Section */}
-      <LoadingWrapper loading={loading} minHeight="120px">
-        <Box className="dashboard-section">
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Overall Progress
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Box sx={{ width: "100%", mr: 1 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={dashboardStats.completionRate}
-                  />
+       {/* Progress Section - Only show if Tasks page is enabled */}
+      {isTasksPageEnabled && (
+        <LoadingWrapper loading={loading} minHeight="120px">
+          <Box className="dashboard-section">
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Overall Progress
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  <Box sx={{ width: "100%", mr: 1 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={dashboardStats.completionRate}
+                    />
+                  </Box>
+                  <Box sx={{ minWidth: 35 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {dashboardStats.completionRate}%
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box sx={{ minWidth: 35 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {dashboardStats.completionRate}%
-                  </Typography>
-                </Box>
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                {dashboardStats.completedTodos} of{" "}
-                {dashboardStats.totalTodos} tasks completed
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
-      </LoadingWrapper>
+                <Typography variant="body2" color="text.secondary">
+                  {dashboardStats.completedTodos} of{" "}
+                  {dashboardStats.totalTodos} tasks completed
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        </LoadingWrapper>
+      )}
       
       {/* Summary Cards Section */}
       <LoadingWrapper loading={loading} minHeight="200px">
@@ -148,7 +161,7 @@ const Home = memo(() => {
             Overview
           </Typography>
           <Grid container spacing={3}>
-            {appConfig.dashboardCards.map((card) => (
+            {enabledDashboardCards.map((card) => (
               <Grid item xs={12} sm={6} lg={3} key={card.id}>
                 <DataCard
                   card={card}
@@ -168,7 +181,10 @@ const Home = memo(() => {
         <Box className="dashboard-section">
           <Grid container spacing={3}>
             {appConfig.dashboardSections
-              .filter((section) => section.enabled)
+              .filter((section) => {
+                const enabledPageIds = new Set(getEnabledPages().map(page => page.id));
+                return section.enabled && enabledPageIds.has(section.pageId);
+              })
               .map((section) => {
                 const sectionData = getSectionData(section);
                 return (
