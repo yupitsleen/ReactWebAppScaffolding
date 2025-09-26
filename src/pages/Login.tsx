@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { Container, Paper, TextField, Button, Typography, Box, Alert, IconButton, InputAdornment } from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { useAppContext } from '../context/AppContext'
+import { useUser } from '../context/ContextProvider'
 import { useAuthService } from '../context/MockContext'
 
 function Login() {
   const navigate = useNavigate()
-  const { setUser } = useAppContext()
+  const { setUser } = useUser()
   const authService = useAuthService()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

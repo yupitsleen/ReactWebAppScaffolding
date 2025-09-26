@@ -29,12 +29,12 @@ export const applyColorPreset = (preset: 'dark-purple' | 'blue' | 'green' | 'red
   }
 };
 
-// Make available globally for console testing
-if (typeof window !== 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).setThemeColor = setThemeColor;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).applyColorPreset = applyColorPreset;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).getThemeColor = getThemeColor;
+// Make available globally for console testing (dev only)
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
+  if (!window.__APP_DEBUG__) {
+    window.__APP_DEBUG__ = {}
+  }
+  window.__APP_DEBUG__.setThemeColor = setThemeColor
+  window.__APP_DEBUG__.applyColorPreset = applyColorPreset
+  window.__APP_DEBUG__.getThemeColor = getThemeColor
 }

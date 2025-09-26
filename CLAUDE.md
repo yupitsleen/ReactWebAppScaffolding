@@ -85,28 +85,70 @@ npm run lint    # Run ESLint
 - Code is structured to be easily forkable for new projects
 - **IMPORTANT: Avoid Claude Code co-author attribution in commits** (#memorize)
 
-## Git Workflow
+## Git Workflow & Best Practices
 
-**IMPORTANT: Always start new features from a fresh branch off main**
+**CRITICAL: Follow strict git practices for maintainable development** (#memorize)
 
+### Branch Management
 ```bash
-# 1. Start from main
+# 1. Always start fresh from main
 git checkout main
 git pull origin main
 
-# 2. Create new feature branch
-git checkout -b feature/feature-name
+# 2. Create descriptive feature branch
+git checkout -b feature/field-renderer-abstraction
+git checkout -b fix/icon-mapping-duplication
+git checkout -b refactor/data-operations-hook
 
-# 3. Make changes and commit
-git add src/
-git commit -m "Add feature description"
+# 3. Make focused commits with clear messages
+git add src/components/FieldRenderer.tsx
+git commit -m "Extract field type mapping to configuration system"
 
-# 4. Push and create PR
-git push -u origin feature/feature-name
-# Then create PR via GitHub URL provided in output
+git add src/hooks/useDataOperations.ts
+git commit -m "Add generic filtering and sorting operations hook"
 
-# 5. After PR is merged, repeat from step 1
+# 4. Push and create comprehensive PR
+git push -u origin feature/field-renderer-abstraction
 ```
+
+### Commit Message Standards
+- **Use imperative mood**: "Add", "Fix", "Refactor", "Update"
+- **Be specific**: "Extract FieldRenderer switch to config" not "Update component"
+- **Reference scope**: "components:", "hooks:", "services:", "types:"
+- **No co-author attribution** - keep commits clean and professional (#memorize)
+
+### PR Guidelines
+- **Descriptive title**: "Implement field type registry and configuration-driven rendering"
+- **Comprehensive summary**: Include motivation, changes, and testing notes
+- **Link related issues**: Reference any planning or bug reports
+- **Request reviews**: Tag relevant team members for code review
+
+### Post-Merge Cleanup
+```bash
+# After PR merge, immediately clean up
+git checkout main
+git pull origin main
+git branch -d feature/field-renderer-abstraction
+git remote prune origin
+```
+
+### Development Cycle
+1. **Plan** → Create todo list and assess scope
+2. **Branch** → Fresh feature branch from main
+3. **Implement** → Focused commits with clear messages
+4. **Test & Lint** → Run `npm test` and `npm run lint` after each working change
+5. **Add Tests** → Write tests for crucial functionality before committing
+6. **Commit** → Only commit when tests pass and linting is clean
+7. **PR** → Comprehensive summary and review
+8. **Merge** → Squash if needed, clean up branches
+9. **Repeat** → Start next feature from fresh main
+
+### Quality Gates (#memorize)
+- **Always run tests and linter** after each working change
+- **No commits without passing tests** (40/40 ✓ required)
+- **Add unit tests** for any crucial general functionality
+- **Keep dev server running** on localhost:5173 for real-time feedback
+- **Test each abstraction incrementally** to maintain working state
 
 ## Design System & Architecture
 
@@ -367,12 +409,61 @@ git push -u origin feature/feature-name
 - `Profile.tsx` - User profile management
 - All integrate with services layer and include TODO comments for backend implementation
 
-## Future Technology Plans
+## Backend Implementation Strategy
 
-- **Azure** - User management and authentication (services layer ready)
+### Technology Stack Assessment
+
+**C# and .NET Core**
+- ✅ **Pros**: Mature ecosystem, excellent VS Code support, strong typing, robust performance
+- ✅ **Enterprise Ready**: Excellent for scalable business applications
+- ✅ **Developer Experience**: Rich debugging, IntelliSense, and tooling in VS Code
+- ⚠️ **Considerations**: Heavier resource usage, Windows hosting typically preferred
+
+**Azure Active Directory (Azure AD)**
+- ✅ **Pros**: Enterprise-grade security, seamless Microsoft ecosystem integration
+- ✅ **Frontend Ready**: React app already structured for Azure AD via `authService`
+- ✅ **Compliance**: Built-in GDPR, SOC, ISO compliance features
+- ⚠️ **Vendor Lock-in**: Tight coupling to Microsoft ecosystem
+
+**Alternative Considerations**
+- **Node.js + Express**: Lighter weight, same language as frontend (TypeScript)
+- **Auth0 or Firebase Auth**: More flexible, multi-provider authentication
+- **PostgreSQL**: More robust than SQLite for production workloads
+
+### VS Code Backend Development
+```bash
+# C# Development Setup
+# 1. Install C# Dev Kit extension
+# 2. .NET Core SDK (latest LTS)
+# 3. Azure Tools extension pack
+# 4. REST Client for API testing
+
+# Recommended VS Code Extensions:
+# - C# Dev Kit (Microsoft)
+# - Azure Tools (Microsoft)
+# - REST Client (Huachao Mao)
+# - Thunder Client (Alternative to Postman)
+```
+
+### Current Backend Integration Points
+- **API Client** (`src/services/api.ts`) - Ready for C# Web API integration
+- **Auth Service** (`src/services/auth.ts`) - Azure AD integration prepared
+- **Environment Config** (`src/utils/env.ts`) - Backend endpoint configuration
+- **Type Definitions** (`src/types/portal.ts`) - Can generate C# models from these
+
+### Recommended Implementation Approach
+1. **Start with C# Web API** - Leverage existing knowledge and VS Code tooling
+2. **Azure AD Integration** - Use existing frontend auth structure
+3. **SQLite for Development** - Easy local development, migrate to SQL Server for production
+4. **Consider Node.js Alternative** - For lighter deployment and simplified development
+
+### Future Technology Plans
+
+- **C# and .NET Core** - Backend API development (API client ready, excellent VS Code support)
+- **Azure Active Directory** - User management and authentication (services layer prepared)
+- **Azure App Service** - Hosting for both frontend and backend
+- **Azure SQL Database** - Production database (SQLite for development)
 - **Terraform** - Infrastructure as code management
-- **SQLite** - Local database storage
-- **C# and .NET** - Backend API development (API client ready)
 
 ## Future Extensions
 

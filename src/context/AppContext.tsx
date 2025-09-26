@@ -90,76 +90,77 @@ export function AppProvider({ children }: AppProviderProps) {
   const createTodo = useCallback(async (todoData: Omit<import('../types/portal').TodoItem, 'id'>) => {
     try {
       const newTodo = await todosService.create(todoData)
-      const updatedTodos = [...state.todos, newTodo]
 
-      setState(prev => ({
-        ...prev,
-        todos: updatedTodos
-      }))
+      setState(prev => {
+        const updatedTodos = [...prev.todos, newTodo]
+        setToStorage('app_todos', updatedTodos)
+        return {
+          ...prev,
+          todos: updatedTodos
+        }
+      })
 
-      // Persist the updated todos
-      setToStorage('app_todos', updatedTodos)
       return newTodo
     } catch (error) {
       console.error('Failed to create todo:', error)
       throw error
     }
-  }, [state.todos])
+  }, [])
 
   const updateTodoStatus = useCallback(async (todoId: string, status: 'pending' | 'in-progress' | 'completed') => {
     try {
       const updatedTodo = await todosService.update(todoId, { status })
-      const updatedTodos = state.todos.map(todo => todo.id === todoId ? updatedTodo : todo)
 
-      setState(prev => ({
-        ...prev,
-        todos: updatedTodos
-      }))
-
-      // Persist the updated todos
-      setToStorage('app_todos', updatedTodos)
+      setState(prev => {
+        const updatedTodos = prev.todos.map(todo => todo.id === todoId ? updatedTodo : todo)
+        setToStorage('app_todos', updatedTodos)
+        return {
+          ...prev,
+          todos: updatedTodos
+        }
+      })
     } catch (error) {
       console.error('Failed to update todo status:', error)
     }
-  }, [state.todos])
+  }, [])
 
   const updateDiscussionStatus = useCallback(async (discussionId: string, resolved: boolean) => {
     try {
       const updatedDiscussion = await discussionsService.update(discussionId, { resolved })
-      const updatedDiscussions = state.discussions.map(discussion =>
-        discussion.id === discussionId ? updatedDiscussion : discussion
-      )
 
-      setState(prev => ({
-        ...prev,
-        discussions: updatedDiscussions
-      }))
-
-      // Persist the updated discussions
-      setToStorage('app_discussions', updatedDiscussions)
+      setState(prev => {
+        const updatedDiscussions = prev.discussions.map(discussion =>
+          discussion.id === discussionId ? updatedDiscussion : discussion
+        )
+        setToStorage('app_discussions', updatedDiscussions)
+        return {
+          ...prev,
+          discussions: updatedDiscussions
+        }
+      })
     } catch (error) {
       console.error('Failed to update discussion status:', error)
     }
-  }, [state.discussions])
+  }, [])
 
   const updateDocumentSharing = useCallback(async (documentId: string, shared: boolean) => {
     try {
       const updatedDocument = await documentsService.update(documentId, { shared })
-      const updatedDocuments = state.documents.map(document =>
-        document.id === documentId ? updatedDocument : document
-      )
 
-      setState(prev => ({
-        ...prev,
-        documents: updatedDocuments
-      }))
-
-      // Persist the updated documents
-      setToStorage('app_documents', updatedDocuments)
+      setState(prev => {
+        const updatedDocuments = prev.documents.map(document =>
+          document.id === documentId ? updatedDocument : document
+        )
+        setToStorage('app_documents', updatedDocuments)
+        return {
+          ...prev,
+          documents: updatedDocuments
+        }
+      })
     } catch (error) {
       console.error('Failed to update document sharing:', error)
     }
-  }, [state.documents])
+  }, [])
 
   const refreshData = useCallback(async () => {
     await loadAllData()
@@ -177,11 +178,13 @@ export function AppProvider({ children }: AppProviderProps) {
     }))
   }, [])
 
-  // Make clearPersistedData available globally for console testing
+  // Make clearPersistedData available globally for console testing (dev only)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(window as any).clearPersistedData = clearPersistedData
+    if (typeof window !== 'undefined' && import.meta.env.DEV) {
+      if (!window.__APP_DEBUG__) {
+        window.__APP_DEBUG__ = {}
+      }
+      window.__APP_DEBUG__.clearPersistedData = clearPersistedData
     }
   }, [clearPersistedData])
 

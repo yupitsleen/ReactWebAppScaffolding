@@ -1,12 +1,12 @@
 import { memo } from 'react'
 import { Typography, Card, CardContent, Chip, Box, Avatar, Button } from '@mui/material'
 import PageLayout from '../components/PageLayout'
-import { useAppContext } from '../context/AppContext'
+import { useData } from '../context/ContextProvider'
 import { usePageLoading } from '../hooks/usePageLoading'
 
 const Discussions = memo(() => {
   const [loading] = usePageLoading(false)
-  const { state, updateDiscussionStatus } = useAppContext()
+  const { discussions, updateDiscussionStatus } = useData()
 
   const handleToggleResolved = async (discussionId: string, currentStatus: boolean) => {
     await updateDiscussionStatus(discussionId, !currentStatus)
@@ -15,7 +15,7 @@ const Discussions = memo(() => {
   return (
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {state.discussions.map(discussion => (
+        {discussions.map(discussion => (
           <Card key={discussion.id} sx={{ mb: 2, width: '100%', maxWidth: '600px' }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2, flexDirection: 'column', gap: 1 }}>

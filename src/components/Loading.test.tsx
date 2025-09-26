@@ -3,20 +3,18 @@ import { describe, it, expect } from "vitest";
 import Loading from "./Loading";
 
 describe("Loading Component", () => {
-  it("renders default loading text", () => {
-    render(<Loading />);
+  it("renders with default and custom text and has proper styling", () => {
+    const { rerender } = render(<Loading />);
+
+    // Default text
     expect(screen.getByText("Loading...")).toBeInTheDocument();
-  });
 
-  it("renders custom loading text", () => {
-    const customText = "Please wait...";
-    render(<Loading text={customText} />);
+    // Custom text and accessibility
+    const customText = "Loading data";
+    rerender(<Loading text={customText} />);
     expect(screen.getByText(customText)).toBeInTheDocument();
-  });
 
-  it("has proper accessibility attributes", () => {
-    render(<Loading text="Loading data" />);
-    const loadingElement = screen.getByText("Loading data");
+    const loadingElement = screen.getByText(customText);
     expect(loadingElement.closest("div")).toHaveStyle({
       display: "flex",
       justifyContent: "center",

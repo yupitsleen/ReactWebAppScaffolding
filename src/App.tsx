@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import createPortalTheme from './theme/portalTheme'
 import { appConfig } from './data/configurableData'
-import { AppProvider, useAppContext } from './context/AppContext'
+import { ContextProvider, useUser, useTheme } from './context/ContextProvider'
 import { MockProvider, MockNotificationHandler } from './context/MockContext'
 import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -60,15 +60,16 @@ function UnauthenticatedApp() {
   )
 }
 
-// Themed App Router component that has access to AppContext
+// Themed App Router component that has access to contexts
 function ThemedAppRouter() {
-  const { state } = useAppContext()
-  const isAuthenticated = state.user?.isAuthenticated
+  const { user } = useUser()
+  const { theme } = useTheme()
+  const isAuthenticated = user?.isAuthenticated
 
   // Create dynamic theme based on current theme state
   const dynamicTheme = createPortalTheme({
     ...appConfig.theme,
-    mode: state.theme
+    mode: theme
   })
 
   return (
@@ -87,12 +88,12 @@ function App() {
   return (
     <ErrorBoundary>
       <MockProvider forceMock={true}>
-        <AppProvider>
+        <ContextProvider>
           <NotificationProvider>
             <MockNotificationHandler />
             <ThemedAppRouter />
           </NotificationProvider>
-        </AppProvider>
+        </ContextProvider>
       </MockProvider>
     </ErrorBoundary>
   )

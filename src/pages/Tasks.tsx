@@ -1,15 +1,16 @@
 import { memo, useState, useMemo } from 'react'
-import { Typography, Card, CardContent, Chip, Box, Checkbox, FormControlLabel, Fab, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Typography, Card, CardContent, Box, Checkbox, FormControlLabel, Fab, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { Add as AddIcon, Sort as SortIcon } from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
+import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
-import { useAppContext } from '../context/AppContext'
+import { useData } from '../context/ContextProvider'
 import CreateTodoDialog from '../components/CreateTodoDialog'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
-  const { state, updateTodoStatus } = useAppContext()
+  const { todos, updateTodoStatus } = useData()
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -17,9 +18,9 @@ const Tasks = memo(() => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   const sortedTodos = useMemo(() => {
-    const todos = [...state.todos]
+    const todosList = [...todos]
 
-    return todos.sort((a, b) => {
+    return todosList.sort((a, b) => {
       let aValue: string | number | Date
       let bValue: string | number | Date
 
@@ -54,10 +55,10 @@ const Tasks = memo(() => {
 
       return sortDirection === 'desc' ? -comparison : comparison
     })
-  }, [state.todos, sortBy, sortDirection])
+  }, [todos, sortBy, sortDirection])
 
   const handleTaskToggle = (taskId: string) => {
-    const currentTodo = state.todos.find(todo => todo.id === taskId)
+    const currentTodo = todos.find(todo => todo.id === taskId)
     if (currentTodo) {
       const newStatus = currentTodo.status === 'completed' ? 'pending' : 'completed'
       updateTodoStatus(taskId, newStatus)
@@ -68,7 +69,7 @@ const Tasks = memo(() => {
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
         {/* Sort Controls */}
-        {state.todos.length > 0 && (
+        {todos.length > 0 && (
           <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <SortIcon color="action" />
             <FormControl size="small" sx={{ minWidth: 150 }}>
@@ -100,7 +101,7 @@ const Tasks = memo(() => {
           </Box>
         )}
 
-        {state.todos.length === 0 ? (
+        {todos.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No tasks yet
@@ -133,77 +134,32 @@ const Tasks = memo(() => {
                     sx={{ m: 0, alignSelf: 'flex-start' }}
                   />
                   <Box sx={{ flex: 1 }}>
-                    <Typography
-                      variant="h6"
-                      component="h3"
-                      gutterBottom
-                      sx={{
-                        textDecoration: isCompleted ? 'line-through' : 'none',
-                        color: isCompleted ? 'text.disabled' : 'text.primary'
-                      }}
-                    >
-                      {todo[todoFields.primary as keyof typeof todo] as string}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color={isCompleted ? 'text.disabled' : 'text.secondary'}
-                      paragraph
-                      sx={{
-                        textDecoration: isCompleted ? 'line-through' : 'none'
-                      }}
-                    >
-                      {todo.description}
-                    </Typography>
+                    <FieldRenderer
+                      field={todoFields.primary}
+                      value={todo[todoFields.primary as keyof typeof todo]}
+                      entity={todo}
+                      variant="primary"
+                      isCompleted={isCompleted}
+                    />
+                    <FieldRenderer
+                      field="description"
+                      value={todo.description}
+                      entity={todo}
+                      variant="secondary"
+                      isCompleted={isCompleted}
+                    />
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-                      {todoFields.secondary.map(field => {
-                        if (field === 'priority') {
-                          const priorityStatus = statusConfig.priority[todo.priority]
-                          return (
-                            <Chip
-                              key={field}
-                              label={`Priority: ${priorityStatus.label}`}
-                              size="small"
-                              color={priorityStatus.color}
-                              sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                            />
-                          )
-                        }
-
-                        if (field === 'status') {
-                          const taskStatus = statusConfig.status[todo.status]
-                          return (
-                            <Chip
-                              key={field}
-                              label={`Status: ${taskStatus.label}`}
-                              size="small"
-                              color={taskStatus.color}
-                              sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                            />
-                          )
-                        }
-
-                        if (field === 'dueDate') {
-                          return (
-                            <Chip
-                              key={field}
-                              label={`Due: ${new Date(todo.dueDate).toLocaleDateString()}`}
-                              size="small"
-                              variant="outlined"
-                              sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                            />
-                          )
-                        }
-
-                        return (
-                          <Chip
-                            key={field}
-                            label={`${field}: ${todo[field as keyof typeof todo]}`}
-                            size="small"
-                            variant="outlined"
-                            sx={{ opacity: isCompleted ? 0.7 : 1 }}
-                          />
-                        )
-                      })}
+                      {todoFields.secondary.map(field => (
+                        <FieldRenderer
+                          key={field}
+                          field={field}
+                          value={todo[field as keyof typeof todo]}
+                          entity={todo}
+                          statusConfig={statusConfig}
+                          variant="chip"
+                          isCompleted={isCompleted}
+                        />
+                      ))}
                     </Box>
                   </Box>
                 </Box>

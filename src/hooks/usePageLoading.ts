@@ -21,10 +21,10 @@ export function usePageLoading(initialLoading = true, delay = 500) {
 
 /**
  * Hook for simulating async data loading with loading states
+ * Note: asyncFn should be memoized (useCallback) to avoid unnecessary re-runs
  */
 export function useAsyncLoading<T>(
-  asyncFn: () => Promise<T>,
-  deps: React.DependencyList = []
+  asyncFn: () => Promise<T>
 ) {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<T | null>(null)
@@ -52,7 +52,7 @@ export function useAsyncLoading<T>(
     return () => {
       isMounted = false
     }
-  }, deps)
+  }, [asyncFn])
 
   return { loading, data, error, setLoading }
 }

@@ -1,11 +1,10 @@
 import { memo } from 'react'
 import { Typography, Card, CardContent, Box, Chip } from '@mui/material'
-import { useAppContext } from '../context/AppContext'
+import { useUser } from '../context/ContextProvider'
 import PageLayout from '../components/PageLayout'
 
 const MyAccount = memo(() => {
-  const { state } = useAppContext()
-  const { user } = state
+  const { user } = useUser()
 
   if (!user) {
     return (

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Container, Paper, TextField, Button, Typography, Box, Alert, Avatar, Divider } from '@mui/material'
-import { useAppContext } from '../context/AppContext'
+import { useUser } from '../context/ContextProvider'
 import type { AuthUser } from '../services/auth'
 
 function Profile() {
-  const { user } = useAppContext()
+  const { user } = useUser()
   const [formData, setFormData] = useState<Partial<AuthUser>>({
     name: '',
     email: '',

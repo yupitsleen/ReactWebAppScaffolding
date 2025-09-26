@@ -112,6 +112,7 @@ export interface DashboardCard {
   title: string
   subtitle: string
   dataSource: string // which data array to pull from
+  pageId: string // which navigation page this card links to
   valueType: 'count' | 'ratio' | 'custom'
   icon?: string
   color: 'primary' | 'secondary' | 'info' | 'warning' | 'error' | 'success'
@@ -121,6 +122,7 @@ export interface DashboardSection {
   id: string
   title: string
   dataSource: string
+  pageId: string // which navigation page this section relates to
   filterCriteria?: unknown
   maxItems?: number
   enabled: boolean
