@@ -262,7 +262,7 @@ claude code --file CLAUDE.md "Read project guide and update CURRENT_SESSION.md t
 claude code "Update CURRENT_SESSION.md with our progress"
 
 # Pre-compaction preparation
-claude code "Update CURRENT_SESSION.md with everything we've accomplished and next priorities"
+claude code "Update CURRENT_SESSION.md with everything we've accomplished and next priorities. If there are any patterns, preferences, or lessons learned from this session that would improve future sessions, suggest updates to CLAUDE.md."
 
 # Session recovery after compaction
 claude code --file CLAUDE.md --file CURRENT_SESSION.md "Review project guide and continue where we left off"

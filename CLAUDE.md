@@ -78,6 +78,29 @@ dotnet build                   # Verify compilation
 dotnet run                     # Start API server (localhost:5276)
 ```
 
+### ARM Architecture Development (#memorize)
+- **Windows ARM**: .NET SDK located at `/c/Program Files/dotnet/x64/dotnet.exe`
+- **PATH Configuration**: Export PATH="$PATH:/c/Program Files/dotnet/x64" for temporary fix
+- **Permanent Fix**: Add to system environment variables via Windows Settings
+- **Verification**: Use `dotnet --version` to confirm SDK accessibility
+- **Common Issue**: "dotnet command not found" in Git Bash on ARM machines
+- **Package Management**: May require NuGet source verification on ARM systems
+
+### Backend Testing Workflow (#memorize)
+- **Test-First Approach**: Implement tests immediately after creating controllers
+- **Quality Gate**: All PRs require passing tests (no exceptions)
+- **Testing Commands**: `dotnet test --verbosity normal` for detailed output
+- **Integration Focus**: Use WebApplicationFactory over unit tests for API endpoints
+- **Test Structure**: Arrange-Act-Assert with descriptive test method names
+- **Database Isolation**: Always use in-memory database for testing to avoid conflicts
+
+### Complex Task Management (#memorize)
+- **Use TodoWrite tool proactively** for multi-step implementations
+- **Document before commit** - Update CLAUDE.md with new patterns before code PR
+- **Three-phase completion**: Update docs → Commit code → Update session file
+- **Recovery preparation**: Always update CURRENT_SESSION.md with sufficient context
+- **Session continuity**: Include environment state, running services, and decision points
+
 ### Error Handling Patterns (#memorize)
 
 - **Use existing ErrorBoundary** - Don't create new error boundaries
