@@ -1,538 +1,334 @@
 # Business Portal Scaffold
 
-A production-ready, highly configurable React portal application designed for **easy forking and business customization**. Built with modern React patterns, comprehensive abstractions, and configuration-driven architecture that allows senior developers to customize for any business domain without touching core components.
+A production-ready, configuration-driven React portal designed for **instant business customization**. Developers can transform this into domain-specific applications through data configuration, not code rewrites.
 
-## 🎯 Quick Fork & Customize
+## Table of Contents
 
-This scaffold is designed to be **forked and personalized** for any business use case. Transform it from a generic portal into your domain-specific application in minutes, not days.
+- [Quick Start](#quick-start)
+- [Business Customization](#business-customization)
+- [Dashboard Configuration](#dashboard-configuration)
+- [Business Domain Examples](#business-domain-examples)
+- [Live Theme Testing](#live-theme-testing)
+- [Technical Architecture](#technical-architecture)
+- [Session Management for Claude Code](#session-management-for-claude-code)
+- [File Structure](#file-structure)
+- [Development Commands](#development-commands)
+- [Customization Priority](#customization-priority)
+- [Production Ready Features](#production-ready-features)
 
-### Architecture Philosophy
+## Architecture Philosophy
 
-- **Configuration Over Code** - Customize through data files, not component rewrites
-- **Smart Abstractions** - Generic components that adapt to any business domain
-- **SOLID Principles** - Open for extension, closed for modification
-- **Performance First** - React.memo, memoization, and lazy loading throughout
-- **Quality Gates** - 86 comprehensive tests ensure stability during customization
+- **Configuration Over Code** - 90% customization through data files
+- **Smart Abstractions** - Generic components adapt to any business domain
+- **Quality Assured** - 86 tests ensure stability during customization
+- **Performance First** - React.memo, memoization, lazy loading throughout
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-# Clone/fork this repository
-npm install
-npm run dev     # → http://localhost:5173
+git clone [repository]
+npm install && npm run dev    # → http://localhost:5173
 ```
 
-## 📋 Business Customization Guide
+## Business Customization
 
-Transform this scaffold for your specific business domain by following these steps:
+### 3-Step Process
 
-### 1. Business Identity & Branding
-
-**Update Core Information** (`src/data/configurableData.ts`):
+<details>
+<summary><strong>1. Business Identity</strong> (<code>src/data/configurableData.ts</code>)</summary>
 
 ```typescript
 export const appConfig: AppConfig = {
   appName: "Your Business Portal",
-  pageTitle: "Your Dashboard",
 
   // Your navigation structure
   navigation: [
-    { id: "dashboard", label: "Dashboard", path: "/", enabled: true },
     { id: "orders", label: "Orders", path: "/orders", enabled: true },
     { id: "customers", label: "Customers", path: "/customers", enabled: true },
     { id: "inventory", label: "Inventory", path: "/inventory", enabled: true },
-    { id: "reports", label: "Reports", path: "/reports", enabled: true }
   ],
 
-  // Your brand colors and styling
+  // Your brand colors
   theme: {
-    primaryColor: "#1976d2",      // Your brand primary
-    secondaryColor: "#f57c00",    // Your brand accent
+    primaryColor: "#1976d2",
+    secondaryColor: "#f57c00",
     mode: "light",
-    borderRadius: 8,
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
-  }
-}
+  },
+};
 ```
 
-**Update Service Information** (`src/data/sampleData.ts`):
+</details>
+
+<details>
+<summary><strong>2. Data Domain Mapping</strong> (<code>src/data/sampleData.ts</code>)</summary>
+
+The scaffold uses generic structures that map to most business domains:
+
+| Generic       | E-commerce   | SaaS          | Medical      | Manufacturing  |
+| ------------- | ------------ | ------------- | ------------ | -------------- |
+| `todoItems`   | Orders       | Tasks         | Appointments | Work Orders    |
+| `payments`    | Transactions | Subscriptions | Billing      | Invoices       |
+| `documents`   | Receipts     | Documentation | Records      | Specifications |
+| `discussions` | Support      | Team Chat     | Notes        | Communication  |
+
+**Replace with your domain objects:**
 
 ```typescript
-export const serviceInfo: ServiceInfo = {
-  name: "Your Business Name",
-  tagline: "Your Value Proposition",
-  description: "What your business does",
-  contact: {
-    email: "contact@yourbusiness.com",
-    phone: "(555) 123-4567",
-    address: "123 Business St, City, State 12345"
-  }
-}
-```
-
-### 2. Data Structure Mapping
-
-**Replace Sample Data with Your Domain Objects**:
-
-The scaffold uses generic data structures that map to most business domains:
-
-| Generic Structure | E-commerce | SaaS Platform | Medical Practice | Project Management |
-|------------------|------------|---------------|------------------|-------------------|
-| `todoItems` | Orders/Shipments | Tasks/Features | Appointments | Milestones |
-| `payments` | Transactions | Subscriptions | Billing | Budgets |
-| `documents` | Invoices/Receipts | Documentation | Medical Records | Contracts |
-| `discussions` | Customer Support | Team Chat | Patient Notes | Communication |
-| `users` | Customers | Team Members | Patients | Stakeholders |
-
-**Example: E-commerce Transformation**:
-
-```typescript
-// Replace todoItems with orders
+// Transform todoItems → orders
 export const orders = [
   {
     id: "ORD-001",
     title: "Premium Widget Order",
-    priority: "high",
     status: "processing",
-    dueDate: "2024-02-15",
-    category: "electronics",
-    description: "Customer order for premium widgets",
+    priority: "high",
     amount: 299.99,
-    customer: "John Doe"
-  }
-]
-
-// Update field configuration
-fieldConfig: {
-  order: {
-    primary: "title",
-    secondary: ["status", "amount", "dueDate", "customer"],
-    hidden: ["id", "internalNotes"]
-  }
-}
-```
-
-### 3. Dashboard Configuration
-
-**Configure Dashboard Cards** for your key metrics:
-
-```typescript
-dashboardCards: [
-  {
-    id: "revenue-card",
-    title: "Monthly Revenue",
-    subtitle: "This Month",
-    dataSource: "payments",
-    pageId: "payments",
-    valueType: "sum",           // count | ratio | sum
-    icon: "AttachMoney",
-    color: "success"
+    customer: "John Doe",
+    dueDate: "2024-02-15",
   },
-  {
-    id: "active-orders",
-    title: "Active Orders",
-    subtitle: "In Progress",
-    dataSource: "orders",
-    pageId: "orders",
-    valueType: "count",
-    icon: "ShoppingCart",
-    color: "primary"
-  }
-]
+];
 ```
 
-**Configure Dashboard Sections** for detailed views:
+</details>
+
+<details>
+<summary><strong>3. Field & Status Configuration</strong></summary>
 
 ```typescript
-dashboardSections: [
-  {
-    id: "urgent-orders",
-    title: "Urgent Orders",
-    dataSource: "orders",
-    pageId: "orders",
-    filterCriteria: { priority: "urgent", status: "!completed" },
-    maxItems: 5,
-    enabled: true
-  }
-]
-```
-
-### 4. Status & Field Configuration
-
-**Define Your Business Status Mappings**:
-
-```typescript
+// Define your business statuses
 statusConfig: {
   orderStatus: {
     pending: { color: "warning", label: "Pending" },
     processing: { color: "info", label: "Processing" },
     shipped: { color: "success", label: "Shipped" },
-    delivered: { color: "success", label: "Delivered" },
     cancelled: { color: "error", label: "Cancelled" }
-  },
-  priority: {
-    low: { color: "default", label: "Low" },
-    medium: { color: "warning", label: "Medium" },
-    high: { color: "error", label: "High" },
-    urgent: { color: "error", label: "Urgent" }
   }
-}
-```
+},
 
-**Configure Field Display Logic**:
-
-```typescript
+// Control field display
 fieldConfig: {
   order: {
-    primary: "title",                                    // Main heading
-    secondary: ["status", "priority", "amount", "dueDate"], // Status chips
-    hidden: ["id", "internalNotes", "createdBy"]         // Never display
+    primary: "title",                           // Main heading
+    secondary: ["status", "amount", "dueDate"], // Status chips
+    hidden: ["id", "internalNotes"]            // Never display
+  }
+}
+```
+
+</details>
+
+## Dashboard Configuration
+
+<details>
+<summary><strong>Key Metrics & Data Sections</strong></summary>
+
+```typescript
+// Key metrics cards
+dashboardCards: [
+  {
+    title: "Monthly Revenue",
+    dataSource: "payments",
+    valueType: "sum",
+    icon: "AttachMoney"
   },
-  customer: {
-    primary: "name",
-    secondary: ["email", "phone", "status"],
-    hidden: ["id", "passwordHash"]
+  {
+    title: "Active Orders",
+    dataSource: "orders",
+    valueType: "count",
+    icon: "ShoppingCart"
   }
-}
-```
+],
 
-### 5. Action Configuration
-
-**Define Available Actions** for each entity type:
-
-```typescript
-actions: {
-  order: [
-    {
-      id: "view-details",
-      label: "View Details",
-      icon: "Visibility",
-      variant: "outlined",
-      onClick: "handleViewOrder"
-    },
-    {
-      id: "update-status",
-      label: "Update Status",
-      icon: "Edit",
-      variant: "contained",
-      onClick: "handleUpdateStatus"
-    }
-  ],
-  customer: [
-    {
-      id: "send-email",
-      label: "Send Email",
-      icon: "Email",
-      variant: "outlined",
-      onClick: "handleSendEmail"
-    }
-  ]
-}
-```
-
-## 🛠 Advanced Customization
-
-### Page-Level Customization
-
-Most functionality is now configurable, but for complex business logic:
-
-**Option 1: Use Configuration** (Recommended)
-- 90% of customization can be achieved through `configurableData.ts`
-- Add new status types, field types, action types
-- Extend existing interfaces rather than creating new ones
-
-**Option 2: Extend Components** (When Needed)
-```typescript
-// Create domain-specific page that extends the scaffold
-import { memo } from 'react'
-import PageLayout from '../components/PageLayout'
-import { useCurrentPage } from '../hooks/useCurrentPage'
-
-const CustomOrdersPage = memo(() => {
-  const currentPage = useCurrentPage()
-
-  // Your custom business logic here
-  const processOrders = () => {
-    // Domain-specific order processing
+// Filtered data sections
+dashboardSections: [
+  {
+    title: "Urgent Orders",
+    dataSource: "orders",
+    filterCriteria: { priority: "urgent", status: "!completed" },
+    maxItems: 5
   }
-
-  return (
-    <PageLayout pageId="orders">
-      {/* Use existing components with your data */}
-    </PageLayout>
-  )
-})
+]
 ```
 
-### Custom Field Types
+</details>
 
-**Add New Field Types** to `FieldRenderer`:
+## Business Domain Examples
+
+<details>
+<summary><strong>E-commerce Platform</strong></summary>
 
 ```typescript
-// In src/components/FieldRenderer.tsx
-case 'currency':
-  return (
-    <Chip
-      label={`$${(value as number).toLocaleString()}`}
-      size="small"
-      color="success"
-      variant="outlined"
-    />
-  )
-
-case 'percentage':
-  return (
-    <Chip
-      label={`${value}%`}
-      size="small"
-      color="info"
-    />
-  )
-```
-
-### Integration Patterns
-
-**API Integration** (Ready for Implementation):
-```typescript
-// Services layer already prepared
-import { apiClient } from '../services/api'
-
-const loadOrders = async () => {
-  const response = await apiClient.get<Order[]>('/api/orders')
-  return response.data
-}
-```
-
-**Authentication Integration** (Azure AD Ready):
-```typescript
-// Authentication service prepared
-import { authService } from '../services/auth'
-
-const authenticateUser = async () => {
-  return await authService.loginWithAzure()
-}
-```
-
-## 📱 Business Domain Examples
-
-### E-commerce Platform
-```typescript
-// Navigation
 navigation: [
   { id: "dashboard", label: "Dashboard", path: "/" },
   { id: "orders", label: "Orders", path: "/orders" },
   { id: "products", label: "Products", path: "/products" },
   { id: "customers", label: "Customers", path: "/customers" },
-  { id: "analytics", label: "Analytics", path: "/analytics" }
-]
-
-// Key Metrics
-dashboardCards: [
-  { title: "Revenue", dataSource: "payments", valueType: "sum" },
-  { title: "Orders", dataSource: "orders", valueType: "count" },
-  { title: "Conversion Rate", dataSource: "analytics", valueType: "percentage" }
-]
+];
 ```
 
-### SaaS Platform
+</details>
+
+<details>
+<summary><strong>SaaS Platform</strong></summary>
+
 ```typescript
-// Navigation
 navigation: [
   { id: "dashboard", label: "Dashboard", path: "/" },
   { id: "projects", label: "Projects", path: "/projects" },
   { id: "team", label: "Team", path: "/team" },
   { id: "billing", label: "Billing", path: "/billing" },
-  { id: "settings", label: "Settings", path: "/settings" }
-]
-
-// Key Metrics
-dashboardCards: [
-  { title: "Active Projects", dataSource: "projects", valueType: "count" },
-  { title: "Team Members", dataSource: "users", valueType: "count" },
-  { title: "Monthly Spend", dataSource: "billing", valueType: "sum" }
-]
+];
 ```
 
-### Medical Practice
+</details>
+
+<details>
+<summary><strong>Medical Practice</strong></summary>
+
 ```typescript
-// Navigation
 navigation: [
-  { id: "dashboard", label: "Dashboard", path: "/" },
   { id: "appointments", label: "Appointments", path: "/appointments" },
   { id: "patients", label: "Patients", path: "/patients" },
   { id: "records", label: "Records", path: "/records" },
-  { id: "billing", label: "Billing", path: "/billing" }
-]
-
-// Status Mappings
-statusConfig: {
-  appointmentStatus: {
-    scheduled: { color: "info", label: "Scheduled" },
-    inProgress: { color: "warning", label: "In Progress" },
-    completed: { color: "success", label: "Completed" },
-    noShow: { color: "error", label: "No Show" }
-  }
-}
+];
 ```
 
-## 🎨 Theme & Design System
+</details>
 
-### Color Customization
+## Live Theme Testing
 
-**Live Theme Testing** (Browser Console):
+**Browser Console Commands:**
+
 ```javascript
 // Test colors instantly without file changes
-setThemeColor('primary-color', '#e91e63')    // Pink
-setThemeColor('secondary-color', '#ff9800')  // Orange
-
-// Apply preset themes
-applyColorPreset('blue')     // Corporate blue
-applyColorPreset('green')    // Nature green
-applyColorPreset('purple')   // Luxury purple
-applyColorPreset('red')      // Bold red
+setThemeColor("primary-color", "#e91e63"); // Pink theme
+applyColorPreset("blue"); // Corporate blue
+applyColorPreset("green"); // Nature theme
 ```
 
-**Permanent Color Configuration**:
-```typescript
-theme: {
-  primaryColor: "#1976d2",      // Material Blue
-  secondaryColor: "#f57c00",    // Material Orange
-  mode: "light",                // or "dark"
-  borderRadius: 8,              // 0 for sharp, 16+ for rounded
-  fontFamily: '"Inter", sans-serif'
-}
+## Technical Architecture
+
+### Tech Stack
+
+- **React 19.1.1** + **TypeScript 5.8.3** + **Vite 7.1.0**
+- **Material-UI** + **React Router**
+- **86 Tests** + **Strict TypeScript**
+
+<details>
+<summary><strong>Key Abstractions</strong></summary>
+
+**PageLayout Component** - Universal page wrapper:
+
+```tsx
+<PageLayout pageId="orders" loading={loading}>
+  {content}
+</PageLayout>
 ```
 
-### Design Principles
+**FieldRenderer Component** - Handles all field types (dates, currency, status):
 
-- **Desktop-First Design** - Sophisticated layouts optimized for desktop, then mobile
-- **Flat, Geometric Aesthetic** - Clean lines, minimal shadows, professional appearance
-- **Maximum Information Density** - Efficient use of space, minimal whitespace
-- **Color-Based Interactions** - Hover effects use color changes, no animations
-- **Mature, Sophisticated Tones** - Professional color palettes, not trendy
+```tsx
+<FieldRenderer field="amount" value={299.99} variant="chip" />
+```
 
-## 🧪 Testing & Quality
+**useDataOperations Hook** - Generic data manipulation:
 
-### Quality Gates
-- **86 Comprehensive Tests** - Unit tests for all major components and hooks
-- **Type Safety** - Strict TypeScript configuration with 100% coverage
-- **Performance Testing** - React.memo and memoization patterns tested
-- **Integration Testing** - Page-level and context testing
+```tsx
+const { filteredData, sortData, filterData } = useDataOperations(orders);
+```
 
-### Running Tests
+</details>
+
+<details>
+<summary><strong>Performance Features</strong></summary>
+
+- **React.memo** on all components prevents unnecessary re-renders
+- **Lazy loading** for route components
+- **Memoized contexts** prevent cascading updates
+- **Optimized abstractions** handle large datasets efficiently
+</details>
+
+## Session Management for Claude Code
+
+<details>
+<summary><strong>Continuous Session Tracking</strong></summary>
+
+When working with Claude Code, maintain session state to handle conversation compaction:
+
 ```bash
-npm test                    # Run all tests
-npm test -- FieldRenderer  # Run specific component tests
-npm test -- useData        # Run specific hook tests
-npm run lint               # Code quality checks
+# Initial setup
+claude code --file CLAUDE.md "Read project guide and update CURRENT_SESSION.md to track our development progress"
+
+# During development
+claude code "Update CURRENT_SESSION.md with our progress"
+
+# Pre-compaction preparation
+claude code "Update CURRENT_SESSION.md with everything we've accomplished and next priorities"
+
+# Session recovery after compaction
+claude code --file CLAUDE.md --file CURRENT_SESSION.md "Review project guide and continue where we left off"
 ```
 
-### Pre-Commit Quality Checks
-```bash
-# Ensure all tests pass before customization
-npm test && npm run lint
-```
+### Session File Structure
 
-## 🔧 Technical Architecture
+Claude Code maintains `CURRENT_SESSION.md` with:
 
-### Core Technologies
-- **React 19.1.1** - Latest React with modern patterns
-- **TypeScript 5.8.3** - Strict typing with verbatimModuleSyntax
-- **Vite 7.1.0** - Fast build tool and dev server
-- **Material-UI** - Component library with comprehensive theming
-- **React Router** - Client-side routing with lazy loading
+- **Current Work** - Active features and tasks
+- **Completed Today** - Finished items with checkmarks
+- **Next Priorities** - Upcoming tasks and priorities
+- **Architecture Decisions** - Important technical decisions made
+- **Files Modified** - List of changed files for context
+- **Session Recovery Notes** - Key context for next session
 
-### Key Abstractions
+This approach ensures seamless transitions between Claude Code sessions and preserves development context through conversation compaction.
 
-**1. PageLayout Component**
-- Eliminates page boilerplate
-- Automatic title/description lookup from navigation config
-- Built-in loading states and error boundaries
-- Consistent layout patterns
+</details>
 
-**2. FieldRenderer Component**
-- Handles all field types: dates, currency, status, priority
-- Configurable variants: primary, secondary, chip
-- Type-safe with fallback handling
-- Extensible for new field types
+## File Structure
 
-**3. useDataOperations Hook**
-- Generic filtering, sorting, pagination
-- Works with any data structure
-- Reusable across all pages
-- Performance optimized
-
-**4. Configuration-Driven Architecture**
-- Navigation, actions, status mappings, field display all configurable
-- Generic TypeScript interfaces work for any business domain
-- Clear separation between configuration and sample data
-
-### Performance Optimizations
-- **React.memo** - All components optimized to prevent unnecessary re-renders
-- **useMemo/useCallback** - Expensive calculations and object creation memoized
-- **Lazy Loading** - Route components loaded on demand
-- **Context Optimization** - AppContext optimized to prevent cascading re-renders
-
-## 🚢 Deployment & Production
-
-### Build Process
-```bash
-npm run build      # Production build → dist/
-npm run preview    # Test production build locally
-```
-
-### Environment Configuration
-```typescript
-// src/utils/env.ts - Ready for environment variables
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
-export const AZURE_CLIENT_ID = import.meta.env.VITE_AZURE_CLIENT_ID
-export const ENVIRONMENT = import.meta.env.MODE
-```
-
-### Production Checklist
-- [ ] Update service information with real business data
-- [ ] Configure authentication endpoints
-- [ ] Set up API integration
-- [ ] Update environment variables
-- [ ] Test on target devices and browsers
-- [ ] Run full test suite
-- [ ] Security audit for any sensitive data
-
-## 📚 Additional Resources
-
-### File Structure Guide
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── PageLayout.tsx   # Universal page wrapper
-│   ├── FieldRenderer.tsx # Universal field display
-│   └── StatusChip.tsx   # Configurable status display
 ├── data/
-│   ├── configurableData.ts # App configuration (your main customization file)
-│   └── sampleData.ts       # Sample data (replace with your data)
-├── hooks/              # Custom React hooks
-│   ├── useDataOperations.ts # Generic data manipulation
-│   └── useNavigation.ts     # Navigation utilities
-├── pages/              # Route components
-├── services/           # API and authentication (ready for backend)
-├── theme/              # Centralized styling
-├── types/              # Generic TypeScript interfaces
-└── utils/              # Helper functions
+│   ├── configurableData.ts    # ← Your main customization file
+│   └── sampleData.ts          # ← Replace with your data
+├── components/
+│   ├── PageLayout.tsx         # Universal page wrapper
+│   ├── FieldRenderer.tsx      # Universal field display
+│   └── StatusChip.tsx         # Configurable status display
+├── hooks/
+│   ├── useDataOperations.ts   # Generic data manipulation
+│   └── useNavigation.ts       # Navigation utilities
+├── pages/                     # Route components
+├── services/                  # API/auth (ready for backend)
+└── theme/                     # Centralized styling
 ```
 
-### Customization Priority
-1. **High Impact, Low Effort** - Update `configurableData.ts` and `sampleData.ts`
-2. **Medium Impact, Low Effort** - Add new status types, field types, action types
-3. **High Impact, Medium Effort** - Add new pages using existing abstractions
-4. **Medium Impact, High Effort** - Extend components for domain-specific logic
-5. **High Impact, High Effort** - Backend integration and authentication
+## Development Commands
 
-### Getting Help
-- Review `CLAUDE.md` for detailed development guidelines
-- Check the test files for usage examples of all components
-- Use the browser console theme functions for rapid color testing
-- All components are documented with TypeScript interfaces
+```bash
+npm run dev        # Development server
+npm run build      # Production build
+npm test           # Run all 86 tests
+npm run lint       # Code quality checks
+```
 
----
+## Customization Priority
 
-**Ready to fork and customize!** This scaffold provides the foundation for any business portal application with minimal customization effort and maximum flexibility.
+1. **High Impact, 5 minutes** - Update `configurableData.ts` and `sampleData.ts`
+2. **Medium Impact, 30 minutes** - Add new status types, field types, actions
+3. **High Impact, 2 hours** - Add new pages using existing abstractions
+4. **Complex, 1 day** - Backend integration and authentication
+
+## Production Ready Features
+
+<details>
+<summary><strong>Enterprise Features</strong></summary>
+
+- **Environment configuration** ready for deployment
+- **API client** prepared for backend integration
+- **Azure AD authentication** service ready
+- **Error boundaries** for graceful failure handling
+- **TypeScript strict mode** with 100% type coverage
+- **Performance optimized** for large datasets
+</details>
+
+**Ready to fork and customize!** Transform this generic portal into your business application through configuration, not code rewrites.
