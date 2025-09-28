@@ -316,4 +316,141 @@ const IconComponent = Icons[action.icon as keyof typeof Icons];
 - **Auth0 or Firebase** - More flexible authentication providers
 - **PostgreSQL** - More robust than SQLite for production
 
-This scaffold provides a solid foundation for any React application with enterprise-grade patterns and extensibility.
+## MVP Backend Development Workflow (#memorize)
+
+### Phase 1: Local Development MVP (Week 1-2)
+```bash
+# 1. Create C# Web API project
+dotnet new webapi -n PortalAPI
+cd PortalAPI
+
+# 2. Install essential packages
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package Microsoft.Identity.Web
+
+# 3. Generate models from TypeScript interfaces
+# Use src/types/portal.ts as reference for C# model creation
+```
+
+**Critical Development Rules:**
+- **Use TypeScript interfaces as contracts** - Generate C# models from `src/types/portal.ts`
+- **Test immediately** - Use Thunder Client/Postman for each endpoint
+- **Frontend integration first** - Switch ServiceFactory to API mode early
+- **Authentication priority** - Implement auth before complex business logic
+
+### Phase 2: Azure Deployment MVP (Week 3)
+```bash
+# Manual Azure setup (before Terraform)
+az group create --name rg-portal-dev --location eastus
+az sql server create --name portal-sql-dev --resource-group rg-portal-dev
+az webapp create --name portal-api-dev --resource-group rg-portal-dev
+```
+
+**Deployment Checklist:**
+- [ ] Azure App Service for Web API
+- [ ] Azure SQL Database (Basic tier for MVP)
+- [ ] Azure AD app registration
+- [ ] Static Web Apps for React frontend
+- [ ] Environment variables configuration
+
+### Phase 3: Infrastructure as Code (Week 4)
+```
+/infrastructure
+├── terraform/
+│   ├── main.tf              # Main Azure resources
+│   ├── variables.tf         # Environment configuration
+│   ├── modules/
+│   │   ├── app-service/     # Web API hosting
+│   │   ├── database/        # SQL Database
+│   │   └── static-web-app/  # React frontend
+└── scripts/deploy.sh        # Automated deployment
+```
+
+**Terraform Integration Timeline:**
+- **Manual setup first** - Learn Azure resources and requirements
+- **Codify after validation** - Convert working infrastructure to Terraform
+- **Benefits**: Avoid over-engineering before MVP validation
+
+### Backend Integration Points
+
+**Ready-to-Use Frontend Services:**
+```typescript
+// Frontend already configured for instant backend integration
+ServiceFactory.createService<TodoItem>('tasks', mockTodos)
+// Automatically switches to /api/todos when backend available
+
+authService.login(credentials)  // Ready for C# auth endpoints
+apiClient.get<TodoItem[]>('/todos')  // Type-safe API calls
+```
+
+**Environment Configuration:**
+```bash
+# Frontend .env for backend integration
+VITE_API_BASE_URL=http://localhost:5000     # Local development
+VITE_API_BASE_URL=https://portal-api.azurewebsites.net  # Production
+VITE_AZURE_CLIENT_ID=your-azure-client-id
+VITE_AZURE_TENANT_ID=your-azure-tenant-id
+```
+
+### Quality Gates for Backend Development (#memorize)
+- **Frontend tests must pass** - 46/46 tests maintain green status
+- **API integration testing** - Test ServiceFactory switch immediately
+- **Authentication flow validation** - Login/logout/token refresh complete
+- **Error handling verification** - Graceful API failure management
+- **TypeScript contracts honored** - C# models match portal.ts interfaces
+
+## GitHub Issue Tracking System (#memorize)
+
+### MVP Development Issues Created (Issues #10-19)
+
+**Issue Management Workflow:**
+```bash
+# 1. Start work on an issue
+git checkout -b feature/backend-foundation
+# Reference: Issue #10 - Backend Foundation Setup
+
+# 2. Link PR to issue (include in PR description)
+"Closes #10" or "Fixes #10"
+
+# 3. Track progress by updating issue checkboxes
+# Each issue has detailed sub-tasks for granular tracking
+
+# 4. Issue automatically closes when PR merges
+```
+
+**Issue Organization:**
+- **Phase 1 (Issues #10-13)**: Local Development MVP
+  - Backend Foundation Setup, Authentication, API Endpoints, Integration Testing
+- **Phase 2 (Issues #14-15)**: Azure Deployment MVP
+  - Infrastructure Setup, Frontend Deployment
+- **Phase 3 (Issues #16-17)**: Infrastructure as Code
+  - Terraform Implementation, CI/CD Pipeline
+- **Phase 4 (Issues #18-19)**: Production Hardening
+  - Security & Performance, Scaling & Monitoring
+
+**Strategic Labels for Filtering:**
+- **Phase tracking**: `phase-1`, `phase-2`, `phase-3`, `phase-4`
+- **Component tracking**: `backend`, `frontend`, `infrastructure`
+- **Technology tracking**: `terraform`, `azure-ad`, `cicd`, `authentication`
+- **Quality tracking**: `security`, `performance`, `testing`, `monitoring`
+
+**Development Workflow Integration:**
+- Each issue contains actionable sub-tasks and acceptance criteria
+- Definition of Done specified for quality gates
+- Related frontend files referenced for integration context
+- Ready for PR linking and automated issue closure
+
+**Issue Progress Tracking:**
+```bash
+# View issues by phase
+gh issue list --label "phase-1"
+
+# View all backend-related issues
+gh issue list --label "backend"
+
+# Check current MVP progress
+gh issue list --milestone "Week 1-2"
+```
+
+This scaffold provides a solid foundation for any React application with enterprise-grade patterns, extensibility, and comprehensive project tracking.
