@@ -1,6 +1,20 @@
 # Business Portal Scaffold
 
-A production-ready, configuration-driven React portal designed for **instant business customization**. Senior developers can transform this into domain-specific applications through data configuration, not code rewrites.
+A production-ready, configuration-driven React portal designed for **instant business customization**. Developers can transform this into domain-specific applications through data configuration, not code rewrites.
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Business Customization](#business-customization)
+- [Dashboard Configuration](#dashboard-configuration)
+- [Business Domain Examples](#business-domain-examples)
+- [Live Theme Testing](#live-theme-testing)
+- [Technical Architecture](#technical-architecture)
+- [Session Management for Claude Code](#session-management-for-claude-code)
+- [File Structure](#file-structure)
+- [Development Commands](#development-commands)
+- [Customization Priority](#customization-priority)
+- [Production Ready Features](#production-ready-features)
 
 ## Architecture Philosophy
 
@@ -16,9 +30,12 @@ git clone [repository]
 npm install && npm run dev    # → http://localhost:5173
 ```
 
-## Business Customization (3-Step Process)
+## Business Customization
 
-### 1. Business Identity (`src/data/configurableData.ts`)
+### 3-Step Process
+
+<details>
+<summary><strong>1. Business Identity</strong> (<code>src/data/configurableData.ts</code>)</summary>
 
 ```typescript
 export const appConfig: AppConfig = {
@@ -40,7 +57,10 @@ export const appConfig: AppConfig = {
 };
 ```
 
-### 2. Data Domain Mapping (`src/data/sampleData.ts`)
+</details>
+
+<details>
+<summary><strong>2. Data Domain Mapping</strong> (<code>src/data/sampleData.ts</code>)</summary>
 
 The scaffold uses generic structures that map to most business domains:
 
@@ -68,7 +88,10 @@ export const orders = [
 ];
 ```
 
-### 3. Field & Status Configuration
+</details>
+
+<details>
+<summary><strong>3. Field & Status Configuration</strong></summary>
 
 ```typescript
 // Define your business statuses
@@ -91,7 +114,12 @@ fieldConfig: {
 }
 ```
 
+</details>
+
 ## Dashboard Configuration
+
+<details>
+<summary><strong>Key Metrics & Data Sections</strong></summary>
 
 ```typescript
 // Key metrics cards
@@ -121,9 +149,12 @@ dashboardSections: [
 ]
 ```
 
+</details>
+
 ## Business Domain Examples
 
-### E-commerce Platform
+<details>
+<summary><strong>E-commerce Platform</strong></summary>
 
 ```typescript
 navigation: [
@@ -134,7 +165,10 @@ navigation: [
 ];
 ```
 
-### SaaS Platform
+</details>
+
+<details>
+<summary><strong>SaaS Platform</strong></summary>
 
 ```typescript
 navigation: [
@@ -145,7 +179,10 @@ navigation: [
 ];
 ```
 
-### Medical Practice
+</details>
+
+<details>
+<summary><strong>Medical Practice</strong></summary>
 
 ```typescript
 navigation: [
@@ -154,6 +191,8 @@ navigation: [
   { id: "records", label: "Records", path: "/records" },
 ];
 ```
+
+</details>
 
 ## Live Theme Testing
 
@@ -174,7 +213,8 @@ applyColorPreset("green"); // Nature theme
 - **Material-UI** + **React Router**
 - **86 Tests** + **Strict TypeScript**
 
-### Key Abstractions
+<details>
+<summary><strong>Key Abstractions</strong></summary>
 
 **PageLayout Component** - Universal page wrapper:
 
@@ -196,12 +236,52 @@ applyColorPreset("green"); // Nature theme
 const { filteredData, sortData, filterData } = useDataOperations(orders);
 ```
 
-### Performance Features
+</details>
+
+<details>
+<summary><strong>Performance Features</strong></summary>
 
 - **React.memo** on all components prevents unnecessary re-renders
 - **Lazy loading** for route components
 - **Memoized contexts** prevent cascading updates
 - **Optimized abstractions** handle large datasets efficiently
+</details>
+
+## Session Management for Claude Code
+
+<details>
+<summary><strong>Continuous Session Tracking</strong></summary>
+
+When working with Claude Code, maintain session state to handle conversation compaction:
+
+```bash
+# Initial setup
+claude code --file CLAUDE.md "Read project guide and create CURRENT_SESSION.md to track our development progress"
+
+# During development
+claude code "Add inventory page component and update CURRENT_SESSION.md with our progress"
+
+# Pre-compaction preparation
+claude code "Update CURRENT_SESSION.md with everything we've accomplished and next priorities"
+
+# Session recovery after compaction
+claude code --file CLAUDE.md --file CURRENT_SESSION.md "Review project guide and continue where we left off"
+```
+
+### Session File Structure
+
+Claude Code maintains `CURRENT_SESSION.md` with:
+
+- **Current Work** - Active features and tasks
+- **Completed Today** - Finished items with checkmarks
+- **Next Priorities** - Upcoming tasks and priorities
+- **Architecture Decisions** - Important technical decisions made
+- **Files Modified** - List of changed files for context
+- **Session Recovery Notes** - Key context for next session
+
+This approach ensures seamless transitions between Claude Code sessions and preserves development context through conversation compaction.
+
+</details>
 
 ## File Structure
 
@@ -240,11 +320,15 @@ npm run lint       # Code quality checks
 
 ## Production Ready Features
 
+<details>
+<summary><strong>Enterprise Features</strong></summary>
+
 - **Environment configuration** ready for deployment
 - **API client** prepared for backend integration
 - **Azure AD authentication** service ready
 - **Error boundaries** for graceful failure handling
 - **TypeScript strict mode** with 100% type coverage
 - **Performance optimized** for large datasets
+</details>
 
 **Ready to fork and customize!** Transform this generic portal into your business application through configuration, not code rewrites.

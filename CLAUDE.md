@@ -1,13 +1,66 @@
-# CLAUDE.md
+### Configuration Extension Patterns (#memorize)
+
+- **Extend existing config** - Add to appConfig/statusConfig rather than creating new config objects
+- **Use type-safe config** - Ensure new config follows existing TypeScript interfaces
+- **Data-driven features** - If something can be configured in mockData.ts, do that instead of hardcoding
+- **Preserve existing structure** - Follow patterns in configurableData.ts for consistency
+- **Document config changes** - Update interface definitions when adding new config options
+
+### Session Management (#memorize)
+
+- **Maintain CURRENT_SESSION.md** - Create and update this file throughout development sessions
+- **Update session file with every significant change** - Track progress, decisions, and next steps
+- **Include recovery context** - File names modified, architectural decisions, current priorities
+- **Prepare for conversation compaction** - Thoroughly update session file when approaching limits
+- **Session file structure** - Current work, completed items, next priorities, architecture notes, modified files### Performance Considerations (#memorize)
+- **Always use React.memo** for new components - prevents unnecessary re-renders
+- **Memoize expensive calculations** - Use useMemo for data transformations
+- **Memoize callback functions** - Use useCallback for functions passed as props
+- **Avoid inline objects/arrays** - Extract to constants or memoize with useMemo
+- **Lazy load when appropriate** - Use React.lazy for large route components### TypeScript Best Practices (#memorize)
+- **Use existing interfaces** - Extend AppConfig, extend existing types rather than creating new ones
+- **Strict type checking** - No `any` types, use proper TypeScript
+- **Type-only imports** - Use `import type` for type imports due to verbatimModuleSyntax
+- **Interface over type** - Use `interface` for object shapes, `type` for unions
+- **Generic constraints** - Use `<T extends SomeInterface>` for reusable components### File Organization Patterns (#memorize)
+- **Use existing directory structure** - Don't create new folders unless absolutely necessary
+- **Follow naming conventions** - PascalCase for components, camelCase for hooks/utils
+- **Group related functionality** - Keep related files in same directory
+- **Avoid deep nesting** - Maximum 2-3 levels deep in src/
+- **Export from index files** - Use barrel exports for clean imports### Testing Philosophy (#memorize)
+- **Minimal, focused tests** - Test core functionality only, not edge cases or obvious behavior
+- **Quality over quantity** - 3-5 essential tests better than 20+ exhaustive tests
+- **Test critical paths** - Business logic, data transformations, error handling
+- **Skip obvious tests** - Don't test props passing, simple renders, or framework behavior
+- **One test file per major component/hook** - Keep test files concise and readable
+
+### Error Handling Patterns (#memorize)
+
+- **Use existing ErrorBoundary** - Don't create new error boundaries
+- **Graceful degradation** - Show fallback UI for missing data, don't crash
+- **User-friendly messages** - "Unable to load data" not "TypeError: undefined"
+- **Console.error for debugging** - Log technical details to console, not UI
+- **Validate at boundaries** - Check data at component entry points# CLAUDE.md
 
 This file provides guidance to Claude Code when working with this React web application.
+
+## Quick Navigation
+
+- [Quick Reference](#quick-reference) - Commands and tech stack
+- [Project Architecture](#project-architecture) - Structure and patterns
+- [Critical Development Rules](#critical-development-rules) - Git workflow and quality gates
+- [Design System](#design-system) - Color management and visual principles
+- [Configuration System](#configuration-system) - Data-driven customization
+- [Available Utilities](#available-utilities) - Hooks, helpers, and services
+- [Smart Abstractions](#smart-abstractions) - Key reusable components
+- [Development Preferences](#development-preferences) - Coding standards and approach
 
 ## Quick Reference
 
 **Development Commands:**
 
 ```bash
-npm run dev     # Start development server (http://localhost:5173)
+npm run dev     # Start development server (http://localhost:5173) - usually already running
 npm run build   # Build for production
 npm run lint    # Run ESLint
 ```
@@ -65,13 +118,15 @@ git checkout main && git pull && git branch -d feature/component-name
 - Be specific: "Extract FieldRenderer switch to config"
 - No co-author attribution (#memorize)
 - Include scope: "components:", "hooks:", "services:"
+- Avoid excessive comments in code - only comment complex logic
 
 ### Quality Gates (#memorize)
 
 - **Always run tests and linter** after each working change
 - **No commits without passing tests** (40/40 ✓ required)
-- **Keep dev server running** on localhost:5173
-- **Add unit tests** for crucial functionality before committing
+- **Dev server assumed running** on localhost:5173 for real-time feedback
+- **Add unit tests** for crucial functionality before committing - minimal, focused tests only
+- **Avoid excessive comments** - Only comment complex business logic, not self-explanatory code
 
 ## Design System
 
@@ -227,9 +282,12 @@ const IconComponent = Icons[action.icon as keyof typeof Icons];
 
 - **Be concise** - Keep responses short and focused
 - **One feature at a time** - Maintain working state between changes
-- **Real-time feedback** - Keep dev server running to see changes
+- **Assume dev server running** - Changes visible at localhost:5173 for immediate feedback
 - **Configuration over code** - Prefer data-driven solutions
 - **Abstraction first** - Ask "Can this be configured instead of coded?"
+- **Minimal comments** - Only comment complex logic, not self-explanatory code
+- **Minimal tests** - Write only essential tests for core functionality, not exhaustive test suites
+- **Incremental changes** - Make small changes, test, then continue - avoid large refactors
 
 ### Loading System
 
