@@ -34,6 +34,50 @@
 - **Skip obvious tests** - Don't test props passing, simple renders, or framework behavior
 - **One test file per major component/hook** - Keep test files concise and readable
 
+### .NET Backend Testing Guidelines (#memorize)
+
+#### xUnit Testing Framework
+- **Use xUnit for all .NET tests** - Industry standard, excellent async support
+- **WebApplicationFactory for integration tests** - Test complete HTTP pipeline
+- **In-memory database for testing** - UseInMemoryDatabase() for isolated test data
+- **Test structure**: Arrange-Act-Assert pattern with clear test names
+
+#### Essential Test Patterns
+```csharp
+public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly HttpClient _client;
+
+    public TodoControllerTests(WebApplicationFactory<Program> factory)
+    {
+        _factory = factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddDbContext<PortalDbContext>(options =>
+                    options.UseInMemoryDatabase("InMemoryDbForTesting"));
+            });
+        });
+        _client = _factory.CreateClient();
+    }
+}
+```
+
+#### .NET Development Best Practices
+- **Entity Framework patterns** - Use DbContext dependency injection, async operations
+- **Controller conventions** - Return ActionResult<T>, use proper HTTP status codes
+- **Model validation** - Use DataAnnotations ([Required], [EmailAddress], etc.)
+- **Public Program class** - Add `public partial class Program { }` for testing access
+- **CORS configuration** - Configure for React development server (localhost:5173)
+
+#### Backend Testing Commands
+```bash
+dotnet test                    # Run all tests
+dotnet test --verbosity normal # Detailed test output
+dotnet build                   # Verify compilation
+dotnet run                     # Start API server (localhost:5276)
+```
+
 ### Error Handling Patterns (#memorize)
 
 - **Use existing ErrorBoundary** - Don't create new error boundaries

@@ -41,3 +41,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Make the Program class public for testing
+public partial class Program { }
