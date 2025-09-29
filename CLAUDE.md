@@ -120,9 +120,18 @@ dotnet run                     # Start API server (localhost:5276)
 
 #### Frontend-Backend Enum Strategy
 - **Problem**: Frontend uses lowercase/kebab-case ("high", "in-progress"), Backend uses PascalCase (Priority.High, TodoStatus.InProgress)
-- **Solution**: DTO parsing with ToLower() and switch expressions
-- **Pattern**: Keep frontend contracts stable, handle conversion on backend
-- **Validation**: Use RegularExpression to validate enum values before parsing
+- **Solution**: JsonStringEnumConverter with JsonPropertyName attributes for seamless conversion
+- **Pattern**: Keep frontend contracts stable, handle conversion on backend with attributes
+- **Implementation**: `[JsonPropertyName("in-progress")] InProgress` in enum definitions
+
+#### Repository Pattern Implementation (#memorize)
+- **Optional Enhancement**: Repository pattern provides domain-specific query methods beyond basic CRUD
+- **Architecture**: IRepository<T> → BaseRepository<T> → ITodoRepository → TodoRepository
+- **Domain Methods**: GetByStatusAsync(), GetOverdueAsync(), GetStatusSummaryAsync() for business queries
+- **When to Use**: Complex queries, analytics, multiple data sources, advanced caching
+- **When to Skip**: Simple CRUD operations work perfectly with Service → DbContext pattern
+- **DbContext IS Unit of Work**: No need for additional Unit of Work pattern - EF Core handles this
+- **DI Registration**: Register repositories with AddScoped<ITodoRepository, TodoRepository>()
 
 ### Frontend-Backend Integration Patterns (#memorize)
 

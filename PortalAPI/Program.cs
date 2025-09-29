@@ -15,6 +15,9 @@ builder.Services.AddDbContext<PortalDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=portal.db"));
 
+// Add Repositories
+builder.Services.AddScoped<PortalAPI.Repositories.Interfaces.ITodoRepository, PortalAPI.Repositories.Implementations.TodoRepository>();
+
 // Add Services
 builder.Services.AddScoped<PortalAPI.Services.Interfaces.ITodoService, PortalAPI.Services.Implementations.TodoService>();
 
