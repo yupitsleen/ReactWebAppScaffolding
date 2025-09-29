@@ -256,7 +256,7 @@ When working with Claude Code, maintain session state to handle conversation com
 
 ```bash
 # Initial setup
-claude code --file CLAUDE.md "Read project guide and update CURRENT_SESSION.md to track our development progress"
+claude code --file CLAUDE.md "Read project guide and create CURRENT_SESSION.md to track our development progress"
 
 # During development
 claude code "Update CURRENT_SESSION.md with our progress"

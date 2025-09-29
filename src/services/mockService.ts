@@ -8,8 +8,8 @@ import { env } from '../utils/env'
 export class MockEntityService<T extends { id: string }> extends BaseEntityService<T> {
   private mockData: T[]
 
-  constructor(navigationId: string, initialMockData: T[]) {
-    super(navigationId) // Call parent constructor
+  constructor(entityName: string, initialMockData: T[]) {
+    super(entityName, '/mock') // Call parent constructor with dummy endpoint
     this.mockData = [...initialMockData]
   }
 
@@ -61,7 +61,7 @@ export class MockEntityService<T extends { id: string }> extends BaseEntityServi
 
     const newEntity = {
       ...data,
-      id: `${this.navigationId}-${Date.now()}`,
+      id: `${this.entityName}-${Date.now()}`,
     } as T
 
     this.mockData.push(newEntity)

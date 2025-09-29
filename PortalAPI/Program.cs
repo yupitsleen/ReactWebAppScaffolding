@@ -4,12 +4,19 @@ using PortalAPI.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 // Add Entity Framework
 builder.Services.AddDbContext<PortalDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=portal.db"));
+
+// Add Services
+builder.Services.AddScoped<PortalAPI.Services.Interfaces.ITodoService, PortalAPI.Services.Implementations.TodoService>();
 
 // Add CORS
 builder.Services.AddCors(options =>

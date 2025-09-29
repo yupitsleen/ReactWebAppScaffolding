@@ -1,16 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { BaseEntityService } from './baseService'
 
-vi.mock('../data/configurableData', () => ({
-  appConfig: {
-    navigation: [
-      { id: 'discussions', path: '/discussions' },
-      { id: 'documents', path: '/documents' },
-      { id: 'tasks', path: '/todos' }
-    ]
-  }
-}))
-
 vi.mock('./api', () => ({
   apiClient: {
     get: vi.fn(),
@@ -26,38 +16,25 @@ interface TestEntity {
 }
 
 describe('BaseEntityService', () => {
-  it('generates correct API endpoints from navigation config', () => {
-    const discussionsService = new BaseEntityService<TestEntity>('discussions')
-    const documentsService = new BaseEntityService<TestEntity>('documents')
-    const tasksService = new BaseEntityService<TestEntity>('tasks')
+  it('generates correct API endpoints with explicit endpoint configuration', () => {
+    const service = new BaseEntityService<TestEntity>('testEntity', '/api/test')
 
-    expect(discussionsService['getApiEndpoint']()).toBe('/api/discussions')
-    expect(discussionsService['getApiEndpoint']('/123')).toBe('/api/discussions/123')
-
-    expect(documentsService['getApiEndpoint']()).toBe('/api/documents')
-    expect(documentsService['getApiEndpoint']('/456')).toBe('/api/documents/456')
-
-    expect(tasksService['getApiEndpoint']()).toBe('/api/todos')
-    expect(tasksService['getApiEndpoint']('/789')).toBe('/api/todos/789')
+    expect(service['getApiEndpoint']()).toBe('/api/test')
+    expect(service['getApiEndpoint']('/123')).toBe('/api/test/123')
+    expect(service['getApiEndpoint']('/nested/path')).toBe('/api/test/nested/path')
   })
 
-  it('throws error for invalid navigation ID when accessing API endpoint', () => {
-    const service = new BaseEntityService<TestEntity>('invalid-nav-id')
-    expect(() => {
-      service['getApiEndpoint']()
-    }).toThrow('Navigation item \'invalid-nav-id\' not found in configuration')
+  it('handles different endpoint formats correctly', () => {
+    const service1 = new BaseEntityService<TestEntity>('todos', '/api/todo')
+    const service2 = new BaseEntityService<TestEntity>('custom', '/api/v2/custom-endpoint')
+
+    expect(service1['getApiEndpoint']()).toBe('/api/todo')
+    expect(service2['getApiEndpoint']('/test-id')).toBe('/api/v2/custom-endpoint/test-id')
   })
 
-  it('sets entity name from navigation config', () => {
-    vi.doMock('../data/configurableData', () => ({
-      appConfig: {
-        navigation: [
-          { id: 'test', path: '/test', label: 'Test Items' }
-        ]
-      }
-    }))
-
-    const service = new BaseEntityService<TestEntity>('discussions')
-    expect(service['entityName']).toBe('discussions')
+  it('stores entity name and endpoint correctly', () => {
+    const service = new BaseEntityService<TestEntity>('myEntity', '/api/my-endpoint')
+    expect(service['entityName']).toBe('myEntity')
+    expect(service['apiEndpoint']).toBe('/api/my-endpoint')
   })
 })

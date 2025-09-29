@@ -5,7 +5,20 @@
       "Bash(npm run lint)",
       "Bash(npm test:*)",
       "Bash(npx eslint:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet --info)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet build)",
+      "Bash(dotnet clean:*)",
+      "Bash(curl -X POST http://localhost:5276/api/todo -H \"Content-Type: application/json\" -d \"{\"\"title\"\":\"\"Test InProgress FINAL\"\",\"\"description\"\":\"\"Testing in-progress status with global converter\"\",\"\"assignedTo\"\":\"\"User\"\",\"\"priority\"\":\"\"medium\"\",\"\"status\"\":\"\"in-progress\"\",\"\"dueDate\"\":\"\"2025-10-01T12:00:00Z\"\",\"\"category\"\":\"\"Testing\"\",\"\"createdBy\"\":\"\"System\"\"}\")",
+      "Bash(curl -X POST http://localhost:5276/api/todo -H \"Content-Type: application/json\" -d \"{\"\"title\"\":\"\"Test Enum Names\"\",\"\"description\"\":\"\"Testing with exact enum names\"\",\"\"assignedTo\"\":\"\"User\"\",\"\"priority\"\":\"\"Medium\"\",\"\"status\"\":\"\"InProgress\"\",\"\"dueDate\"\":\"\"2025-10-01T12:00:00Z\"\",\"\"category\"\":\"\"Testing\"\",\"\"createdBy\"\":\"\"System\"\"}\")",
+      "Bash(dotnet run:*)",
+      "Bash(curl -X POST http://localhost:5276/api/todo -H \"Content-Type: application/json\" -d \"{\"\"title\"\":\"\"Test DTO Solution\"\",\"\"description\"\":\"\"Testing enum conversion with DTO\"\",\"\"assignedTo\"\":\"\"User\"\",\"\"priority\"\":\"\"high\"\",\"\"status\"\":\"\"in-progress\"\",\"\"dueDate\"\":\"\"2025-10-01T12:00:00Z\"\",\"\"category\"\":\"\"Testing\"\",\"\"createdBy\"\":\"\"System\"\"}\")",
+      "Bash(curl -X POST http://localhost:5276/api/todo -H \"Content-Type: application/json\" -d \"{\"\"title\"\":\"\"Test All Combos\"\",\"\"description\"\":\"\"Testing all priority/status combinations\"\",\"\"assignedTo\"\":\"\"User\"\",\"\"priority\"\":\"\"low\"\",\"\"status\"\":\"\"completed\"\",\"\"dueDate\"\":\"\"2025-10-01T12:00:00Z\"\",\"\"category\"\":\"\"Testing\"\",\"\"createdBy\"\":\"\"System\"\"}\")",
+      "Bash(curl:*)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

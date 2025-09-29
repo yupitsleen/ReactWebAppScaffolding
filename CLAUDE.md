@@ -68,10 +68,13 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 #### .NET Development Best Practices
 
 - **Entity Framework patterns** - Use DbContext dependency injection, async operations
-- **Controller conventions** - Return ActionResult<T>, use proper HTTP status codes
-- **Model validation** - Use DataAnnotations ([Required], [EmailAddress], etc.)
+- **Service Layer Pattern** - Implement ITodoService interfaces for business logic separation
+- **Controller conventions** - Return ActionResult<T>, use proper HTTP status codes, keep controllers thin
+- **Model validation** - Use DataAnnotations ([Required], [RegularExpression], etc.) in DTOs
 - **Public Program class** - Add `public partial class Program { }` for testing access
 - **CORS configuration** - Configure for React development server (localhost:5173)
+- **Dependency Injection** - Register services with appropriate lifetime scopes (Scoped for Entity Framework)
+- **DTO Pattern** - Use DTOs for input validation and enum serialization handling
 
 #### Backend Testing Commands
 
@@ -99,6 +102,37 @@ dotnet run                     # Start API server (localhost:5276)
 - **Integration Focus**: Use WebApplicationFactory over unit tests for API endpoints
 - **Test Structure**: Arrange-Act-Assert with descriptive test method names
 - **Database Isolation**: Always use in-memory database for testing to avoid conflicts
+
+### Backend Architecture Patterns (#memorize)
+
+#### Service Layer Implementation
+- **Interface-First Design**: Create ITodoService before TodoService implementation
+- **Dependency Injection**: Register services with `builder.Services.AddScoped<IService, ServiceImpl>()`
+- **Controller Separation**: Controllers handle HTTP concerns, services handle business logic
+- **Structured Logging**: Use ILogger<T> in services for meaningful context
+- **Error Handling**: Centralize exception handling in service methods
+
+#### DTO Pattern for API Integration
+- **Input Validation**: Use DataAnnotations in DTOs ([Required], [RegularExpression])
+- **Enum Serialization**: Handle frontend/backend enum format mismatches in DTOs
+- **Business Logic**: Include conversion methods (ToTodoItem()) in DTOs
+- **Error Messages**: Provide clear validation error messages for API consumers
+
+#### Frontend-Backend Enum Strategy
+- **Problem**: Frontend uses lowercase/kebab-case ("high", "in-progress"), Backend uses PascalCase (Priority.High, TodoStatus.InProgress)
+- **Solution**: DTO parsing with ToLower() and switch expressions
+- **Pattern**: Keep frontend contracts stable, handle conversion on backend
+- **Validation**: Use RegularExpression to validate enum values before parsing
+
+### Frontend-Backend Integration Patterns (#memorize)
+
+- **Explicit Over Dynamic**: Use direct API endpoint configuration instead of complex path derivation
+- **Environment Configuration**: `.env.local` changes require frontend dev server restart to take effect
+- **Cache Management**: Use `window.__APP_DEBUG__.clearPersistedData()` to clear localStorage during integration
+- **SDK Version Consistency**: Always use `global.json` to pin .NET SDK version for team consistency
+- **Integration Debugging**: Verify ServiceFactory → Service → ApiClient → Network request flow step by step
+- **Service Architecture**: Prefer constructor injection with explicit endpoints over runtime path computation
+- **State Cache Awareness**: localStorage persistence can mask integration progress - clear when switching modes
 
 ### Complex Task Management (#memorize)
 
