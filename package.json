@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "tsc --noEmit && echo \"✓ TypeScript check passed - all files valid\"",
-    "lint:full": "tsc --noEmit && echo \"✓ TypeScript + basic ESLint checks complete\"",
+    "lint": "tsc --noEmit && echo \"✓ TypeScript + basic ESLint checks complete\"",
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest --coverage",

@@ -1,7 +1,14 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ServiceFactory } from './serviceFactory'
 import { BaseEntityService } from './baseService'
 import { MockEntityService } from './mockService'
+
+// Mock the index file to provide test endpoints
+vi.mock('./index', () => ({
+  serviceEndpoints: {
+    test: '/api/test'
+  }
+}))
 
 interface TestEntity {
   id: string
@@ -20,14 +27,14 @@ describe('ServiceFactory', () => {
 
   it('creates MockEntityService when in mock mode', () => {
     ServiceFactory.forceMockMode()
-    const service = ServiceFactory.createService('test', mockData)
+    const service = ServiceFactory.createService('test', '/api/test', mockData)
     expect(service).toBeInstanceOf(MockEntityService)
     expect(ServiceFactory.isUsingMockData()).toBe(true)
   })
 
   it('creates BaseEntityService when in API mode', () => {
     ServiceFactory.forceApiMode()
-    const service = ServiceFactory.createService('test', mockData)
+    const service = ServiceFactory.createService('test', '/api/test', mockData)
     expect(service).toBeInstanceOf(BaseEntityService)
     expect(ServiceFactory.isUsingMockData()).toBe(false)
   })

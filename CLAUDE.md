@@ -37,12 +37,14 @@
 ### .NET Backend Testing Guidelines (#memorize)
 
 #### xUnit Testing Framework
+
 - **Use xUnit for all .NET tests** - Industry standard, excellent async support
 - **WebApplicationFactory for integration tests** - Test complete HTTP pipeline
 - **In-memory database for testing** - UseInMemoryDatabase() for isolated test data
 - **Test structure**: Arrange-Act-Assert pattern with clear test names
 
 #### Essential Test Patterns
+
 ```csharp
 public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
@@ -64,19 +66,90 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 ```
 
 #### .NET Development Best Practices
+
 - **Entity Framework patterns** - Use DbContext dependency injection, async operations
-- **Controller conventions** - Return ActionResult<T>, use proper HTTP status codes
-- **Model validation** - Use DataAnnotations ([Required], [EmailAddress], etc.)
+- **Service Layer Pattern** - Implement ITodoService interfaces for business logic separation
+- **Controller conventions** - Return ActionResult<T>, use proper HTTP status codes, keep controllers thin
+- **Model validation** - Use DataAnnotations ([Required], [RegularExpression], etc.) in DTOs
 - **Public Program class** - Add `public partial class Program { }` for testing access
 - **CORS configuration** - Configure for React development server (localhost:5173)
+- **Dependency Injection** - Register services with appropriate lifetime scopes (Scoped for Entity Framework)
+- **DTO Pattern** - Use DTOs for input validation and enum serialization handling
 
 #### Backend Testing Commands
+
 ```bash
 dotnet test                    # Run all tests
 dotnet test --verbosity normal # Detailed test output
 dotnet build                   # Verify compilation
 dotnet run                     # Start API server (localhost:5276)
 ```
+
+### ARM Architecture Development (#memorize)
+
+- **Windows ARM**: .NET SDK located at `/c/Program Files/dotnet/x64/dotnet.exe`
+- **PATH Configuration**: Export PATH="$PATH:/c/Program Files/dotnet/x64" for temporary fix
+- **Permanent Fix**: Add to system environment variables via Windows Settings
+- **Verification**: Use `dotnet --version` to confirm SDK accessibility
+- **Common Issue**: "dotnet command not found" in Git Bash on ARM machines
+- **Package Management**: May require NuGet source verification on ARM systems
+
+### Backend Testing Workflow (#memorize)
+
+- **Test-First Approach**: Implement tests immediately after creating controllers
+- **Quality Gate**: All PRs require passing tests (no exceptions)
+- **Testing Commands**: `dotnet test --verbosity normal` for detailed output
+- **Integration Focus**: Use WebApplicationFactory over unit tests for API endpoints
+- **Test Structure**: Arrange-Act-Assert with descriptive test method names
+- **Database Isolation**: Always use in-memory database for testing to avoid conflicts
+
+### Backend Architecture Patterns (#memorize)
+
+#### Service Layer Implementation
+- **Interface-First Design**: Create ITodoService before TodoService implementation
+- **Dependency Injection**: Register services with `builder.Services.AddScoped<IService, ServiceImpl>()`
+- **Controller Separation**: Controllers handle HTTP concerns, services handle business logic
+- **Structured Logging**: Use ILogger<T> in services for meaningful context
+- **Error Handling**: Centralize exception handling in service methods
+
+#### DTO Pattern for API Integration
+- **Input Validation**: Use DataAnnotations in DTOs ([Required], [RegularExpression])
+- **Enum Serialization**: Handle frontend/backend enum format mismatches in DTOs
+- **Business Logic**: Include conversion methods (ToTodoItem()) in DTOs
+- **Error Messages**: Provide clear validation error messages for API consumers
+
+#### Frontend-Backend Enum Strategy
+- **Problem**: Frontend uses lowercase/kebab-case ("high", "in-progress"), Backend uses PascalCase (Priority.High, TodoStatus.InProgress)
+- **Solution**: JsonStringEnumConverter with JsonPropertyName attributes for seamless conversion
+- **Pattern**: Keep frontend contracts stable, handle conversion on backend with attributes
+- **Implementation**: `[JsonPropertyName("in-progress")] InProgress` in enum definitions
+
+#### Repository Pattern Implementation (#memorize)
+- **Optional Enhancement**: Repository pattern provides domain-specific query methods beyond basic CRUD
+- **Architecture**: IRepository<T> → BaseRepository<T> → ITodoRepository → TodoRepository
+- **Domain Methods**: GetByStatusAsync(), GetOverdueAsync(), GetStatusSummaryAsync() for business queries
+- **When to Use**: Complex queries, analytics, multiple data sources, advanced caching
+- **When to Skip**: Simple CRUD operations work perfectly with Service → DbContext pattern
+- **DbContext IS Unit of Work**: No need for additional Unit of Work pattern - EF Core handles this
+- **DI Registration**: Register repositories with AddScoped<ITodoRepository, TodoRepository>()
+
+### Frontend-Backend Integration Patterns (#memorize)
+
+- **Explicit Over Dynamic**: Use direct API endpoint configuration instead of complex path derivation
+- **Environment Configuration**: `.env.local` changes require frontend dev server restart to take effect
+- **Cache Management**: Use `window.__APP_DEBUG__.clearPersistedData()` to clear localStorage during integration
+- **SDK Version Consistency**: Always use `global.json` to pin .NET SDK version for team consistency
+- **Integration Debugging**: Verify ServiceFactory → Service → ApiClient → Network request flow step by step
+- **Service Architecture**: Prefer constructor injection with explicit endpoints over runtime path computation
+- **State Cache Awareness**: localStorage persistence can mask integration progress - clear when switching modes
+
+### Complex Task Management (#memorize)
+
+- **Use TodoWrite tool proactively** for multi-step implementations
+- **Document before commit** - Update CLAUDE.md with new patterns before code PR
+- **Three-phase completion**: Update docs → Commit code → Update session file
+- **Recovery preparation**: Always update CURRENT_SESSION.md with sufficient context
+- **Session continuity**: Include environment state, running services, and decision points
 
 ### Error Handling Patterns (#memorize)
 
@@ -141,20 +214,20 @@ src/
 
 ### Git Workflow (#memorize)
 
-```bash
-# 1. Always start fresh from main
-git checkout main && git pull origin main
+````bash
+# 1. Work on current feature branch (user creates fresh branches from main)
+# Current branch already created from latest main
 
-# 2. Create descriptive feature branch
-git checkout -b feature/component-name
-
-# 3. Make focused commits with clear messages
+# 2. Make focused commits with clear messages
 git commit -m "Add field renderer configuration system"
-# NOT: "Add sophisticated field rendering with Claude assistance"
+# NOT: "Add field rendering with Claude assistance"
 
-# 4. Clean up after merge
-git checkout main && git pull && git branch -d feature/component-name
-```
+# 3. Push and create PR when feature is complete
+git push origin [current-branch-name]
+# Then create PR with descriptive title and summary
+
+# Note: User approves/merges PR and creates next fresh branch
+# Next session starts with user-created fresh branch from main
 
 **Commit Standards:**
 
@@ -191,7 +264,7 @@ This app uses a centralized CSS custom properties system:
 setThemeColor("primary-color", "#d32f2f"); // Test red
 applyColorPreset("blue"); // Apply blue preset
 applyColorPreset("dark-purple"); // Back to default
-```
+````
 
 **Configuration Changes:**
 
@@ -363,6 +436,7 @@ const IconComponent = Icons[action.icon as keyof typeof Icons];
 ## MVP Backend Development Workflow (#memorize)
 
 ### Phase 1: Local Development MVP (Week 1-2) - IN PROGRESS
+
 ```bash
 # ✅ .NET 8.0 SDK installed successfully
 # 🎯 CURRENT TASK: Issue #10 - Backend Foundation Setup
@@ -381,18 +455,21 @@ dotnet add package Microsoft.Identity.Web
 ```
 
 **Current Progress:**
+
 - ✅ Issue #10 started on feature/back-end branch
 - ✅ .NET SDK installation complete
 - 🔄 VS Code Admin restart for package installation privileges
 - 📋 Ready to create PortalAPI project structure
 
 **Critical Development Rules:**
+
 - **Use TypeScript interfaces as contracts** - Generate C# models from `src/types/portal.ts`
 - **Test immediately** - Use Thunder Client/Postman for each endpoint
 - **Frontend integration first** - Switch ServiceFactory to API mode early
 - **Authentication priority** - Implement auth before complex business logic
 
 ### Phase 2: Azure Deployment MVP (Week 3)
+
 ```bash
 # Manual Azure setup (before Terraform)
 az group create --name rg-portal-dev --location eastus
@@ -401,6 +478,7 @@ az webapp create --name portal-api-dev --resource-group rg-portal-dev
 ```
 
 **Deployment Checklist:**
+
 - [ ] Azure App Service for Web API
 - [ ] Azure SQL Database (Basic tier for MVP)
 - [ ] Azure AD app registration
@@ -408,6 +486,7 @@ az webapp create --name portal-api-dev --resource-group rg-portal-dev
 - [ ] Environment variables configuration
 
 ### Phase 3: Infrastructure as Code (Week 4)
+
 ```
 /infrastructure
 ├── terraform/
@@ -421,6 +500,7 @@ az webapp create --name portal-api-dev --resource-group rg-portal-dev
 ```
 
 **Terraform Integration Timeline:**
+
 - **Manual setup first** - Learn Azure resources and requirements
 - **Codify after validation** - Convert working infrastructure to Terraform
 - **Benefits**: Avoid over-engineering before MVP validation
@@ -428,16 +508,18 @@ az webapp create --name portal-api-dev --resource-group rg-portal-dev
 ### Backend Integration Points
 
 **Ready-to-Use Frontend Services:**
+
 ```typescript
 // Frontend already configured for instant backend integration
-ServiceFactory.createService<TodoItem>('tasks', mockTodos)
+ServiceFactory.createService<TodoItem>("tasks", mockTodos);
 // Automatically switches to /api/todos when backend available
 
-authService.login(credentials)  // Ready for C# auth endpoints
-apiClient.get<TodoItem[]>('/todos')  // Type-safe API calls
+authService.login(credentials); // Ready for C# auth endpoints
+apiClient.get<TodoItem[]>("/todos"); // Type-safe API calls
 ```
 
 **Environment Configuration:**
+
 ```bash
 # Frontend .env for backend integration
 VITE_API_BASE_URL=http://localhost:5000     # Local development
@@ -447,6 +529,7 @@ VITE_AZURE_TENANT_ID=your-azure-tenant-id
 ```
 
 ### Quality Gates for Backend Development (#memorize)
+
 - **Frontend tests must pass** - 46/46 tests maintain green status
 - **API integration testing** - Test ServiceFactory switch immediately
 - **Authentication flow validation** - Login/logout/token refresh complete
@@ -458,6 +541,7 @@ VITE_AZURE_TENANT_ID=your-azure-tenant-id
 ### MVP Development Issues Created (Issues #10-19)
 
 **Issue Management Workflow:**
+
 ```bash
 # 1. Start work on an issue
 git checkout -b feature/backend-foundation
@@ -473,6 +557,7 @@ git checkout -b feature/backend-foundation
 ```
 
 **Issue Organization:**
+
 - **Phase 1 (Issues #10-13)**: Local Development MVP
   - Backend Foundation Setup, Authentication, API Endpoints, Integration Testing
 - **Phase 2 (Issues #14-15)**: Azure Deployment MVP
@@ -483,18 +568,21 @@ git checkout -b feature/backend-foundation
   - Security & Performance, Scaling & Monitoring
 
 **Strategic Labels for Filtering:**
+
 - **Phase tracking**: `phase-1`, `phase-2`, `phase-3`, `phase-4`
 - **Component tracking**: `backend`, `frontend`, `infrastructure`
 - **Technology tracking**: `terraform`, `azure-ad`, `cicd`, `authentication`
 - **Quality tracking**: `security`, `performance`, `testing`, `monitoring`
 
 **Development Workflow Integration:**
+
 - Each issue contains actionable sub-tasks and acceptance criteria
 - Definition of Done specified for quality gates
 - Related frontend files referenced for integration context
 - Ready for PR linking and automated issue closure
 
 **Issue Progress Tracking:**
+
 ```bash
 # View issues by phase
 gh issue list --label "phase-1"

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PortalAPI.Data;
 using PortalAPI.Models;
+using PortalAPI.DTOs;
+using PortalAPI.Services.Interfaces;
 
 namespace PortalAPI.Controllers;
 
@@ -9,12 +9,12 @@ namespace PortalAPI.Controllers;
 [Route("api/[controller]")]
 public class TodoController : ControllerBase
 {
-    private readonly PortalDbContext _context;
+    private readonly ITodoService _todoService;
     private readonly ILogger<TodoController> _logger;
 
-    public TodoController(PortalDbContext context, ILogger<TodoController> logger)
+    public TodoController(ITodoService todoService, ILogger<TodoController> logger)
     {
-        _context = context;
+        _todoService = todoService;
         _logger = logger;
     }
 
@@ -24,10 +24,7 @@ public class TodoController : ControllerBase
     {
         try
         {
-            var todos = await _context.TodoItems
-                .OrderBy(t => t.CreatedAt)
-                .ToListAsync();
-
+            var todos = await _todoService.GetAllAsync();
             return Ok(todos);
         }
         catch (Exception ex)
@@ -43,7 +40,7 @@ public class TodoController : ControllerBase
     {
         try
         {
-            var todo = await _context.TodoItems.FindAsync(id);
+            var todo = await _todoService.GetByIdAsync(id);
 
             if (todo == null)
             {
@@ -61,16 +58,11 @@ public class TodoController : ControllerBase
 
     // POST: api/todo
     [HttpPost]
-    public async Task<ActionResult<TodoItem>> CreateTodo(TodoItem todo)
+    public async Task<ActionResult<TodoItem>> CreateTodo(TodoCreateDto todoDto)
     {
         try
         {
-            todo.Id = Guid.NewGuid().ToString();
-            todo.CreatedAt = DateTime.UtcNow;
-
-            _context.TodoItems.Add(todo);
-            await _context.SaveChangesAsync();
-
+            var todo = await _todoService.CreateAsync(todoDto);
             return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, todo);
         }
         catch (Exception ex)
@@ -91,21 +83,13 @@ public class TodoController : ControllerBase
 
         try
         {
-            _context.Entry(todo).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!await TodoExists(id))
+            var success = await _todoService.UpdateAsync(id, todo);
+            if (!success)
             {
                 return NotFound();
             }
-            else
-            {
-                throw;
-            }
+
+            return NoContent();
         }
         catch (Exception ex)
         {
@@ -120,14 +104,11 @@ public class TodoController : ControllerBase
     {
         try
         {
-            var todo = await _context.TodoItems.FindAsync(id);
-            if (todo == null)
+            var success = await _todoService.DeleteAsync(id);
+            if (!success)
             {
                 return NotFound();
             }
-
-            _context.TodoItems.Remove(todo);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -138,8 +119,4 @@ public class TodoController : ControllerBase
         }
     }
 
-    private async Task<bool> TodoExists(string id)
-    {
-        return await _context.TodoItems.AnyAsync(e => e.Id == id);
-    }
 }

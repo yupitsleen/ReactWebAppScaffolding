@@ -57,20 +57,20 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task CreateTodo_ReturnsCreatedTodo_WithValidData()
     {
         // Arrange
-        var newTodo = new TodoItem
+        var newTodoDto = new
         {
             Title = "Test Todo",
             Description = "Test Description",
             AssignedTo = "Test User",
-            Priority = Priority.High,
-            Status = TodoStatus.Pending,
+            Priority = "high",
+            Status = "pending",
             DueDate = DateTime.UtcNow.AddDays(7),
             Category = "Test Category",
             CreatedBy = "Test Creator"
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync("/api/todo", newTodo);
+        var response = await _client.PostAsJsonAsync("/api/todo", newTodoDto);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -78,10 +78,10 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 
         Assert.NotNull(createdTodo);
         Assert.False(string.IsNullOrEmpty(createdTodo.Id));
-        Assert.Equal(newTodo.Title, createdTodo.Title);
-        Assert.Equal(newTodo.Description, createdTodo.Description);
-        Assert.Equal(newTodo.Priority, createdTodo.Priority);
-        Assert.Equal(newTodo.Status, createdTodo.Status);
+        Assert.Equal(newTodoDto.Title, createdTodo.Title);
+        Assert.Equal(newTodoDto.Description, createdTodo.Description);
+        Assert.Equal(Priority.High, createdTodo.Priority);
+        Assert.Equal(TodoStatus.Pending, createdTodo.Status);
     }
 
     [Fact]
@@ -98,19 +98,19 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task UpdateTodo_ReturnsNoContent_WithValidData()
     {
         // Arrange - Create a todo first
-        var newTodo = new TodoItem
+        var createTodoDto = new
         {
             Title = "Original Title",
             Description = "Original Description",
             AssignedTo = "Test User",
-            Priority = Priority.Low,
-            Status = TodoStatus.Pending,
+            Priority = "low",
+            Status = "pending",
             DueDate = DateTime.UtcNow.AddDays(7),
             Category = "Test Category",
             CreatedBy = "Test Creator"
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/api/todo", newTodo);
+        var createResponse = await _client.PostAsJsonAsync("/api/todo", createTodoDto);
         var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoItem>();
 
         // Update the todo
@@ -128,19 +128,19 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task DeleteTodo_ReturnsNoContent_WhenTodoExists()
     {
         // Arrange - Create a todo first
-        var newTodo = new TodoItem
+        var createTodoDto = new
         {
             Title = "To Be Deleted",
             Description = "This will be deleted",
             AssignedTo = "Test User",
-            Priority = Priority.Medium,
-            Status = TodoStatus.Pending,
+            Priority = "medium",
+            Status = "pending",
             DueDate = DateTime.UtcNow.AddDays(7),
             Category = "Test Category",
             CreatedBy = "Test Creator"
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/api/todo", newTodo);
+        var createResponse = await _client.PostAsJsonAsync("/api/todo", createTodoDto);
         var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoItem>();
 
         // Act

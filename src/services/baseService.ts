@@ -4,32 +4,22 @@ import { appConfig } from '../data/configurableData'
 
 /**
  * Base service class for real API operations
- * Uses configurable navigation paths for API endpoints
+ * Uses explicit API endpoints for simplicity
  */
 export class BaseEntityService<T extends { id: string }> {
   protected entityName: string
-  protected navigationId: string
+  protected apiEndpoint: string
 
-  constructor(navigationId: string) {
-    this.navigationId = navigationId
-
-    // Get entity name from navigation config
-    const navItem = appConfig.navigation.find(nav => nav.id === navigationId)
-    this.entityName = navItem?.label || navigationId
+  constructor(entityName: string, apiEndpoint: string) {
+    this.entityName = entityName
+    this.apiEndpoint = apiEndpoint
   }
 
   /**
-   * Get API endpoint from navigation configuration
+   * Get API endpoint with optional additional path
    */
   protected getApiEndpoint(additionalPath: string = ''): string {
-    const navItem = appConfig.navigation.find(nav => nav.id === this.navigationId)
-    if (!navItem) {
-      throw new Error(`Navigation item '${this.navigationId}' not found in configuration`)
-    }
-
-    // Convert frontend path to API path (e.g., '/discussions' -> '/api/discussions')
-    const basePath = navItem.path === '/' ? '' : navItem.path
-    return `/api${basePath}${additionalPath}`
+    return `${this.apiEndpoint}${additionalPath}`
   }
 
   /**

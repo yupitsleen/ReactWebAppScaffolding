@@ -1,18 +1,27 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PortalAPI.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Priority
 {
+    [JsonPropertyName("low")]
     Low,
+    [JsonPropertyName("medium")]
     Medium,
+    [JsonPropertyName("high")]
     High
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TodoStatus
 {
+    [JsonPropertyName("pending")]
     Pending,
+    [JsonPropertyName("in-progress")]
     InProgress,
+    [JsonPropertyName("completed")]
     Completed
 }
 
