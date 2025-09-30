@@ -1,15 +1,22 @@
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { Typography, Card, CardContent, Chip, Box, Avatar, Button } from '@mui/material'
+import { discussions as initialDiscussions } from '../data/sampleData'
 import PageLayout from '../components/PageLayout'
-import { useData } from '../context/ContextProvider'
 import { usePageLoading } from '../hooks/usePageLoading'
+import type { Discussion } from '../types/portal'
 
 const Discussions = memo(() => {
   const [loading] = usePageLoading(false)
-  const { discussions, updateDiscussionStatus } = useData()
+  const [discussions, setDiscussions] = useState<Discussion[]>(initialDiscussions)
 
-  const handleToggleResolved = async (discussionId: string, currentStatus: boolean) => {
-    await updateDiscussionStatus(discussionId, !currentStatus)
+  const handleToggleResolved = (discussionId: string, currentStatus: boolean) => {
+    setDiscussions(prev =>
+      prev.map(discussion =>
+        discussion.id === discussionId
+          ? { ...discussion, resolved: !currentStatus }
+          : discussion
+      )
+    )
   }
 
   return (
