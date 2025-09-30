@@ -1,15 +1,14 @@
 import { memo } from 'react'
 import { Card, CardContent, Box } from '@mui/material'
+import { documents } from '../data/sampleData'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import ActionMenu from '../components/ActionMenu'
 import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
-import { useData } from '../context/ContextProvider'
 
 const Documents = memo(() => {
   const [loading] = usePageLoading(false)
-  const { documents } = useData()
   const { actions, statusConfig, fieldConfig } = appConfig
   const documentActions = actions.document
   const documentFields = fieldConfig.document

@@ -1,163 +1,4 @@
-### Configuration Extension Patterns (#memorize)
-
-- **Extend existing config** - Add to appConfig/statusConfig rather than creating new config objects
-- **Use type-safe config** - Ensure new config follows existing TypeScript interfaces
-- **Data-driven features** - If something can be configured in mockData.ts, do that instead of hardcoding
-- **Preserve existing structure** - Follow patterns in configurableData.ts for consistency
-- **Document config changes** - Update interface definitions when adding new config options
-
-### Session Management (#memorize)
-
-- **Maintain CURRENT_SESSION.md** - Create and update this file throughout development sessions
-- **Update session file with every significant change** - Track progress, decisions, and next steps
-- **Include recovery context** - File names modified, architectural decisions, current priorities
-- **Prepare for conversation compaction** - Thoroughly update session file when approaching limits
-- **Session file structure** - Current work, completed items, next priorities, architecture notes, modified files### Performance Considerations (#memorize)
-- **Always use React.memo** for new components - prevents unnecessary re-renders
-- **Memoize expensive calculations** - Use useMemo for data transformations
-- **Memoize callback functions** - Use useCallback for functions passed as props
-- **Avoid inline objects/arrays** - Extract to constants or memoize with useMemo
-- **Lazy load when appropriate** - Use React.lazy for large route components### TypeScript Best Practices (#memorize)
-- **Use existing interfaces** - Extend AppConfig, extend existing types rather than creating new ones
-- **Strict type checking** - No `any` types, use proper TypeScript
-- **Type-only imports** - Use `import type` for type imports due to verbatimModuleSyntax
-- **Interface over type** - Use `interface` for object shapes, `type` for unions
-- **Generic constraints** - Use `<T extends SomeInterface>` for reusable components### File Organization Patterns (#memorize)
-- **Use existing directory structure** - Don't create new folders unless absolutely necessary
-- **Follow naming conventions** - PascalCase for components, camelCase for hooks/utils
-- **Group related functionality** - Keep related files in same directory
-- **Avoid deep nesting** - Maximum 2-3 levels deep in src/
-- **Export from index files** - Use barrel exports for clean imports### Testing Philosophy (#memorize)
-- **Minimal, focused tests** - Test core functionality only, not edge cases or obvious behavior
-- **Quality over quantity** - 3-5 essential tests better than 20+ exhaustive tests
-- **Test critical paths** - Business logic, data transformations, error handling
-- **Skip obvious tests** - Don't test props passing, simple renders, or framework behavior
-- **One test file per major component/hook** - Keep test files concise and readable
-
-### .NET Backend Testing Guidelines (#memorize)
-
-#### xUnit Testing Framework
-
-- **Use xUnit for all .NET tests** - Industry standard, excellent async support
-- **WebApplicationFactory for integration tests** - Test complete HTTP pipeline
-- **In-memory database for testing** - UseInMemoryDatabase() for isolated test data
-- **Test structure**: Arrange-Act-Assert pattern with clear test names
-
-#### Essential Test Patterns
-
-```csharp
-public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
-{
-    private readonly HttpClient _client;
-
-    public TodoControllerTests(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                services.AddDbContext<PortalDbContext>(options =>
-                    options.UseInMemoryDatabase("InMemoryDbForTesting"));
-            });
-        });
-        _client = _factory.CreateClient();
-    }
-}
-```
-
-#### .NET Development Best Practices
-
-- **Entity Framework patterns** - Use DbContext dependency injection, async operations
-- **Service Layer Pattern** - Implement ITodoService interfaces for business logic separation
-- **Controller conventions** - Return ActionResult<T>, use proper HTTP status codes, keep controllers thin
-- **Model validation** - Use DataAnnotations ([Required], [RegularExpression], etc.) in DTOs
-- **Public Program class** - Add `public partial class Program { }` for testing access
-- **CORS configuration** - Configure for React development server (localhost:5173)
-- **Dependency Injection** - Register services with appropriate lifetime scopes (Scoped for Entity Framework)
-- **DTO Pattern** - Use DTOs for input validation and enum serialization handling
-
-#### Backend Testing Commands
-
-```bash
-dotnet test                    # Run all tests
-dotnet test --verbosity normal # Detailed test output
-dotnet build                   # Verify compilation
-dotnet run                     # Start API server (localhost:5276)
-```
-
-### ARM Architecture Development (#memorize)
-
-- **Windows ARM**: .NET SDK located at `/c/Program Files/dotnet/x64/dotnet.exe`
-- **PATH Configuration**: Export PATH="$PATH:/c/Program Files/dotnet/x64" for temporary fix
-- **Permanent Fix**: Add to system environment variables via Windows Settings
-- **Verification**: Use `dotnet --version` to confirm SDK accessibility
-- **Common Issue**: "dotnet command not found" in Git Bash on ARM machines
-- **Package Management**: May require NuGet source verification on ARM systems
-
-### Backend Testing Workflow (#memorize)
-
-- **Test-First Approach**: Implement tests immediately after creating controllers
-- **Quality Gate**: All PRs require passing tests (no exceptions)
-- **Testing Commands**: `dotnet test --verbosity normal` for detailed output
-- **Integration Focus**: Use WebApplicationFactory over unit tests for API endpoints
-- **Test Structure**: Arrange-Act-Assert with descriptive test method names
-- **Database Isolation**: Always use in-memory database for testing to avoid conflicts
-
-### Backend Architecture Patterns (#memorize)
-
-#### Service Layer Implementation
-- **Interface-First Design**: Create ITodoService before TodoService implementation
-- **Dependency Injection**: Register services with `builder.Services.AddScoped<IService, ServiceImpl>()`
-- **Controller Separation**: Controllers handle HTTP concerns, services handle business logic
-- **Structured Logging**: Use ILogger<T> in services for meaningful context
-- **Error Handling**: Centralize exception handling in service methods
-
-#### DTO Pattern for API Integration
-- **Input Validation**: Use DataAnnotations in DTOs ([Required], [RegularExpression])
-- **Enum Serialization**: Handle frontend/backend enum format mismatches in DTOs
-- **Business Logic**: Include conversion methods (ToTodoItem()) in DTOs
-- **Error Messages**: Provide clear validation error messages for API consumers
-
-#### Frontend-Backend Enum Strategy
-- **Problem**: Frontend uses lowercase/kebab-case ("high", "in-progress"), Backend uses PascalCase (Priority.High, TodoStatus.InProgress)
-- **Solution**: JsonStringEnumConverter with JsonPropertyName attributes for seamless conversion
-- **Pattern**: Keep frontend contracts stable, handle conversion on backend with attributes
-- **Implementation**: `[JsonPropertyName("in-progress")] InProgress` in enum definitions
-
-#### Repository Pattern Implementation (#memorize)
-- **Optional Enhancement**: Repository pattern provides domain-specific query methods beyond basic CRUD
-- **Architecture**: IRepository<T> → BaseRepository<T> → ITodoRepository → TodoRepository
-- **Domain Methods**: GetByStatusAsync(), GetOverdueAsync(), GetStatusSummaryAsync() for business queries
-- **When to Use**: Complex queries, analytics, multiple data sources, advanced caching
-- **When to Skip**: Simple CRUD operations work perfectly with Service → DbContext pattern
-- **DbContext IS Unit of Work**: No need for additional Unit of Work pattern - EF Core handles this
-- **DI Registration**: Register repositories with AddScoped<ITodoRepository, TodoRepository>()
-
-### Frontend-Backend Integration Patterns (#memorize)
-
-- **Explicit Over Dynamic**: Use direct API endpoint configuration instead of complex path derivation
-- **Environment Configuration**: `.env.local` changes require frontend dev server restart to take effect
-- **Cache Management**: Use `window.__APP_DEBUG__.clearPersistedData()` to clear localStorage during integration
-- **SDK Version Consistency**: Always use `global.json` to pin .NET SDK version for team consistency
-- **Integration Debugging**: Verify ServiceFactory → Service → ApiClient → Network request flow step by step
-- **Service Architecture**: Prefer constructor injection with explicit endpoints over runtime path computation
-- **State Cache Awareness**: localStorage persistence can mask integration progress - clear when switching modes
-
-### Complex Task Management (#memorize)
-
-- **Use TodoWrite tool proactively** for multi-step implementations
-- **Document before commit** - Update CLAUDE.md with new patterns before code PR
-- **Three-phase completion**: Update docs → Commit code → Update session file
-- **Recovery preparation**: Always update CURRENT_SESSION.md with sufficient context
-- **Session continuity**: Include environment state, running services, and decision points
-
-### Error Handling Patterns (#memorize)
-
-- **Use existing ErrorBoundary** - Don't create new error boundaries
-- **Graceful degradation** - Show fallback UI for missing data, don't crash
-- **User-friendly messages** - "Unable to load data" not "TypeError: undefined"
-- **Console.error for debugging** - Log technical details to console, not UI
-- **Validate at boundaries** - Check data at component entry points# CLAUDE.md
+# CLAUDE.md
 
 This file provides guidance to Claude Code when working with this React web application.
 
@@ -170,6 +11,7 @@ This file provides guidance to Claude Code when working with this React web appl
 - [Configuration System](#configuration-system) - Data-driven customization
 - [Available Utilities](#available-utilities) - Hooks, helpers, and services
 - [Smart Abstractions](#smart-abstractions) - Key reusable components
+- [Backend Development](#backend-development) - .NET Core API patterns
 - [Development Preferences](#development-preferences) - Coding standards and approach
 
 ## Quick Reference
@@ -177,126 +19,135 @@ This file provides guidance to Claude Code when working with this React web appl
 **Development Commands:**
 
 ```bash
-npm run dev     # Start development server (http://localhost:5173) - usually already running
+npm run dev     # Start dev server (localhost:5173) - usually already running
 npm run build   # Build for production
 npm run lint    # Run ESLint
+npm test        # Run frontend tests (40 tests)
+
+# Backend commands
+dotnet run      # Start API server (localhost:5276)
+dotnet test     # Run backend tests (6 integration tests)
+dotnet build    # Verify compilation
 ```
 
-**Tech Stack:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI + React Router
+**Tech Stack:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI + React Router  
+**Backend Stack:** .NET 8.0 + ASP.NET Core + Entity Framework Core + SQLite
 
 ## Project Architecture
 
-### Core Structure
+### Frontend Structure
 
 ```
 src/
-├── App.tsx              # Main app with routing
-├── main.tsx             # Entry point
-├── components/          # Reusable UI (ErrorBoundary, Loading, PageLayout)
-├── pages/               # Route components (Home, Tasks, Payments, etc.)
-├── hooks/               # Custom hooks (useDebounce, usePageLoading, etc.)
-├── context/             # React Context for state management
-├── services/            # API and auth services
+├── data/                # mockData.ts (config), sampleData.ts (data)
+├── components/          # PageLayout, FieldRenderer, StatusChip
+├── pages/               # Route components
+├── hooks/               # useDebounce, usePageLoading, useDataOperations
+├── services/            # API client, auth, ServiceFactory
 ├── theme/               # Centralized theme provider
-├── types/               # TypeScript definitions
-├── utils/               # Helpers and color management
-└── data/                # Mock data and configuration
+└── types/               # TypeScript interfaces
+```
+
+### Backend Structure
+
+```
+PortalAPI/
+├── Controllers/         # Slim HTTP request handlers
+├── Services/            # Business logic (ITodoService)
+├── Repositories/        # Optional domain queries (ITodoRepository)
+├── Models/              # Entity definitions
+├── DTOs/                # API contracts with validation
+├── Data/                # DbContext and migrations
+└── Tests/               # Integration tests (WebApplicationFactory)
 ```
 
 ### Key Patterns
 
-- **PageLayout Component**: Use `<PageLayout pageId="documents" loading={loading}>{content}</PageLayout>` for all pages
-- **Configuration-Driven**: All UI elements configurable through `src/data/mockData.ts`
-- **Theme-Based Styling**: NO inline styles, all styling through `src/theme/portalTheme.ts`
-- **Performance Optimized**: React.memo, useMemo/useCallback, lazy loading
+- **Configuration-Driven** - 90% customization through `src/data/configurableData.ts`
+- **Service Layer** - Controllers → Services → Repositories → DbContext
+- **Theme-Based Styling** - NO inline styles, all through `src/theme/portalTheme.ts`
+- **Performance Optimized** - React.memo, useMemo/useCallback, lazy loading
 
 ## Critical Development Rules
 
 ### Git Workflow (#memorize)
 
-````bash
-# 1. Work on current feature branch (user creates fresh branches from main)
-# Current branch already created from latest main
-
-# 2. Make focused commits with clear messages
+```bash
+# Work on current feature branch (user creates from main)
 git commit -m "Add field renderer configuration system"
 # NOT: "Add field rendering with Claude assistance"
 
-# 3. Push and create PR when feature is complete
+# Push and create PR when complete
 git push origin [current-branch-name]
 # Then create PR with descriptive title and summary
 
-# Note: User approves/merges PR and creates next fresh branch
-# Next session starts with user-created fresh branch from main
+# User approves/merges PR and creates next fresh branch
+```
 
 **Commit Standards:**
 
-- Use imperative mood: "Add", "Fix", "Refactor"
-- Be specific: "Extract FieldRenderer switch to config"
+- Imperative mood: "Add", "Fix", "Refactor"
+- Be specific about what changed
 - No co-author attribution (#memorize)
 - Include scope: "components:", "hooks:", "services:"
-- Avoid excessive comments in code - only comment complex logic
+- Minimal comments - only for complex logic
 
 ### Quality Gates (#memorize)
 
-- **Always run tests and linter** after each working change
-- **No commits without passing tests** (40/40 ✓ required)
-- **Dev server assumed running** on localhost:5173 for real-time feedback
-- **Add unit tests** for crucial functionality before committing - minimal, focused tests only
-- **Avoid excessive comments** - Only comment complex business logic, not self-explanatory code
+- **Always run tests** after each working change
+- **No commits without passing tests** - Frontend: 40/40 ✓, Backend: 6/6 ✓
+- **Dev server assumed running** - localhost:5173 for real-time feedback
+- **Minimal, focused tests** - Test core functionality only
+- **Avoid excessive comments** - Code should be self-explanatory
+
+### Session Management (#memorize)
+
+- **Maintain CURRENT_SESSION.md** - Update throughout development
+- **Track progress and decisions** - Modified files, architecture choices, next steps
+- **Prepare for compaction** - Thorough updates when approaching conversation limits
+- **Session structure** - Current work, completed items, next priorities, modified files, recovery context
 
 ## Design System
 
 ### Color Management (CRITICAL)
 
-This app uses a centralized CSS custom properties system:
+Centralized CSS custom properties system:
 
-**CSS Variables Available:**
+**CSS Variables:**
 
 - `--primary-color` (#312E81 - Dark Purple)
 - `--secondary-color` (#F59E0B - Yellow)
 - `--background-color` (#F3F4F6 - Subdued Purple)
-- `--text-primary`, `--text-secondary`, `--border-color`
 
 **Live Testing (Browser Console):**
 
 ```javascript
-setThemeColor("primary-color", "#d32f2f"); // Test red
-applyColorPreset("blue"); // Apply blue preset
-applyColorPreset("dark-purple"); // Back to default
-````
+setThemeColor("primary-color", "#d32f2f");
+applyColorPreset("blue");
+```
 
-**Configuration Changes:**
+**Configuration:**
 
 ```javascript
-// Edit src/data/mockData.ts
+// src/data/mockData.ts
 theme: {
-  primaryColor: "#312E81",  // Change this to update entire app
+  primaryColor: "#312E81",
   secondaryColor: "#F59E0B"
 }
 ```
 
-### Visual Principles
-
-- **Desktop-First Design** - Sophisticated interfaces, not mobile-constrained
-- **Flat, Geometric** - No rounded edges (borderRadius: 0), no shadows
-- **Subdued Color Interactions** - Hover effects use color changes only
-- **Maximum Information Density** - Minimal whitespace, compact layouts
-- **Purple-Yellow-Green Triadic Harmony** - Mature, sophisticated tones
-
-### Styling Rules
+### Styling Rules (#memorize)
 
 - **NEVER use inline styles** - ALL styling through theme provider
-- **Use semantic CSS classes** - `header-section`, `dashboard-section`, `card-header`
-- **Inherit from theme** - Components get styling from Material-UI overrides
-- **All text centered by default** - Discussion content left-aligned for readability
+- **Use semantic CSS classes** - `header-section`, `dashboard-section`
+- **Desktop-first design** - Sophisticated layouts, minimal whitespace
+- **Flat, geometric aesthetic** - No rounded edges, no shadows
 
 ## Configuration System
 
 ### Action Buttons
 
 ```javascript
-// All buttons configurable in mockData.ts
 appConfig.actions.document = {
   icon: "Download",
   variant: "contained",
@@ -307,19 +158,17 @@ appConfig.actions.document = {
 ### Status/Priority System
 
 ```javascript
-// All status colors configurable
-statusConfig.priority[todo.priority].color; // Instead of hardcoded logic
+statusConfig.priority[todo.priority].color;
 appConfig.statusConfig.priority.high = { color: "#dc2626", label: "High" };
 ```
 
 ### Field Display Configuration
 
 ```javascript
-// Controls what fields show and how
 appConfig.fieldConfig.todoItem = {
   primary: ["title"], // Prominent display
   secondary: ["priority"], // As chips
-  hidden: ["internalNotes"], // Excluded from display
+  hidden: ["internalNotes"], // Excluded
 };
 ```
 
@@ -328,24 +177,16 @@ appConfig.fieldConfig.todoItem = {
 ### Custom Hooks
 
 - `useDebounce(value, delay)` - Debounce for search/input
-- `useToggle(initial)` - Boolean state toggle
-- `usePageLoading(delay?)` - Page-level loading with configurable delays
-- `useCurrentPage()` - Auto-detect current page config from URL
-- `useDocumentTitle(title)` - Dynamic browser tab titles
-
-### Helper Functions
-
-- `formatDate(date)`, `debounce(fn, delay)`, `classNames(...)`
-- `generateId()`, `isValidEmail(email)`
+- `usePageLoading(delay?)` - Page-level loading states
+- `useCurrentPage()` - Auto-detect page config from URL
+- `useDataOperations(data)` - Generic filtering, sorting, pagination
 
 ### Services
 
 ```javascript
-// API Client
 import { apiClient } from "../services/api";
 await apiClient.get("/todos");
 
-// Authentication
 import { authService } from "../services/auth";
 await authService.login(credentials);
 ```
@@ -354,244 +195,238 @@ await authService.login(credentials);
 
 ### PageLayout Component
 
-Eliminates boilerplate for all pages:
-
 ```tsx
 <PageLayout pageId="documents" loading={loading}>
   {content}
 </PageLayout>
 ```
 
-- Auto title/description lookup from `appConfig.navigation`
+- Auto title/description from navigation config
 - Built-in loading wrapper
 - Consistent layout patterns
 
-### Icon Mapping
+### FieldRenderer Component
 
-```javascript
-// All icons configurable in mockData.ts
-appConfig.theme.iconMappings = {
-  download: "Download",
-  edit: "Edit"
-};
+Handles all field types automatically (dates, currency, status, priority)
 
-// Dynamic loading in components
-const IconComponent = Icons[action.icon as keyof typeof Icons];
+### ServiceFactory
+
+```typescript
+// Automatically switches between mock and API
+ServiceFactory.createService<TodoItem>("tasks", mockTodos);
 ```
 
-## Future Extensibility Roadmap
+## Backend Development
 
-### Planned Abstractions (SOLID Principles)
+### .NET Architecture Patterns (#memorize)
 
-1. **Generic Data Display** - `<DataCard>` and `<DataList>` components for any data structure
-2. **Abstract Status System** - `<StatusChip>` driven by configuration
-3. **Field Rendering System** - `<FieldRenderer>` handles different field types automatically
-4. **Generic Filtering/Sorting** - Reusable `useDataFilter` and `useDataSort` hooks
+#### Service Layer Implementation
 
-### Backend Integration Ready
+```csharp
+// Interface-first design
+public interface ITodoService {
+    Task<IEnumerable<TodoItem>> GetAllAsync();
+    Task<TodoItem> CreateAsync(TodoCreateDto dto);
+}
 
-- **API Client** - Ready for C# Web API integration
-- **Auth Service** - Azure AD integration prepared
-- **Environment Config** - Backend endpoint configuration
-- **Type Safety** - TypeScript interfaces can generate C# models
+// Registration in Program.cs
+builder.Services.AddScoped<ITodoService, TodoService>();
+```
+
+#### Service Creation Strategy (#memorize)
+- **Explicit Service Creation**: Direct instantiation based on implementation status in services/index.ts
+- **Mock for Unimplemented**: Always use MockEntityService for entities without backend (Documents, Discussions)
+- **API for Implemented**: Always use BaseEntityService for entities with working backend (Tasks)
+- **Fail Fast Principle**: If production API fails, show errors rather than mock data fallback
+- **Clean Separation**: No mock dependencies in production BaseEntityService code
+
+#### DTO Pattern for API Integration
+
+```csharp
+public class TodoCreateDto {
+    [Required]
+    [RegularExpression(@"^(low|medium|high)$")]
+    public string Priority { get; set; } = string.Empty;
+}
+```
+
+#### Controller Conventions
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class TodoController : ControllerBase {
+    private readonly ITodoService _service;
+
+    public TodoController(ITodoService service) {
+        _service = service;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TodoItem>>> GetAll() {
+        return Ok(await _service.GetAllAsync());
+    }
+}
+```
+
+### Frontend-Backend Integration (#memorize)
+
+#### Enum Serialization Strategy
+
+**Problem:** Frontend sends lowercase ("high", "in-progress"), Backend expects PascalCase enums
+
+**Solution:**
+
+```csharp
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Priority {
+    [JsonPropertyName("low")] Low,
+    [JsonPropertyName("medium")] Medium,
+    [JsonPropertyName("high")] High
+}
+```
+
+#### Integration Patterns
+
+- **Explicit endpoints** - Direct API paths over complex derivation
+- **Environment configuration** - `.env.local` requires dev server restart
+- **Cache management** - `window.__APP_DEBUG__.clearPersistedData()` for localStorage
+- **SDK version consistency** - Use `global.json` to pin .NET SDK
+
+### Testing Strategy (#memorize)
+
+#### xUnit Integration Tests
+
+```csharp
+public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>> {
+    private readonly HttpClient _client;
+
+    public TodoControllerTests(WebApplicationFactory<Program> factory) {
+        _factory = factory.WithWebHostBuilder(builder => {
+            builder.ConfigureServices(services => {
+                services.AddDbContext<PortalDbContext>(options =>
+                    options.UseInMemoryDatabase("TestDb"));
+            });
+        });
+        _client = _factory.CreateClient();
+    }
+}
+```
+
+#### Testing Principles
+
+- **WebApplicationFactory** - Test complete HTTP pipeline
+- **In-memory database** - Isolated test data
+- **Arrange-Act-Assert** - Clear test structure
+- **Quality gate** - All PRs require passing tests
+
+### Repository Pattern (Optional) (#memorize)
+
+```csharp
+// Generic CRUD
+public interface IRepository<T> where T : class {
+    Task<IEnumerable<T>> GetAllAsync();
+    Task<T?> GetByIdAsync(string id);
+}
+
+// Domain-specific queries
+public interface ITodoRepository : IRepository<TodoItem> {
+    Task<IEnumerable<TodoItem>> GetByStatusAsync(TodoStatus status);
+    Task<IEnumerable<TodoItem>> GetOverdueAsync();
+}
+```
+
+**When to use:**
+
+- Complex domain queries
+- Analytics and reporting
+- Multiple data sources
+
+**When to skip:**
+
+- Simple CRUD operations work with Service → DbContext
+
+**Note:** DbContext IS Unit of Work - no additional pattern needed
+
+### ARM Architecture (#memorize)
+
+- .NET SDK location: `/c/Program Files/dotnet/x64/dotnet.exe`
+- PATH fix: `export PATH="$PATH:/c/Program Files/dotnet/x64"`
+- Verification: `dotnet --version`
 
 ## Development Preferences
 
-- **Be concise** - Keep responses short and focused
-- **One feature at a time** - Maintain working state between changes
-- **Assume dev server running** - Changes visible at localhost:5173 for immediate feedback
+- **Be concise** - Short, focused responses
+- **One feature at a time** - Maintain working state
+- **Assume dev server running** - Changes visible at localhost:5173
 - **Configuration over code** - Prefer data-driven solutions
-- **Abstraction first** - Ask "Can this be configured instead of coded?"
-- **Minimal comments** - Only comment complex logic, not self-explanatory code
-- **Minimal tests** - Write only essential tests for core functionality, not exhaustive test suites
-- **Incremental changes** - Make small changes, test, then continue - avoid large refactors
+- **Abstraction first** - Ask "Can this be configured?"
+- **Minimal comments** - Only for complex logic
+- **Minimal tests** - 3-5 essential tests, not exhaustive suites
+- **Incremental changes** - Small changes, test, continue
 
-### Loading System
+### Complex Task Management (#memorize)
 
-- Use `LoadingWrapper` for async content
-- Use `usePageLoading` hook for page-level loading
-- No artificial delays - real async operations only
+- **Use TodoWrite tool** for multi-step implementations
+- **Document before commit** - Update CLAUDE.md with new patterns
+- **Three-phase completion** - Update docs → Commit code → Update session
+- **Recovery preparation** - Update CURRENT_SESSION.md with context
 
-### Error Handling
+### Configuration Extension (#memorize)
 
-- Error boundaries catch and display user-friendly messages
-- TypeScript strict mode with proper type-only imports
-- Graceful degradation for missing data or failed requests
+- **Extend existing config** - Add to appConfig/statusConfig
+- **Use type-safe config** - Follow existing TypeScript interfaces
+- **Data-driven features** - Configure in mockData.ts, not hardcode
+- **Document config changes** - Update interface definitions
 
-## Backend Strategy
+### TypeScript Best Practices (#memorize)
 
-### Recommended Stack
+- **Use existing interfaces** - Extend, don't create new
+- **Strict type checking** - No `any` types
+- **Type-only imports** - Use `import type` (verbatimModuleSyntax)
+- **Interface over type** - Objects use `interface`, unions use `type`
 
-- **C# and .NET Core** - Excellent VS Code support, enterprise-ready
-- **Azure Active Directory** - Frontend already structured for integration
-- **SQLite for development** - Migrate to SQL Server for production
-- **VS Code Extensions**: C# Dev Kit, Azure Tools, REST Client
+### Performance Considerations (#memorize)
 
-### Alternative Considerations
+- **Always use React.memo** for new components
+- **Memoize calculations** - useMemo for data transformations
+- **Memoize callbacks** - useCallback for functions as props
+- **Avoid inline objects/arrays** - Extract or memoize
 
-- **Node.js + Express** - Same language as frontend (TypeScript)
-- **Auth0 or Firebase** - More flexible authentication providers
-- **PostgreSQL** - More robust than SQLite for production
+### File Organization (#memorize)
 
-## MVP Backend Development Workflow (#memorize)
+- **Use existing structure** - Don't create new folders unnecessarily
+- **Naming conventions** - PascalCase for components, camelCase for hooks/utils
+- **Avoid deep nesting** - Maximum 2-3 levels in src/
+- **Barrel exports** - Use index files for clean imports
 
-### Phase 1: Local Development MVP (Week 1-2) - IN PROGRESS
+### Error Handling (#memorize)
 
-```bash
-# ✅ .NET 8.0 SDK installed successfully
-# 🎯 CURRENT TASK: Issue #10 - Backend Foundation Setup
+- **Use existing ErrorBoundary** - Don't create new ones
+- **Graceful degradation** - Show fallback UI, don't crash
+- **User-friendly messages** - "Unable to load data" not "TypeError"
+- **Console.error for debugging** - Technical details to console only
 
-# 1. Create C# Web API project
-dotnet new webapi -n PortalAPI
-cd PortalAPI
+## GitHub Issue Tracking (#memorize)
 
-# 2. Install essential packages
-dotnet add package Microsoft.EntityFrameworkCore.Sqlite
-dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
-dotnet add package Microsoft.Identity.Web
-
-# 3. Generate models from TypeScript interfaces
-# Use src/types/portal.ts as reference for C# model creation
-```
-
-**Current Progress:**
-
-- ✅ Issue #10 started on feature/back-end branch
-- ✅ .NET SDK installation complete
-- 🔄 VS Code Admin restart for package installation privileges
-- 📋 Ready to create PortalAPI project structure
-
-**Critical Development Rules:**
-
-- **Use TypeScript interfaces as contracts** - Generate C# models from `src/types/portal.ts`
-- **Test immediately** - Use Thunder Client/Postman for each endpoint
-- **Frontend integration first** - Switch ServiceFactory to API mode early
-- **Authentication priority** - Implement auth before complex business logic
-
-### Phase 2: Azure Deployment MVP (Week 3)
+### Issue Workflow
 
 ```bash
-# Manual Azure setup (before Terraform)
-az group create --name rg-portal-dev --location eastus
-az sql server create --name portal-sql-dev --resource-group rg-portal-dev
-az webapp create --name portal-api-dev --resource-group rg-portal-dev
-```
-
-**Deployment Checklist:**
-
-- [ ] Azure App Service for Web API
-- [ ] Azure SQL Database (Basic tier for MVP)
-- [ ] Azure AD app registration
-- [ ] Static Web Apps for React frontend
-- [ ] Environment variables configuration
-
-### Phase 3: Infrastructure as Code (Week 4)
-
-```
-/infrastructure
-├── terraform/
-│   ├── main.tf              # Main Azure resources
-│   ├── variables.tf         # Environment configuration
-│   ├── modules/
-│   │   ├── app-service/     # Web API hosting
-│   │   ├── database/        # SQL Database
-│   │   └── static-web-app/  # React frontend
-└── scripts/deploy.sh        # Automated deployment
-```
-
-**Terraform Integration Timeline:**
-
-- **Manual setup first** - Learn Azure resources and requirements
-- **Codify after validation** - Convert working infrastructure to Terraform
-- **Benefits**: Avoid over-engineering before MVP validation
-
-### Backend Integration Points
-
-**Ready-to-Use Frontend Services:**
-
-```typescript
-// Frontend already configured for instant backend integration
-ServiceFactory.createService<TodoItem>("tasks", mockTodos);
-// Automatically switches to /api/todos when backend available
-
-authService.login(credentials); // Ready for C# auth endpoints
-apiClient.get<TodoItem[]>("/todos"); // Type-safe API calls
-```
-
-**Environment Configuration:**
-
-```bash
-# Frontend .env for backend integration
-VITE_API_BASE_URL=http://localhost:5000     # Local development
-VITE_API_BASE_URL=https://portal-api.azurewebsites.net  # Production
-VITE_AZURE_CLIENT_ID=your-azure-client-id
-VITE_AZURE_TENANT_ID=your-azure-tenant-id
-```
-
-### Quality Gates for Backend Development (#memorize)
-
-- **Frontend tests must pass** - 46/46 tests maintain green status
-- **API integration testing** - Test ServiceFactory switch immediately
-- **Authentication flow validation** - Login/logout/token refresh complete
-- **Error handling verification** - Graceful API failure management
-- **TypeScript contracts honored** - C# models match portal.ts interfaces
-
-## GitHub Issue Tracking System (#memorize)
-
-### MVP Development Issues Created (Issues #10-19)
-
-**Issue Management Workflow:**
-
-```bash
-# 1. Start work on an issue
+# Start work
 git checkout -b feature/backend-foundation
-# Reference: Issue #10 - Backend Foundation Setup
+# Reference: Issue #10
 
-# 2. Link PR to issue (include in PR description)
+# Link PR to issue (in PR description)
 "Closes #10" or "Fixes #10"
 
-# 3. Track progress by updating issue checkboxes
-# Each issue has detailed sub-tasks for granular tracking
-
-# 4. Issue automatically closes when PR merges
+# Issue auto-closes when PR merges
 ```
 
-**Issue Organization:**
+### Issue Organization
 
-- **Phase 1 (Issues #10-13)**: Local Development MVP
-  - Backend Foundation Setup, Authentication, API Endpoints, Integration Testing
-- **Phase 2 (Issues #14-15)**: Azure Deployment MVP
-  - Infrastructure Setup, Frontend Deployment
-- **Phase 3 (Issues #16-17)**: Infrastructure as Code
-  - Terraform Implementation, CI/CD Pipeline
-- **Phase 4 (Issues #18-19)**: Production Hardening
-  - Security & Performance, Scaling & Monitoring
+- **Phase 1 (#10-13)** - Local Development MVP
+- **Phase 2 (#14-15)** - Azure Deployment MVP
+- **Phase 3 (#16-17)** - Infrastructure as Code
+- **Phase 4 (#18-19)** - Production Hardening
 
-**Strategic Labels for Filtering:**
-
-- **Phase tracking**: `phase-1`, `phase-2`, `phase-3`, `phase-4`
-- **Component tracking**: `backend`, `frontend`, `infrastructure`
-- **Technology tracking**: `terraform`, `azure-ad`, `cicd`, `authentication`
-- **Quality tracking**: `security`, `performance`, `testing`, `monitoring`
-
-**Development Workflow Integration:**
-
-- Each issue contains actionable sub-tasks and acceptance criteria
-- Definition of Done specified for quality gates
-- Related frontend files referenced for integration context
-- Ready for PR linking and automated issue closure
-
-**Issue Progress Tracking:**
-
-```bash
-# View issues by phase
-gh issue list --label "phase-1"
-
-# View all backend-related issues
-gh issue list --label "backend"
-
-# Check current MVP progress
-gh issue list --milestone "Week 1-2"
-```
-
-This scaffold provides a solid foundation for any React application with enterprise-grade patterns, extensibility, and comprehensive project tracking.
+This scaffold provides a production-ready foundation for React applications with enterprise-grade patterns and comprehensive backend integration.
