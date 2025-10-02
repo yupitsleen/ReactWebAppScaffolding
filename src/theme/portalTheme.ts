@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import type { ThemeConfig } from '../types/portal'
+import { layoutClasses } from './layoutClasses'
 
 // Inject CSS custom properties for dynamic color management
 const injectCSSVariables = (themeConfig: ThemeConfig) => {
@@ -141,6 +142,10 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
             boxShadow: 'none',
             borderColor: 'var(--primary-color)',
             backgroundColor: themeConfig.mode === 'light' ? 'rgba(49, 46, 129, 0.02)' : 'rgba(49, 46, 129, 0.1)',
+          },
+          '&.completed': {
+            opacity: 0.6,
+            transition: 'opacity 0.3s ease',
           },
         },
       },
@@ -336,6 +341,24 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiBox: {
       styleOverrides: {
         root: {
+          // Layout classes from layoutClasses.ts
+          '&.flex-row': layoutClasses.flexRow,
+          '&.flex-row-wrap': layoutClasses.flexRowWrap,
+          '&.flex-column': layoutClasses.flexColumn,
+          '&.empty-state': layoutClasses.emptyState,
+          '&.actions-right': layoutClasses.actionsRight,
+          '&.section-spacing': layoutClasses.sectionSpacing,
+          // Spacing utilities
+          '&.spacing-sm': layoutClasses.spacingSm,
+          '&.spacing-top-sm': layoutClasses.spacingTopSm,
+          '&.spacing-bottom-sm': layoutClasses.spacingBottomSm,
+          '&.spacing-md': layoutClasses.spacingMd,
+          '&.spacing-top-md': layoutClasses.spacingTopMd,
+          '&.spacing-bottom-md': layoutClasses.spacingBottomMd,
+          '&.spacing-lg': layoutClasses.spacingLg,
+          '&.spacing-top-lg': layoutClasses.spacingTopLg,
+          '&.spacing-bottom-lg': layoutClasses.spacingBottomLg,
+          // Existing section classes
           '&.dashboard-section': {
             marginBottom: '48px',
             textAlign: 'center',

@@ -83,10 +83,10 @@ const Tasks = memo(() => {
 
   return (
     <PageLayout loading={loading}>
-      <Box sx={{ mt: 3 }}>
+      <Box className="spacing-top-lg">
         {/* Sort and Filter Controls */}
         {todos.length > 0 && (
-          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Box className="flex-row-wrap" sx={{ mb: 3 }}>
             <SortIcon color="action" />
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel>Sort by</InputLabel>
@@ -114,7 +114,7 @@ const Tasks = memo(() => {
                 <MenuItem value="desc">Descending</MenuItem>
               </Select>
             </FormControl>
-            <Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
+            <Box className="actions-right">
               <Button
                 variant={hideCompleted ? "contained" : "outlined"}
                 size="small"
@@ -137,7 +137,7 @@ const Tasks = memo(() => {
         )}
 
         {todos.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Box className="empty-state">
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No tasks yet
             </Typography>
@@ -150,13 +150,9 @@ const Tasks = memo(() => {
           const isCompleted = todo.status === 'completed'
 
           return (
-            <Card key={todo.id} sx={{
-              mb: 2,
-              opacity: isCompleted ? 0.6 : 1,
-              transition: 'opacity 0.3s ease'
-            }}>
+            <Card key={todo.id} className={isCompleted ? 'completed' : ''} sx={{ mb: 2 }}>
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                <Box className="flex-row" sx={{ alignItems: 'flex-start' }}>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -183,7 +179,7 @@ const Tasks = memo(() => {
                       variant="secondary"
                       isCompleted={isCompleted}
                     />
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <Box className="flex-row-wrap" sx={{ justifyContent: 'center', gap: 1 }}>
                       {todoFields.secondary.map(field => (
                         <FieldRenderer
                           key={field}
