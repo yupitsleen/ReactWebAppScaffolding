@@ -1,196 +1,71 @@
-# Suggested Updates to CLAUDE.md
+# CLAUDE.md Update Suggestions
 
-**Date:** 2025-10-02
-**Based on:** Session on frontend polish and API integration refinements
-
----
+**Date:** 2025-10-02  
+**Based on:** Frontend polish and API integration refinements
 
 ## 1. Update Test Counts
 
-**Location:** Quick Reference section
+**Location:** Quick Reference → Development Commands
 
-**Current:**
+**Change:**
+
 ```bash
-npm test        # Run frontend tests (40 tests)
-dotnet test     # Run backend tests (6 integration tests)
+npm test        # Run frontend tests (56 tests)  # was 40
 ```
-
-**Suggested:**
-```bash
-npm test        # Run frontend tests (51 tests)
-dotnet test     # Run backend tests (6 integration tests)
-```
-
-**Reason:** Frontend test count increased from 40 to 51 with new state persistence tests
 
 ---
 
-## 2. Add Section: State Persistence Pattern
+## 2. Add State Persistence Pattern
 
-**Location:** After "Available Utilities" section
+**Location:** After Available Utilities
 
-**Add New Section:**
+**Add:**
 
 ```markdown
-## State Persistence Patterns (#memorize)
+### State Persistence Pattern (#memorize)
 
-### localStorage Integration
-
-**Pattern for UI preferences:**
-
-```typescript
+**localStorage for UI preferences:**
+\`\`\`typescript
 // Lazy initialization from storage
-const [state, setState] = useState<boolean>(() =>
-  getFromStorage('storage_key', defaultValue)
+const [hideCompleted, setHideCompleted] = useState<boolean>(() =>
+getFromStorage('tasks_hideCompleted', false)
 )
 
-// Automatic persistence on change
+// Auto-persist on change
 useEffect(() => {
-  setToStorage('storage_key', state)
-}, [state])
-```
+setToStorage('tasks_hideCompleted', hideCompleted)
+}, [hideCompleted])
+\`\`\`
 
-**Benefits:**
-- Instant UI with cached values
-- Automatic persistence
-- Type-safe with explicit types
-- Survives page navigation and refresh
-
-**Common Use Cases:**
-- Filter states (hide completed, search terms)
-- Sort preferences
-- View mode (grid/list)
-- Collapsed/expanded sections
-
-**Storage Keys Convention:**
-- Format: `{page}_{setting}` (e.g., `tasks_hideCompleted`)
-- Prefix with page name for organization
-- Use camelCase for setting name
+**Use cases:** Filter states, sort preferences, view modes, collapsed sections  
+**Storage keys:** Format as `{page}_{setting}` (e.g., `tasks_hideCompleted`)
 ```
 
 ---
 
-## 3. Add Section: API Integration Testing
+## 3. Add Custom JSON Converters
 
-**Location:** Backend Development section, after Testing Strategy
+**Location:** Backend Development → Frontend-Backend Integration
 
-**Add Subsection:**
-
-```markdown
-### Integration Test JSON Configuration (#memorize)
-
-**Pattern for matching API serialization:**
-
-```csharp
-private readonly JsonSerializerOptions _jsonOptions;
-
-public TestClass(WebApplicationFactory<Program> factory)
-{
-    // ... factory setup ...
-
-    // Configure JSON options to match API
-    _jsonOptions = new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true
-    };
-    _jsonOptions.Converters.Add(new PriorityConverter());
-    _jsonOptions.Converters.Add(new TodoStatusConverter());
-}
-
-// Use in all deserialization calls
-var result = await response.Content.ReadFromJsonAsync<TodoItem>(_jsonOptions);
-```
-
-**Critical:** Test client must use same JSON converters as API to properly deserialize responses.
-
-**Common Issue:** Forgetting to pass `_jsonOptions` causes enum deserialization failures.
-```
-
----
-
-## 4. Update DTO Pattern Section
-
-**Location:** Backend Development section
-
-**Add to existing DTO Pattern:**
+**Add after Enum Serialization Strategy:**
 
 ```markdown
-#### Update DTO Pattern
+#### Custom JSON Converters (#memorize)
 
-```csharp
-public class TodoUpdateDto
-{
-    // All fields nullable for partial updates
-    public string? Title { get; set; }
-    public string? Status { get; set; }
-
-    // Apply changes to existing entity
-    public void ApplyToTodoItem(TodoItem todo)
-    {
-        if (Title != null) todo.Title = Title;
-        if (Status != null) todo.Status = ParseStatus(Status);
-        // ... other fields
-    }
-
-    private static TodoStatus ParseStatus(string status) { ... }
+**When JsonPropertyName fails:**
+\`\`\`csharp
+public class TodoStatusConverter : JsonConverter<TodoStatus> {
+public override TodoStatus Read(ref Utf8JsonReader reader, ...) {
+return reader.GetString()?.ToLower() switch {
+"pending" => TodoStatus.Pending,
+"in-progress" => TodoStatus.InProgress,
+"completed" => TodoStatus.Completed,
+\_ => TodoStatus.Pending
+};
 }
-```
 
-**Benefits:**
-- Supports partial updates
-- Client doesn't need to send entire object
-- Immutable fields (ID, CreatedAt) protected
-- Validation on changed fields only
-
-**Controller Pattern:**
-```csharp
-[HttpPut("{id}")]
-public async Task<ActionResult<TodoItem>> UpdateTodo(string id, TodoUpdateDto dto)
-{
-    var updated = await _service.UpdateAsync(id, dto);
-    return updated == null ? NotFound() : Ok(updated);
-}
-```
-
-**Why return entity:** Enables frontend to update state without refetch (reduces API calls).
-```
-
----
-
-## 5. Add Section: Custom JSON Converters
-
-**Location:** Backend Development → Integration Patterns
-
-**Add New Subsection:**
-
-```markdown
-### Custom JSON Converters for Enums (#memorize)
-
-**Problem:** `JsonPropertyName` attribute doesn't work reliably with enum serialization
-
-**Solution:** Custom `JsonConverter<T>` implementations
-
-```csharp
-public class TodoStatusConverter : JsonConverter<TodoStatus>
-{
-    // Deserialization: lowercase string → enum
-    public override TodoStatus Read(ref Utf8JsonReader reader, ...)
-    {
-        var value = reader.GetString();
-        return value?.ToLower() switch
-        {
-            "pending" => TodoStatus.Pending,
-            "in-progress" => TodoStatus.InProgress,
-            "completed" => TodoStatus.Completed,
-            _ => TodoStatus.Pending  // Default value
-        };
-    }
-
-    // Serialization: enum → lowercase string
-    public override void Write(Utf8JsonWriter writer, TodoStatus value, ...)
-    {
-        var stringValue = value switch
-        {
+    public override void Write(Utf8JsonWriter writer, TodoStatus value, ...) {
+        var stringValue = value switch {
             TodoStatus.Pending => "pending",
             TodoStatus.InProgress => "in-progress",
             TodoStatus.Completed => "completed",
@@ -198,280 +73,183 @@ public class TodoStatusConverter : JsonConverter<TodoStatus>
         };
         writer.WriteStringValue(stringValue);
     }
+
 }
-```
+\`\`\`
 
-**Registration:**
-```csharp
-// Program.cs
+**Register in Program.cs:**
+\`\`\`csharp
 builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new PriorityConverter());
-        options.JsonSerializerOptions.Converters.Add(new TodoStatusConverter());
-    });
-```
+.AddJsonOptions(options => {
+options.JsonSerializerOptions.Converters.Add(new TodoStatusConverter());
+});
+\`\`\`
 
-**Benefits:**
-- Case-insensitive reading (`"LOW"`, `"low"`, `"Low"` all work)
-- Consistent lowercase output
-- Default values for invalid input
-- Works bidirectionally
-
-**When to use:**
-- Enum format differs between frontend/backend
-- Need case-insensitive deserialization
-- Want custom string representations
+**When to use:** Enum format differs between frontend/backend, need case-insensitive deserialization
 ```
 
 ---
 
-## 6. Add Section: ServiceFactory Patterns
+## 4. Update DTO Pattern
 
-**Location:** Frontend Architecture section
+**Location:** Backend Development → DTO Pattern
 
-**Add Subsection:**
+**Add:**
 
 ```markdown
-### ServiceFactory Mock Configuration
+**Partial Update DTO:**
+\`\`\`csharp
+public class TodoUpdateDto {
+public string? Title { get; set; } // All fields nullable
+public string? Status { get; set; }
 
-**Pattern for hybrid data sources:**
+    public void ApplyToTodoItem(TodoItem todo) {
+        if (Title != null) todo.Title = Title;
+        if (Status != null) todo.Status = ParseStatus(Status);
+    }
 
-```typescript
-// src/services/index.ts
-export const tasksService = ServiceFactory.createService<TodoItem>(
-  'Tasks',
-  '/api/todo',
-  mockTodos,
-  false  // Use API
-)
+}
+\`\`\`
 
-export const discussionsService = ServiceFactory.createService<Discussion>(
-  'Discussions',
-  '/api/discussions',
-  mockDiscussions,
-  true  // Force mock data
-)
-```
+**Controller returns updated entity (HTTP 200):**
+\`\`\`csharp
+[HttpPut("{id}")]
+public async Task<ActionResult<TodoItem>> Update(string id, TodoUpdateDto dto) {
+var updated = await \_service.UpdateAsync(id, dto);
+return updated == null ? NotFound() : Ok(updated);
+}
+\`\`\`
 
-**Use Cases:**
-- Develop frontend while backend is incomplete
-- Test with consistent mock data
-- Avoid API rate limits during development
-- Demo mode without backend
-
-**ServiceFactory signature:**
-```typescript
-createService<T>(
-  entityName: string,
-  apiEndpoint: string,
-  mockData: T[],
-  forceMock?: boolean  // Override environment setting
-)
-```
+**Benefits:** Partial updates, immutable fields protected, frontend updates state without refetch
 ```
 
 ---
 
-## 7. Update Testing Preferences
-
-**Location:** Development Preferences section
-
-**Add to Testing subsection:**
-
-```markdown
-### React Component Testing Best Practices
-
-**Router Context:**
-```typescript
-import { MemoryRouter } from 'react-router-dom'
-
-render(
-  <MemoryRouter initialEntries={['/tasks']}>
-    <TasksComponent />
-  </MemoryRouter>
-)
-```
-
-**Context Mocking:**
-```typescript
-vi.mock('../context/ContextProvider', () => ({
-  useData: () => ({ todos: mockTodos }),
-  useUser: () => ({ user: mockUser })
-}))
-```
-
-**Storage Helpers:**
-```typescript
-const getFromStorageSpy = vi.spyOn(helpers, 'getFromStorage')
-const setToStorageSpy = vi.spyOn(helpers, 'setToStorage')
-
-// Verify persistence
-expect(setToStorageSpy).toHaveBeenCalledWith('key', value)
-```
-
-**Async Updates:**
-```typescript
-await waitFor(() => {
-  expect(screen.getByText('Updated Text')).toBeInTheDocument()
-})
-```
-```
-
----
-
-## 8. Add Common Pitfalls Section
+## 5. Add Common Pitfalls
 
 **Location:** After Development Preferences
 
-**Add New Section:**
+**Add:**
 
 ```markdown
-## Common Pitfalls & Solutions (#memorize)
+## Common Pitfalls (#memorize)
 
-### Frontend
-
-**Vite Cache Corruption:**
-```bash
-# Symptom: MIME type errors, module loading failures
-# Solution:
-rm -rf node_modules/.vite
-npm run dev  # Restart dev server
-```
+**Vite Cache Issues:**
+\`\`\`bash
+rm -rf node_modules/.vite && npm run dev
+\`\`\`
 
 **useEffect Infinite Loops:**
-```typescript
-// ❌ Bad: Creates new function on every render
+\`\`\`typescript
+// ❌ Bad: New function every render
 useEffect(() => { loadData() }, [loadData])
 
 // ✅ Good: Run only on mount
 useEffect(() => { loadData() }, [])
-
-// ✅ Good: Properly memoized dependency
-const loadData = useCallback(() => { ... }, [])
-useEffect(() => { loadData() }, [loadData])
-```
-
-**localStorage Stale Data:**
-```typescript
-// Clear cache during development
-window.__APP_DEBUG__.clearPersistedData()
-```
-
-### Backend
+\`\`\`
 
 **Test File Locks:**
-```bash
-# Symptom: dotnet test fails with file locked error
-# Solution: Stop API server before testing
-Ctrl+C  # Stop server
-dotnet test
-```
+\`\`\`bash
 
-**Enum Case Mismatches:**
-- Frontend expects lowercase ("pending")
-- Backend returns PascalCase ("Pending")
-- Solution: Custom JSON converters (see Custom JSON Converters section)
+# Stop API server before testing
 
-**Hot Reload Limitations:**
-- Some changes require server restart
-- Custom converters, middleware, DI registration
-- When in doubt: restart server
+Ctrl+C && dotnet test
+\`\`\`
+
+**localStorage Stale Data:**
+\`\`\`javascript
+window.**APP_DEBUG**.clearPersistedData() // Browser console
+\`\`\`
 ```
 
 ---
 
-## 9. Update Quick Reference Commands
+## 6. Add Testing Patterns
+
+**Location:** Development Preferences → Testing
+
+**Add:**
+
+```markdown
+### React Testing Patterns (#memorize)
+
+**Router context:**
+\`\`\`typescript
+import { MemoryRouter } from 'react-router-dom'
+render(<MemoryRouter><Component /></MemoryRouter>)
+\`\`\`
+
+**Storage spies:**
+\`\`\`typescript
+const setStorageSpy = vi.spyOn(helpers, 'setToStorage')
+expect(setStorageSpy).toHaveBeenCalledWith('key', value)
+\`\`\`
+
+**Async updates:**
+\`\`\`typescript
+await waitFor(() => {
+expect(screen.getByText('Updated')).toBeInTheDocument()
+})
+\`\`\`
+```
+
+---
+
+## 7. Update Performance Section
+
+**Location:** Development Preferences → Performance Considerations
+
+**Add:**
+
+```markdown
+**API Data Refresh:**
+\`\`\`typescript
+// Run only on mount, not on every loadEntities change
+useEffect(() => {
+loadEntities()
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])
+\`\`\`
+```
+
+---
+
+## 8. Add Quick Reference Commands
 
 **Location:** Quick Reference section
 
 **Add:**
 
 ```bash
-# Clear frontend cache
-window.__APP_DEBUG__.clearPersistedData()  # Browser console
+# Clear caches
+window.__APP_DEBUG__.clearPersistedData()  # Frontend (browser console)
+rm -rf node_modules/.vite                   # Vite build cache
 
-# Clear Vite build cache
-rm -rf node_modules/.vite
-
-# Run specific test file
+# Run specific test
 npm test -- Tasks.test.tsx
 ```
 
 ---
 
-## 10. Add Performance Considerations Section
+## Summary
 
-**Location:** Development Preferences section
+**Key Additions:**
 
-**Add Subsection:**
+- State persistence pattern (localStorage)
+- Custom JSON converters for enums
+- Partial update DTO pattern
+- Common pitfalls and solutions
+- React testing patterns
+- Performance considerations
 
-```markdown
-### Performance Considerations (#memorize)
+**Updated:**
 
-**API Data Refresh:**
-```typescript
-// Current implementation (potential issue):
-useEffect(() => {
-  loadEntities()
-}, [loadEntities])  // Triggers on every loadEntities reference change
+- Test count: 40 → 56 frontend tests
+- Quick reference commands
 
-// Recommended for mount-only:
-useEffect(() => {
-  loadEntities()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [])  // Run only on mount
+**Rationale:**
 
-// Alternative with staleness check:
-const [lastFetch, setLastFetch] = useState<number>(0)
-useEffect(() => {
-  const now = Date.now()
-  if (now - lastFetch > 5000) {  // 5 second cache
-    loadEntities().then(() => setLastFetch(now))
-  }
-}, [])
-```
-
-**Memoization Dependencies:**
-```typescript
-// Include ALL dependencies
-const filtered = useMemo(() => {
-  return data.filter(item => item.status !== 'completed')
-}, [data])  // ✅ Includes data dependency
-
-// TypeScript explicit typing prevents errors
-const statusValues: Record<string, number> = {
-  'pending': 1,
-  'completed': 3
-}
-```
-```
-
----
-
-## Summary of Changes
-
-**Additions:**
-1. State Persistence Patterns section
-2. Integration Test JSON Configuration
-3. Update DTO Pattern examples
-4. Custom JSON Converters section
-5. ServiceFactory mock configuration
-6. React testing best practices
-7. Common Pitfalls & Solutions section
-8. Performance considerations
-9. Additional quick reference commands
-10. Updated test counts (40→51 frontend tests)
-
-**Why These Changes:**
-- Capture lessons from successful integration work
-- Document patterns that work well
+- Document proven patterns from successful integration
 - Prevent common mistakes
-- Provide quick reference for testing
-- Improve onboarding for future sessions
-
-**Impact:**
-- Faster debugging (common pitfalls documented)
-- Better test coverage (testing patterns clear)
-- Consistent patterns (DTO, converters, mocking)
-- Reduced trial-and-error (proven solutions documented)
+- Faster debugging with documented solutions
+- Better test coverage guidance
