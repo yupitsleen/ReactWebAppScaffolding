@@ -1,531 +1,257 @@
 # CURRENT_SESSION.md
 
 **Session Date:** 2025-10-02
-**Session Goal:** Frontend Polish, API Integration Refinements & Code Quality Review
+**Session Goal:** High-Value Component Development & Production Readiness
 
-## Session Status: ✅ COMPLETE - PHASE 1-2 REFACTORING COMPLETE
+## Session Status: ✅ ACTIVE - FEATURE DEVELOPMENT
 
 ---
 
 ## Key Accomplishments
 
-### 1. Task Filtering with State Persistence ✅
-
-- Added "Hide Completed" toggle button to Tasks page
-- Filter state persists to localStorage across sessions
-- Button shows active state (contained vs outlined variant)
-- Dynamic button text: "Hide Completed" ↔ "Show Completed"
-- Filter integrated with existing sort functionality
-- **Storage Key:** `tasks_hideCompleted`
-
-### 2. UI Improvements ✅
-
-- Moved "Add Task" button from FAB to controls bar
-- Improved button grouping and alignment
-- Added `flexWrap: 'wrap'` for responsive controls
-- Removed floating action button (cleaner desktop UI)
-- Consistent button sizing and styling
-- **Sticky Header** - Menu remains accessible when scrolling
-
-### 3. API Enum Serialization Fixed ✅
-
-**Problem:** API returned PascalCase enums (`"Completed"`), frontend expected lowercase (`"completed"`)
-
-**Solution:**
-- Created custom `PriorityConverter` and `TodoStatusConverter`
-- Bidirectional conversion: lowercase JSON ↔ C# enums
-- Registered converters in `Program.cs`
-- UI effects (checkbox, grey-out) now work correctly
-
-**File:** `PortalAPI/Converters/LowercaseEnumConverter.cs`
-
-### 4. API Update Endpoint Enhanced ✅
-
-**Before:** HTTP 204 No Content (empty response)
-**After:** HTTP 200 OK with updated TodoItem
-
-**Changes:**
-- Created `TodoUpdateDto` for partial updates
-- All fields nullable for flexibility
-- Proper validation with RegularExpression
-- `ApplyToTodoItem()` method for clean entity updates
-- Service returns `Task<TodoItem?>` instead of `Task<bool>`
-
-### 5. Mock Data Configuration ✅
-
-**Change:** Discussions and Documents pages now use mock data, not API
-
-**Implementation:**
-- Added `forceMock` parameter to `ServiceFactory.createService()`
-- Services configured per-entity in `src/services/index.ts`
-- Tasks: Real API ✓
-- Discussions: Mock data ✓
-- Documents: Mock data ✓
-
-### 6. Data Refresh Strategy Updated ✅
-
-**Problem:** `useEntityState` only loaded from API if localStorage was empty
-
-**Solution:** Always refresh from API on mount
-```typescript
-useEffect(() => {
-  loadEntities()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []) // Only run once on mount
-```
-
-**Impact:** Dashboard "Priority Tasks" shows correct data
-
-### 7. Performance Fix - useEntityState ✅
-
-**Fixed excessive API calls** by changing useEffect dependency from `[loadEntities]` to `[]`
-
-**Before:** Triggered on every parent re-render (potentially 10+ API calls)
-**After:** Single API call on component mount
-
-**Commit:** `e5b9640`
-
-### 8. Sticky Header Implementation ✅
-
-**Added:** `position: sticky`, `top: 0`, `z-index: 1000` to header
-
-**Benefits:**
-- Menu always accessible when scrolling
-- No JavaScript overhead
-- Works on all modern browsers
-- Professional UX pattern
-
-### 9. Comprehensive Test Coverage ✅
-
-**Frontend:** 51/51 tests passing ✓
-- Added 5 new tests for state persistence
-- Tests cover: initialization, save, filter, toggle
-- Proper mocking with MemoryRouter and context providers
-
-**Backend:** 6/6 tests passing ✓
-- Updated tests to use `TodoUpdateDto` format
-- Added `JsonSerializerOptions` with custom converters
-- Tests now properly deserialize API responses
-- Validates HTTP 200 responses with returned entities
-
-**File:** `src/pages/Tasks.test.tsx` (created)
-
-### 10. Comprehensive Code Review Completed ✅
-
-**Overall Grade:** B+
-
-**Reviewed:**
-- DRY, KISS, SOLID principles
-- Theme provider usage
-- Configuration-driven patterns
-- Inline styling vs theme classes
-- Component architecture
-
-**Results:** See Code Review Findings section below
-
-### 11. Phase 1-2 Refactoring Implemented ✅
-
-**Created:** `src/theme/layoutClasses.ts`
-- 15 reusable layout patterns
-- Flex layouts (row, wrap, column)
-- Common patterns (empty-state, actions-right)
-- Spacing utilities (sm/md/lg variants)
-
-**Updated:** `src/theme/portalTheme.ts`
-- Integrated layout classes into MuiBox overrides
-- Added `.completed` class to MuiCard
-
-**Refactored:** `src/pages/Tasks.tsx`
-- Replaced 7 inline `sx` patterns with semantic classes
-- Reduced code complexity
-- Established reusable patterns
-
-**Decision:** Skip Phase 3-5 refactoring of existing pages
-- Low ROI (1+ hours to save 50 spacing instances)
-- New pages will adopt patterns automatically
-- Focus shifted to high-value components (DataTable, FormBuilder)
-
-**Commit:** `eb0cc9d`
-
-### 12. DataTable Component Created ✅
+### 1. DataTable Component Created ✅
 
 **Created:** High-value reusable table component
 - `src/components/DataTable.tsx` - 219 lines
-- Type-safe generic interface
+- Type-safe generic interface: `DataTable<T>`
 - Built-in sorting, filtering, pagination
-- Custom cell renderers
+- Custom cell renderers with FieldRenderer integration
 - Clickable rows support
 - Empty state handling
 - Theme integration
 
-**Demo Page:** `src/pages/Table.tsx`
+**Demo Page:** `src/pages/Table.tsx` - 77 lines
 - Live demonstration with TodoItem data
-- FieldRenderer integration
-- Added to navigation
+- FieldRenderer integration for status/priority
+- Added to navigation (`/table`)
 
-**FieldRenderer Improvement:**
-- Removed all label prefixes from chips
-- Status/Priority chips now show clean values
-- Applies everywhere (tables, cards, lists)
-
-**Tests:** 5 new tests, 56/56 total passing ✓
+**Tests:** 5 new tests, all passing ✓
 
 **Commit:** `d5fc4c9`
 
-### Service Layer Pattern
+---
 
-## Code Review Findings
+### 2. FieldRenderer Global Improvements ✅
 
-### ✅ Strengths
+**Problem:** Redundant labels on all chips ("Priority: High" should be "High")
 
-1. **Theme System** - Excellent MUI component overrides, CSS custom properties
-2. **No Hardcoded Colors** - All colors via theme/statusConfig ✓
-3. **Configuration-Driven** - appConfig, statusConfig, fieldConfig centralized
-4. **Component Architecture** - React.memo, custom hooks, SRP followed
-5. **SOLID Principles** - Generally well-followed
+**Solution:** Removed all label prefixes globally
+- Date fields: "Due: 1/14/2024" → "1/14/2024"
+- Amount fields: "Amount: $299.99" → "$299.99"
+- Status/Priority: "Status: Completed" → "Completed"
+- Changed StatusChip `showLabel` parameter to `false`
 
-### ⚠️ Issues Identified
+**Impact:** Cleaner UI across all pages (Tasks, Table, Timeline, etc.)
 
-#### 1. Excessive Inline `sx` Styling 🔴 HIGH PRIORITY
+**Files Modified:**
+- `src/components/FieldRenderer.tsx` (lines 36, 51, 64, 77, 104)
+- `src/components/FieldRenderer.test.tsx` (updated 6 tests)
 
-**Metrics:**
-- 74 instances in pages
-- 35 instances in components
-- Total: 109 inline styles
-
-**Common Violations:**
-
-**Tasks.tsx:**
-```typescript
-// Line 86
-<Box sx={{ mt: 3 }}>
-
-// Line 89
-<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-
-// Line 117
-<Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
-
-// Line 140
-<Box sx={{ textAlign: 'center', py: 8 }}>
-
-// Line 153-156
-<Card sx={{
-  mb: 2,
-  opacity: isCompleted ? 0.6 : 1,
-  transition: 'opacity 0.3s ease'
-}}>
-```
-
-**Home.tsx:**
-```typescript
-<Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-<Box sx={{ width: "100%", mr: 1 }}>
-<Box sx={{ minWidth: 35 }}>
-```
-
-**Impact:**
-- ❌ Violates DRY (20+ instances of same flex pattern)
-- ❌ Hard to maintain consistency
-- ❌ Can't be themed dynamically
-- ❌ Repeated layout patterns
-
-#### 2. Missing Theme Classes 🟡 MEDIUM PRIORITY
-
-**Repeated Patterns Not in Theme:**
-
-| Pattern | Occurrences | Should Be |
-|---------|-------------|-----------|
-| `display: 'flex', alignItems: 'center'` | 20+ | `.flex-row` class |
-| `textAlign: 'center', py: 8` | 5+ | `.empty-state` class |
-| `ml: 'auto', display: 'flex'` | 3+ | `.actions-right` class |
-| `mb: 2`, `mt: 3` | 30+ | Semantic spacing classes |
-
-#### 3. Hardcoded Spacing Values 🟡 MEDIUM PRIORITY
-
-**Magic numbers instead of theme.spacing():**
-- `mt: 3`, `mb: 2`, `gap: 2`, `py: 8` (50+ instances)
-
-#### 4. Conditional Styling in Components 🟡 LOW PRIORITY
-
-**Tasks.tsx Line 153-156:**
-```typescript
-<Card sx={{
-  opacity: isCompleted ? 0.6 : 1,
-}}>
-```
-
-**Should be:**
-```typescript
-<Card className={isCompleted ? 'completed' : ''}>
-```
-
-With theme class:
-```typescript
-'&.completed': { opacity: 0.6 }
-```
-
-- `PortalAPI.Tests/TodoControllerTests.cs` (updated to DTO format)
-
-## DRY Violations Summary
-
-| Pattern | Occurrences | Severity |
-|---------|-------------|----------|
-| Flex row pattern | 20+ | High |
-| Spacing (mb/mt) | 30+ | Medium |
-| Text alignment | 15+ | Medium |
-| Gap spacing | 12+ | Medium |
-| Empty states | 5+ | Low |
+**Commit:** `d5fc4c9`
 
 ---
 
-## Refactoring Plan (NEXT SESSION)
+### 3. Timeline Page with Interactive Visualization ✅
 
-### Phase 1: Create Layout Classes System 🔴 HIGH PRIORITY
+**Created:** `src/pages/Timeline.tsx` - 350 lines
 
-**Goal:** Extract common layout patterns to theme
+**Features:**
+- Horizontal timeline with proportional date positioning
+- Interactive points with hover tooltips
+- Click to expand task details
+- Color-coded status indicators:
+  - 🔴 Red: Overdue tasks
+  - 🟡 Yellow: Due today
+  - 🔵 Blue: Upcoming tasks
+  - 🟢 Green: Completed tasks
+- Point size scales with task count (12-24px)
+- Empty state handling
+- Legend for color coding
+- Responsive design
 
-**Create:** `src/theme/layoutClasses.ts`
-
+**Implementation Highlights:**
 ```typescript
-export const layoutClasses = {
-  flexRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  flexRowWrap: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    flexWrap: 'wrap',
-  },
-  flexColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: '64px 16px',
-  },
-  actionsRight: {
-    marginLeft: 'auto',
-    display: 'flex',
-    gap: '16px',
-  },
-  sectionSpacing: {
-    marginTop: '24px',
-    marginBottom: '24px',
-  }
+// Calculate proportional position on timeline
+const position = range > 0
+  ? ((date.getTime() - minDate.getTime()) / range) * 100
+  : 50
+
+// Dynamic color based on status and date
+const getPointColor = (tasks: TodoItem[]): string => {
+  const hasIncomplete = tasks.some(t => t.status !== 'completed')
+  if (pointDate < today && hasIncomplete) return '#ef4444' // Overdue
+  if (pointDate === today && hasIncomplete) return '#f59e0b' // Today
+  if (!hasIncomplete) return '#10b981' // Completed
+  return '#3b82f6' // Upcoming
 }
 ```
 
-**Integrate into `portalTheme.ts`:**
+**Commit:** `b4fea16`
 
+---
+
+### 4. Google Maps Integration ✅
+
+**Added to:** `src/pages/Contact.tsx`
+
+**Implementation:**
+- Embedded Google Maps at bottom of Contact page
+- Uses query parameter method (no API key required)
+- Shows service location from `serviceInfo.contact.address`
+- Address: "456 Garden Lane, Riverside, CA 92501"
+- 450px height with responsive width
+- Paper component with LocationIcon header
+- Uses `flex-row` layout class
+
+**Code:**
 ```typescript
-MuiBox: {
-  styleOverrides: {
-    root: {
-      '&.flex-row': layoutClasses.flexRow,
-      '&.flex-row-wrap': layoutClasses.flexRowWrap,
-      '&.flex-column': layoutClasses.flexColumn,
-      '&.empty-state': layoutClasses.emptyState,
-      '&.actions-right': layoutClasses.actionsRight,
-      '&.section-spacing': layoutClasses.sectionSpacing,
-      // Existing classes remain...
+const encodedAddress = encodeURIComponent(serviceInfo.contact.address);
+const mapSrcQuery = `https://maps.google.com/maps?q=${encodedAddress}&output=embed`;
+
+<iframe
+  src={mapSrcQuery}
+  width="100%"
+  height="100%"
+  style={{ border: 0 }}
+  allowFullScreen
+  loading="lazy"
+  referrerPolicy="no-referrer-when-downgrade"
+  title="Location Map"
+/>
+```
+
+**Commit:** `1a15fa6`
+
+---
+
+### 5. Pull Request #23 Created & Merged ✅
+
+**PR Title:** "Add high-value components and interactive features"
+
+**Summary:**
+- DataTable component with full functionality
+- Timeline page with visual timeline
+- Google Maps integration on Contact page
+- Layout class system for consistent styling
+- Task filtering with persistence
+- Sticky navigation header
+- API enum serialization fixes
+
+**Test Results:**
+- ✅ 56/56 frontend tests passing
+- ✅ 6/6 backend integration tests passing
+
+**Merged to:** `main` branch
+**PR:** https://github.com/yupitsleen/ReactWebAppScaffolding/pull/23
+
+---
+
+### 6. Fallback Service for Offline Development ✅
+
+**Created:** `src/services/fallbackService.ts` - 93 lines
+
+**Problem:** Can't add/update tasks without backend API running
+
+**Solution:** FallbackEntityService with intelligent API detection
+- Tries API first when available
+- Automatically falls back to mock data on network errors
+- Periodically retries API connection every 30 seconds
+- Seamlessly switches back when API becomes available
+- Transparent to consumers (same interface as BaseEntityService)
+
+**Implementation:**
+```typescript
+export class FallbackEntityService<T extends { id: string }> {
+  private mockService: MockEntityService<T>
+  private isApiAvailable: boolean = true
+  private lastApiCheck: number = 0
+  private readonly API_CHECK_INTERVAL = 30000
+
+  private async executeWithFallback<R>(
+    apiCall: () => Promise<R>,
+    mockCall: () => Promise<R>
+  ): Promise<R> {
+    if (!this.shouldTryApi()) {
+      return mockCall()
+    }
+    try {
+      const result = await apiCall()
+      this.isApiAvailable = true
+      return result
+    } catch (error) {
+      this.isApiAvailable = false
+      console.warn(`${this.entityName} API unavailable, using mock data`)
+      return mockCall()
     }
   }
 }
 ```
 
-**Estimated Effort:** 30 minutes
-
----
-
-### Phase 2: Refactor Tasks.tsx 🔴 HIGH PRIORITY
-
-**Goal:** Replace inline `sx` with theme classes
-
-**Changes:**
-
+**Updated:** `src/services/index.ts`
 ```typescript
-// BEFORE (Line 89)
-<Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+// Before: Always use real API (fails without backend)
+export const todosService = new BaseEntityService<TodoItem>('Tasks', '/api/todo')
 
-// AFTER
-<Box className="flex-row-wrap" sx={{ mb: 3 }}>
+// After: Intelligent fallback
+export const todosService = new FallbackEntityService<TodoItem>('Tasks', '/api/todo', todoItems)
 ```
 
-```typescript
-// BEFORE (Line 117)
-<Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
+**Benefits:**
+- ✅ Full CRUD operations without backend running
+- ✅ Automatic API reconnection when backend starts
+- ✅ No configuration changes needed
+- ✅ Developer experience significantly improved
+- ✅ Mock data persists in memory during session
 
-// AFTER
-<Box className="actions-right">
-```
+**Tests:** All 56 tests passing ✓
 
-```typescript
-// BEFORE (Line 140)
-<Box sx={{ textAlign: 'center', py: 8 }}>
-
-// AFTER
-<Box className="empty-state">
-```
-
-```typescript
-// BEFORE (Line 153-156)
-<Card sx={{
-  mb: 2,
-  opacity: isCompleted ? 0.6 : 1,
-  transition: 'opacity 0.3s ease'
-}}>
-
-// AFTER (with theme class for completed state)
-<Card className={isCompleted ? 'completed' : ''} sx={{ mb: 2 }}>
-```
-
-**Files to Update:**
-- `src/pages/Tasks.tsx` (primary target)
-- Add `.completed` class to theme MuiCard overrides
-
-**Estimated Effort:** 45 minutes
+**Commit:** `a821d60`
 
 ---
 
-### Phase 3: Refactor Home.tsx 🟡 MEDIUM PRIORITY
+## Previous Session Accomplishments
 
-**Goal:** Replace inline `sx` with theme classes
+### Task Filtering with State Persistence ✅
+- Added "Hide Completed" toggle to Tasks page
+- Filter state persists to localStorage
+- Dynamic button text and visual state
+- Storage key: `tasks_hideCompleted`
 
-**Target Lines:**
-- Line 134: `<Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>`
-- Line 135: `<Box sx={{ width: "100%", mr: 1 }}>`
-- Line 141: `<Box sx={{ minWidth: 35 }}>`
-- All progress bar container patterns
+### UI Improvements ✅
+- Sticky header for persistent navigation
+- Moved "Add Task" from FAB to controls bar
+- Responsive button grouping
+- Cleaner desktop UI
 
-**Changes:**
-```typescript
-// BEFORE
-<Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+### API Enum Serialization Fixed ✅
+- Created custom `LowercaseEnumConverter`
+- Bidirectional conversion: lowercase JSON ↔ C# enums
+- UI effects (checkbox, grey-out) now work correctly
 
-// AFTER
-<Box className="flex-row" sx={{ mb: 1 }}>
-```
+### API Update Endpoint Enhanced ✅
+- Changed from HTTP 204 to HTTP 200 with updated entity
+- Created `TodoUpdateDto` for partial updates
+- Proper validation with RegularExpression
 
-**Estimated Effort:** 30 minutes
+### Performance Fix - useEntityState ✅
+- Fixed excessive API calls (10+ per mount → 1 per mount)
+- Changed useEffect dependency from `[loadEntities]` to `[]`
 
----
-
-### Phase 4: Create Spacing Utilities 🟡 MEDIUM PRIORITY
-
-**Goal:** Replace magic numbers with semantic classes
-
-**Add to theme:**
-
-```typescript
-MuiBox: {
-  styleOverrides: {
-    root: {
-      '&.spacing-sm': { margin: '8px 0' },
-      '&.spacing-md': { margin: '16px 0' },
-      '&.spacing-lg': { margin: '24px 0' },
-      '&.spacing-top-sm': { marginTop: '8px' },
-      '&.spacing-top-md': { marginTop: '16px' },
-      '&.spacing-top-lg': { marginTop: '24px' },
-      '&.spacing-bottom-sm': { marginBottom: '8px' },
-      '&.spacing-bottom-md': { marginBottom: '16px' },
-      '&.spacing-bottom-lg': { marginBottom: '24px' },
-    }
-  }
-}
-```
-
-**Replace:**
-```typescript
-// BEFORE
-sx={{ mt: 3 }}
-
-// AFTER
-className="spacing-top-lg"
-```
-
-**Estimated Effort:** 1 hour (global replacement)
+### Layout Classes System ✅
+- Created `src/theme/layoutClasses.ts` with 15 patterns
+- Integrated into `portalTheme.ts`
+- Refactored Tasks.tsx as reference implementation
+- Strategic decision to skip low-ROI refactoring
 
 ---
 
-### Phase 5: Refactor Remaining Components 🟡 LOW PRIORITY
-
-**Components with inline styles:**
-- CreateTodoDialog.tsx
-- DataCard.tsx
-- NotificationBell.tsx
-- PageLayout.tsx
-
-**Approach:** Apply same pattern as pages
-
-**Estimated Effort:** 1 hour
-
----
-
-### Phase 6: Add Tests for Theme Classes 🟡 LOW PRIORITY
-
-**Create:** `src/theme/layoutClasses.test.ts`
-
-**Test:**
-- Layout classes render correctly
-- Classes compose properly
-- Responsive behavior
-
-**Estimated Effort:** 30 minutes
-
----
-
-### Phase 7: Documentation 🟡 LOW PRIORITY
-
-**Update CLAUDE.md with:**
-- Available layout classes
-- When to use theme classes vs sx
-- Spacing class guidelines
-- Examples of refactored patterns
-
-**Estimated Effort:** 20 minutes
-
----
-
-## Success Metrics
-
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Inline `sx` in pages | 74 | <10 | 🔴 TODO |
-| Inline `sx` in components | 35 | <5 | 🔴 TODO |
-| Theme layout classes | 8 | 20+ | 🔴 TODO |
-| Magic spacing values | 50+ | 0 | 🔴 TODO |
-| Hardcoded colors | 0 | 0 | ✅ DONE |
-| Tests passing | 57/57 | 57/57 | ✅ DONE |
-| Sticky header | Yes | Yes | ✅ DONE |
-
----
-
-## Estimated Total Effort
-
-**All refactoring phases:** 4-5 hours
-
-**Quick wins (Phase 1-2):** 1.5 hours
-- Creates immediate impact
-- Reduces 40+ inline styles
-- Establishes pattern for rest
-
-**Recommendation:** Complete Phase 1-2 next session, then iterate
-
----
-
-## Current System State
+## Current System Architecture
 
 ```
-Frontend: localhost:5173 (React + Vite)
-    ↓ API Calls via ServiceFactory
-    ↓ forceMock flag per entity
-Backend: localhost:5276 (C# ASP.NET Core) - STOPPED
+Frontend: localhost:5173 (React 19.1.1 + Vite 7.1.0)
+    ↓ ServiceFactory with FallbackEntityService
+    ↓ Intelligent API detection + mock fallback
+Backend: localhost:5276 (ASP.NET Core 8.0) - OPTIONAL
     ↓ Service Layer (ITodoService)
     ↓ Custom JSON Converters (lowercase enums)
     ↓ Entity Framework Core
@@ -533,143 +259,461 @@ Database: SQLite (portal.db)
 ```
 
 **Data Sources:**
-- **Tasks:** Real API (CRUD operations)
-- **Discussions:** Mock data (frontend only)
-- **Documents:** Mock data (frontend only)
+- **Tasks:** FallbackEntityService (API when available, mock otherwise)
+- **Discussions:** MockEntityService (frontend only)
+- **Documents:** MockEntityService (frontend only)
 
-**Test Coverage:**
-- Frontend: 51 tests (100% passing)
-- Backend: 6 integration tests (100% passing)
-- Total: 57 tests ✓
+**Development Mode:**
+- ✅ Backend offline: Full CRUD with mock data
+- ✅ Backend online: Automatic API connection
+- ✅ No configuration changes needed
+
+---
+
+## Test Coverage
+
+**Frontend:** 56/56 tests passing ✓
+- Component tests: DataTable (5), FieldRenderer (5), Tasks (5)
+- Hook tests: usePageLoading (6), useDataOperations (2)
+- Context tests: AppContext (3), NotificationContext (4), MockContext (3)
+- Integration tests: App (4), Pages (5)
+
+**Backend:** 6/6 integration tests passing ✓
+- TodoController integration tests with WebApplicationFactory
+- In-memory database for isolated test data
+- DTO validation and enum serialization tests
+
+**Total:** 62 tests ✓
 
 ---
 
 ## Commit History (This Session)
 
-1. **`7e39e56`** - Add task filtering with persistence and fix API enum serialization
-   - Frontend: Filtering UI, localStorage persistence, 5 new tests
-   - Backend: Custom converters, TodoUpdateDto, HTTP 200 responses
-   - 13 files changed, +364 insertions, -71 deletions
-
-2. **`e5b9640`** - Fix useEntityState to prevent excessive API calls
-   - Changed useEffect dependency from `[loadEntities]` to `[]`
-   - 1 file changed, +2 insertions, -1 deletion
-
-3. **`e48472b`** - Add sticky header for persistent navigation
-   - `src/layouts/Layout.module.css` - position: sticky, z-index: 1000
-   - 1 file changed, +4 insertions
-
-4. **`8bfc519`** - Document code review findings and refactoring plan
-   - Updated CURRENT_SESSION.md with comprehensive analysis
-   - Created CLAUDE_MD_SUGGESTIONS.md
-   - 2 files changed, +1002 insertions, -140 deletions
-
-5. **`eb0cc9d`** - Refactor Tasks.tsx with theme-based layout classes
-   - Created layoutClasses.ts with 15 reusable patterns
-   - Integrated into portalTheme.ts
-   - Refactored Tasks.tsx (7 inline styles removed)
-   - 3 files changed, +118 insertions, -11 deletions
-
-6. **`d5fc4c9`** - Add DataTable component and Table demo page
-   - Created DataTable component with full test coverage
-   - Added Table demo page to navigation
-   - Removed label prefixes from FieldRenderer chips
+1. **`d5fc4c9`** - Add DataTable component and Table demo page
+   - Created reusable DataTable component (219 lines)
+   - Added Table demo page with navigation
+   - Removed label prefixes from FieldRenderer globally
    - Updated CLAUDE.md with DataTable documentation
    - 9 files changed, +531 insertions, -54 deletions
+
+2. **`6423098`** - Update documentation with DataTable component
+   - Updated CURRENT_SESSION.md
+   - No code changes
+
+3. **`b4fea16`** - Add Timeline page with interactive visual timeline
+   - Created Timeline.tsx with horizontal timeline (350 lines)
+   - Proportional date positioning
+   - Color-coded status indicators
+   - Interactive tooltips and click details
+   - Added to navigation and App.tsx
+   - 3 files changed, +364 insertions, -0 deletions
+
+4. **`1a15fa6`** - Add Google Maps embed to Contact page
+   - Embedded map showing service location
+   - Query parameter method (no API key)
+   - Responsive design with Paper component
+   - 1 file changed, +42 insertions, -1 deletion
+
+5. **PR #23 Merged** - "Add high-value components and interactive features"
+   - All commits merged to main
+   - Branch: `feature/front-end-features`
+
+6. **`a821d60`** - Add fallback service for seamless development without API
+   - Created FallbackEntityService (93 lines)
+   - Intelligent API detection with automatic fallback
+   - 30-second retry interval
+   - Updated todosService to use fallback
+   - Branch: `feature/enhancements`
+   - 2 files changed, +99 insertions, -2 deletions
 
 ---
 
 ## Next Session Priorities
 
-### High-Value Components for New Pages 🔴 HIGH PRIORITY
+### 1. FormBuilder Component 🔴 HIGH PRIORITY
 
-1. **DataTable Component** (~2 hours)
-   - Generic table with sorting, filtering, pagination
-   - Column configuration with custom renderers
-   - Replaces 100+ lines of boilerplate per table page
-   - **Impact:** High - tables are the most common new page type
+**Goal:** Configuration-driven form generation
 
-2. **FormBuilder Component** (~1.5 hours)
-   - Configuration-driven form generation
-   - Built-in validation and error handling
-   - Consistent styling and layout
-   - **Impact:** High - forms needed everywhere
+**Features:**
+- Generic form builder with validation
+- Built-in error handling
+- Consistent styling and layout
+- Support for common field types (text, select, date, checkbox)
+- Integration with existing StatusChip/FieldRenderer
 
-3. **EmptyState Component** (~30 minutes)
-   - Standardized empty state pattern
-   - Icon, title, description, action button
-   - **Impact:** Medium - already have className but component is cleaner
+**Estimated Effort:** 1.5 hours
 
-### Documentation 🟡 MEDIUM PRIORITY
+**Impact:** High - forms needed for all CRUD operations
 
-4. **Update CLAUDE.md with component patterns**
-   - DataTable usage examples
-   - FormBuilder configuration
-   - When to create new vs use existing
+---
 
-### Deferred (Low ROI) ❌
+### 2. Improve Empty States 🟡 MEDIUM PRIORITY
 
-- ~~Phase 3-5: Refactor existing pages~~ - Will adopt naturally
-- ~~Spacing utilities migration~~ - Only 55 instances, contextual usage
-- ~~Layout class tests~~ - Covered by component tests
+**Goal:** Standardized empty state component
+
+**Current:** Using `className="empty-state"` with custom content
+
+**Proposed:** EmptyState component
+```typescript
+<EmptyState
+  icon="AssignmentTurnedIn"
+  title="No tasks yet"
+  description="Create your first task to get started"
+  action={{ label: "Add Task", onClick: handleAdd }}
+/>
+```
+
+**Estimated Effort:** 30 minutes
+
+**Impact:** Medium - cleaner API, consistent UX
+
+---
+
+### 3. API Connection Indicator 🟡 MEDIUM PRIORITY
+
+**Goal:** Visual indicator of API connection status
+
+**Features:**
+- Show "Using Mock Data" badge when offline
+- Show "Connected" badge when API available
+- Could be in header or footer
+- Uses `todosService.isUsingMockData()` method
+
+**Estimated Effort:** 30 minutes
+
+**Impact:** Medium - helps developers understand current state
+
+---
+
+### 4. Timeline Enhancements 🟢 LOW PRIORITY
+
+**Potential Improvements:**
+- Filter by priority/status
+- Group by week/month view
+- Export timeline to image/PDF
+- Drag-and-drop to reschedule
+
+**Estimated Effort:** 2-3 hours
+
+**Impact:** Low - current implementation fully functional
+
+---
+
+### 5. Documentation Updates 🟡 MEDIUM PRIORITY
+
+**Update CLAUDE.md with:**
+- FallbackEntityService pattern
+- When to use BaseEntityService vs MockEntityService vs FallbackEntityService
+- Development workflow (backend optional)
+- FormBuilder usage examples (when implemented)
+
+**Estimated Effort:** 30 minutes
 
 ---
 
 ## Lessons Learned
 
-### Code Quality Patterns
+### Patterns That Work
 
-**What Works:**
-- Theme-based color management (zero hardcoded colors)
-- Configuration-driven design (appConfig, statusConfig)
-- Custom hooks for reusable logic
-- Component composition (FieldRenderer, StatusChip)
+1. **Intelligent Fallback Pattern** ✓
+   - Try API first, fall back to mock gracefully
+   - Periodic retry for automatic reconnection
+   - Transparent to consumers
+   - **Learning:** Always design services to handle network failures
 
-**Improvement Areas:**
-- Inline `sx` styling overused
-- Layout patterns not abstracted to theme
-- Spacing values repeated (magic numbers)
-- Conditional styling in components
+2. **Configuration-Driven Features** ✓
+   - Timeline colors from hardcoded → could be in statusConfig
+   - DataTable columns from configuration
+   - FieldRenderer uses statusConfig
+   - **Learning:** Even visual features benefit from configuration
 
-### Best Practices Established
+3. **Generic Type-Safe Components** ✓
+   - `DataTable<T>` works with any entity type
+   - `FallbackEntityService<T>` reusable for any service
+   - **Learning:** Generics enable true reusability
 
-1. **Always use theme colors** - No hardcoded values ✓
-2. **Extract repeated patterns** - Don't repeat flex layouts
-3. **Use semantic classes** - `.flex-row` > `sx={{ display: 'flex' }}`
-4. **Theme first, sx second** - Only use sx for unique cases
-5. **Test visual changes** - Ensure consistency after refactoring
+4. **Visual Feedback for State** ✓
+   - Timeline color coding shows status at a glance
+   - Point size indicates task count
+   - Hover/click interactions provide details
+   - **Learning:** Interactive visualizations > static tables
 
 ### Anti-Patterns to Avoid
 
-1. **Inline `sx` for common layouts** - Use theme classes instead
-2. **Magic numbers for spacing** - Use theme spacing or semantic classes
-3. **Conditional styling in JSX** - Move to CSS classes
-4. **Repeated layout patterns** - Abstract to reusable classes
+1. **Hard Dependencies on Backend** ❌
+   - Before: Can't develop frontend without backend running
+   - After: Seamless fallback to mock data
+   - **Learning:** Development environment should work offline
+
+2. **Hardcoded Visual Values** ⚠️
+   - Timeline colors still hardcoded (`#ef4444`, etc.)
+   - Should move to theme or statusConfig
+   - **Learning:** ALL visual values should be configurable
+
+3. **No Visual Feedback for System State** ❌
+   - User doesn't know if using mock vs API data
+   - Could lead to confusion during development
+   - **Learning:** Always show system state visually
 
 ---
 
 ## Recovery Context
 
-**Session completed:** Phase 1-2 refactoring complete. Layout classes system established and applied to Tasks.tsx. Strategic decision to skip low-ROI refactoring of existing pages in favor of high-value reusable components.
+**Session Status:** Active development on `feature/enhancements` branch
 
-**Next session focus:** Create DataTable component for table-based pages. High impact - eliminates 100+ lines of boilerplate per table page.
+**Completed This Session:**
+- ✅ PR #23 merged (DataTable, Timeline, Google Maps)
+- ✅ FallbackEntityService implemented and tested
+- ✅ Full offline development capability
 
-**Branch:** `feature/front-end-features`
-**Commits:** 5 total this session
-**Tests:** 51/51 frontend passing ✓, 6/6 backend passing ✓
-**Code Review Grade:** B+ → A- (after refactoring)
+**Current Branch:** `feature/enhancements`
 
-**Key accomplishments:**
-- ✅ Layout classes system (15 patterns)
-- ✅ Tasks.tsx refactored (7 inline styles removed)
-- ✅ CLAUDE.md updated with usage guidelines
-- ⏭️ Ready for high-value component creation
+**Last Commit:** `a821d60` - Add fallback service for seamless development without API
 
-**Key files created:**
-- `src/theme/layoutClasses.ts` - Reusable layout patterns
-- Updated: `src/theme/portalTheme.ts`, `src/pages/Tasks.tsx`, `CLAUDE.md`
+**Tests:** 62/62 total passing ✓ (56 frontend + 6 backend)
 
-**Next immediate work:**
-- Create DataTable component (src/components/DataTable.tsx)
-- Establish pattern for table-based pages
-- Add tests and documentation
+**Key Files Modified:**
+- `src/services/fallbackService.ts` (created)
+- `src/services/index.ts` (updated to use FallbackEntityService)
+
+**Development State:**
+- Backend: Optional (fallback to mock data)
+- Frontend: Fully functional with or without backend
+- CRUD Operations: Working in both modes
+
+**Next Immediate Work:**
+- FormBuilder component for configuration-driven forms
+- API connection status indicator
+- Documentation updates for new patterns
+
+---
+
+## CLAUDE.md Improvement Suggestions
+
+### 1. Add FallbackEntityService Pattern Section
+
+**Suggestion:** Add to "Backend Development" or "Available Utilities" section
+
+```markdown
+### FallbackEntityService Pattern (#memorize)
+
+**Purpose:** Enable development without backend dependency
+
+**When to use:**
+- Services that have backend implementation but want offline capability
+- Development/testing without running backend
+- Graceful degradation when API unavailable
+
+**When NOT to use:**
+- Services that will never have backend (use MockEntityService)
+- Services that must always use API (use BaseEntityService)
+
+**Implementation:**
+\`\`\`typescript
+import { FallbackEntityService } from './fallbackService'
+import { todoItems } from '../data/sampleData'
+
+export const todosService = new FallbackEntityService<TodoItem>(
+  'Tasks',
+  '/api/todo',
+  todoItems
+)
+\`\`\`
+
+**Behavior:**
+- Tries API first on every call
+- Falls back to mock on network error
+- Console warns when using mock data
+- Retries API every 30 seconds
+- Automatically reconnects when backend available
+```
+
+---
+
+### 2. Update Service Layer Decision Tree
+
+**Suggestion:** Replace or augment existing service layer documentation
+
+```markdown
+### Service Layer Decision Tree (#memorize)
+
+**Choose the right service for your entity:**
+
+1. **MockEntityService** - No backend, never will have
+   - Example: Static reference data, demos
+   - All operations in-memory only
+
+2. **BaseEntityService** - Backend required, no fallback
+   - Example: Production APIs, auth services
+   - Fails fast if backend unavailable
+
+3. **FallbackEntityService** - Backend preferred, mock fallback
+   - Example: CRUD entities during development
+   - Seamless offline development
+
+**Current Configuration (src/services/index.ts):**
+- Tasks: FallbackEntityService (API + mock)
+- Discussions: MockEntityService (mock only)
+- Documents: MockEntityService (mock only)
+```
+
+---
+
+### 3. Update Development Commands
+
+**Suggestion:** Update "Quick Reference" section
+
+```markdown
+**Development Commands:**
+
+\`\`\`bash
+npm run dev     # Start dev server (localhost:5173)
+                # Works with or without backend running
+                # Uses FallbackEntityService for tasks
+
+# Optional: Run backend for real API
+dotnet run      # Start API server (localhost:5276)
+                # Frontend auto-connects when available
+\`\`\`
+
+**Development Modes:**
+- Frontend only: Full CRUD with mock data
+- Frontend + Backend: Full CRUD with real API
+- No configuration changes needed
+```
+
+---
+
+### 4. Add Interactive Component Patterns
+
+**Suggestion:** Add new section after "Smart Abstractions"
+
+```markdown
+## Interactive Component Patterns
+
+### Timeline Visualization
+
+**Pattern:** Proportional positioning on visual timeline
+
+\`\`\`typescript
+// Calculate position based on date range
+const minDate = new Date(Math.min(...dates))
+const maxDate = new Date(Math.max(...dates))
+const range = maxDate.getTime() - minDate.getTime()
+const position = ((date.getTime() - minDate.getTime()) / range) * 100
+
+// Render at calculated position
+<Box sx={{ left: \`\${position}%\` }} />
+\`\`\`
+
+**Use cases:**
+- Task timelines
+- Project milestones
+- Event schedules
+
+### Color-Coded Status Indicators
+
+**Pattern:** Dynamic color based on multiple conditions
+
+\`\`\`typescript
+const getStatusColor = (item: TodoItem): string => {
+  const isOverdue = new Date(item.dueDate) < new Date()
+  const isComplete = item.status === 'completed'
+
+  if (isOverdue && !isComplete) return theme.palette.error.main
+  if (isComplete) return theme.palette.success.main
+  return theme.palette.info.main
+}
+\`\`\`
+
+**Best practice:** Use theme colors, not hardcoded hex values
+```
+
+---
+
+### 5. Add Development Workflow Section
+
+**Suggestion:** Add new section or update existing workflow documentation
+
+```markdown
+## Development Workflow (#memorize)
+
+### Frontend-First Development
+
+1. **Start frontend only** - `npm run dev`
+   - Full CRUD operations with mock data
+   - No backend required
+   - Changes to tasks persist in memory
+
+2. **Optional: Start backend** - `dotnet run`
+   - Frontend automatically detects and connects
+   - Switches from mock to real API
+   - Check console for "API unavailable, using mock data" warnings
+
+3. **Backend restart**
+   - Frontend retries connection every 30 seconds
+   - Automatically reconnects when backend available
+   - No page refresh needed
+
+### Testing Workflow
+
+1. **Frontend tests** - `npm test` (no backend needed)
+2. **Backend tests** - `dotnet test` (uses in-memory database)
+3. **Integration** - Start both, verify API connection
+
+### When to Use Each Mode
+
+**Mock Data (backend off):**
+- UI development and styling
+- Component development
+- Frontend-only feature work
+- Rapid prototyping
+
+**Real API (backend on):**
+- API integration testing
+- Database schema changes
+- Backend business logic development
+- Full-stack feature testing
+```
+
+---
+
+### 6. Update "Development Preferences"
+
+**Suggestion:** Add to existing preferences section
+
+```markdown
+### Offline Development (#memorize)
+
+- **Design for offline-first** - All services should work without backend
+- **Use FallbackEntityService** - For entities with backend implementation
+- **Console warnings are good** - "Using mock data" helps developers understand state
+- **Periodic retry pattern** - 30 seconds is good balance (not too aggressive)
+- **Transparent fallback** - Consumers shouldn't need to know about fallback logic
+```
+
+---
+
+## Summary of Suggested CLAUDE.md Updates
+
+**High Priority:**
+1. ✅ Add FallbackEntityService pattern documentation
+2. ✅ Update Service Layer decision tree
+3. ✅ Update development commands and modes
+
+**Medium Priority:**
+4. ✅ Add interactive component patterns (Timeline, color coding)
+5. ✅ Add development workflow section
+
+**Low Priority:**
+6. ✅ Update development preferences with offline-first guidance
+
+**Rationale:**
+- FallbackEntityService is a major architectural pattern worth documenting
+- Development workflow significantly improved (backend now optional)
+- Interactive components (Timeline, DataTable) establish new patterns
+- Future developers need clear guidance on service selection
+
+---
+
+**End of CURRENT_SESSION.md**
