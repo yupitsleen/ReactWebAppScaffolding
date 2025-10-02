@@ -1,9 +1,17 @@
 import { memo } from "react";
-import { Card, CardContent, Box, Avatar, Typography } from "@mui/material";
+import { Card, CardContent, Box, Avatar, Typography, Paper } from "@mui/material";
+import { LocationOn as LocationIcon } from "@mui/icons-material";
 import { users, serviceInfo } from "../data/sampleData";
 import PageLayout from "../components/PageLayout";
 
 const Contact = memo(() => {
+  // Encode address for Google Maps embed
+  const encodedAddress = encodeURIComponent(serviceInfo.contact.address);
+  const mapSrc = `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodedAddress}`;
+
+  // Alternative: Use query parameter (works without API key but has limitations)
+  const mapSrcQuery = `https://maps.google.com/maps?q=${encodedAddress}&output=embed`;
+
   return (
     <PageLayout>
       <Box
@@ -77,6 +85,39 @@ const Contact = memo(() => {
           </CardContent>
         </Card>
       </Box>
+
+      {/* Google Maps Section */}
+      <Paper sx={{ mt: 3, p: 3 }}>
+        <Box className="flex-row" sx={{ mb: 2 }}>
+          <LocationIcon color="primary" sx={{ mr: 1 }} />
+          <Typography variant="h6">Location</Typography>
+        </Box>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {serviceInfo.contact.address}
+        </Typography>
+        <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+            height: 450,
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 0,
+            overflow: 'hidden'
+          }}
+        >
+          <iframe
+            src={mapSrcQuery}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Location Map"
+          />
+        </Box>
+      </Paper>
     </PageLayout>
   );
 });
