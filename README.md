@@ -5,30 +5,335 @@ A production-ready, configuration-driven React portal designed for **instant bus
 ## Table of Contents
 
 - [Quick Start](#quick-start)
+- [Architecture Philosophy](#architecture-philosophy)
+- [Key Features](#key-features)
 - [Business Customization](#business-customization)
 - [Dashboard Configuration](#dashboard-configuration)
 - [Business Domain Examples](#business-domain-examples)
 - [Live Theme Testing](#live-theme-testing)
 - [Technical Architecture](#technical-architecture)
+- [Development Workflow](#development-workflow)
 - [Session Management for Claude Code](#session-management-for-claude-code)
 - [File Structure](#file-structure)
 - [Development Commands](#development-commands)
-- [Customization Priority](#customization-priority)
 - [Production Ready Features](#production-ready-features)
 
 ## Architecture Philosophy
 
 - **Configuration Over Code** - 90% customization through data files
 - **Smart Abstractions** - Generic components adapt to any business domain
-- **Quality Assured** - 86 tests ensure stability during customization
+- **Offline-First Development** - Full CRUD operations without backend running
+- **Quality Assured** - 62 tests (56 frontend + 6 backend) ensure stability
 - **Performance First** - React.memo, memoization, lazy loading throughout
 
 ## Quick Start
 
+### Try the Demo
+
 ```bash
-git clone [repository]
+# Frontend only (works immediately)
 npm install && npm run dev    # → http://localhost:5173
+
+# Optional: Backend API
+cd PortalAPI
+dotnet run                    # → http://localhost:5276
 ```
+
+**No backend required** - Frontend automatically uses mock data when API unavailable, seamlessly connects when backend starts.
+
+### Start Your Own App
+
+After forking this repository, follow these steps to transform it into your custom business application:
+
+<details>
+<summary><strong>Step 1: Clone and Setup (5 minutes)</strong></summary>
+
+```bash
+# Clone your fork
+git clone https://github.com/YOUR_USERNAME/YOUR_APP_NAME.git
+cd YOUR_APP_NAME
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+**Verify it works:** Open http://localhost:5173 and see the demo portal
+
+</details>
+
+<details>
+<summary><strong>Step 2: Customize App Identity (10 minutes)</strong></summary>
+
+**File: `src/data/configurableData.ts`**
+
+```typescript
+export const appConfig: AppConfig = {
+  // 1. Change app name
+  appName: "Your Business Portal",  // Appears in header and page titles
+  pageTitle: "Dashboard",
+
+  // 2. Define your navigation
+  navigation: [
+    { id: "home", label: "Home", path: "/", enabled: true },
+    { id: "orders", label: "Orders", path: "/orders", enabled: true },
+    { id: "customers", label: "Customers", path: "/customers", enabled: true },
+    // Add your pages here
+  ],
+
+  // 3. Set your brand colors
+  theme: {
+    primaryColor: "#1976d2",      // Your primary brand color
+    secondaryColor: "#f57c00",    // Your accent color
+    mode: "light",                // "light" or "dark"
+  }
+}
+```
+
+**Test it:** Save and see changes instantly in browser (Vite hot reload)
+
+</details>
+
+<details>
+<summary><strong>Step 3: Replace Sample Data (15 minutes)</strong></summary>
+
+**File: `src/data/sampleData.ts`**
+
+Transform generic entities to your domain:
+
+```typescript
+// BEFORE: Generic todo items
+export const todoItems = [
+  { id: "1", title: "Task 1", status: "pending", ... }
+]
+
+// AFTER: Your domain objects (e.g., orders)
+export const orders = [
+  {
+    id: "ORD-001",
+    customerName: "Acme Corp",
+    product: "Widget Pro",
+    quantity: 50,
+    status: "processing",
+    total: 2499.99,
+    orderDate: "2024-02-15"
+  }
+]
+```
+
+**Update type definitions:** `src/types/portal.ts`
+
+```typescript
+export interface Order {
+  id: string
+  customerName: string
+  product: string
+  quantity: number
+  status: string
+  total: number
+  orderDate: string
+}
+```
+
+**Update context provider:** `src/context/ContextProvider.tsx`
+
+```typescript
+// Replace todoItems with your data
+const [orders, setOrders] = useState<Order[]>(sampleData.orders)
+```
+
+</details>
+
+<details>
+<summary><strong>Step 4: Configure Status & Fields (10 minutes)</strong></summary>
+
+**File: `src/data/configurableData.ts`**
+
+Define your business statuses:
+
+```typescript
+statusConfig: {
+  orderStatus: {
+    pending: { color: "warning", label: "Pending" },
+    processing: { color: "info", label: "Processing" },
+    shipped: { color: "success", label: "Shipped" },
+    cancelled: { color: "error", label: "Cancelled" }
+  }
+}
+```
+
+Configure which fields to display:
+
+```typescript
+fieldConfig: {
+  order: {
+    primary: "customerName",                    // Main heading
+    secondary: ["status", "total", "orderDate"], // Show as chips
+    hidden: ["id", "internalNotes"]             // Never display
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Step 5: Customize Pages (30 minutes)</strong></summary>
+
+**Rename existing pages or create new ones:**
+
+```bash
+# Rename Tasks.tsx to Orders.tsx
+mv src/pages/Tasks.tsx src/pages/Orders.tsx
+```
+
+**Update the page component:**
+
+```tsx
+// src/pages/Orders.tsx
+import { useData } from '../context/ContextProvider'
+
+const Orders = memo(() => {
+  const { orders } = useData()  // Use your data
+
+  return (
+    <PageLayout pageId="orders">
+      <DataTable
+        data={orders}
+        columns={[
+          { field: 'customerName', header: 'Customer', width: '30%' },
+          { field: 'product', header: 'Product', width: '25%' },
+          {
+            field: 'status',
+            header: 'Status',
+            render: (value, row) => (
+              <FieldRenderer
+                field="status"
+                value={value}
+                entity={row}
+                statusConfig={statusConfig}
+                variant="chip"
+              />
+            )
+          }
+        ]}
+        sortable
+        filterable
+        paginated
+      />
+    </PageLayout>
+  )
+})
+```
+
+**Update App.tsx routing:**
+
+```tsx
+import Orders from './pages/Orders'
+
+const pageComponents = {
+  home: Home,
+  orders: Orders,  // Map navigation id to component
+  customers: Customers,
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Step 6: Run Tests (5 minutes)</strong></summary>
+
+```bash
+# Run all tests
+npm test
+
+# Update failing tests to match your data
+# Example: src/pages/Orders.test.tsx
+expect(screen.getByText('Orders')).toBeInTheDocument()
+expect(screen.getByText('Acme Corp')).toBeInTheDocument()
+```
+
+</details>
+
+<details>
+<summary><strong>Step 7: Optional Backend Integration</strong></summary>
+
+**When ready to connect to your API:**
+
+**Update service configuration:** `src/services/index.ts`
+
+```typescript
+// Switch from mock to API with fallback
+export const ordersService = new FallbackEntityService<Order>(
+  'Orders',
+  '/api/orders',  // Your API endpoint
+  sampleOrders    // Fallback data
+)
+```
+
+**Create .NET API endpoint** (if using provided backend):
+
+```csharp
+// PortalAPI/Controllers/OrderController.cs
+[ApiController]
+[Route("api/[controller]")]
+public class OrderController : ControllerBase {
+    private readonly IOrderService _service;
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Order>>> GetAll() {
+        return Ok(await _service.GetAllAsync());
+    }
+}
+```
+
+**The frontend automatically:**
+- Tries your API first
+- Falls back to mock data if API unavailable
+- Retries connection every 30 seconds
+- No configuration changes needed
+
+</details>
+
+### Next Steps
+
+1. **Customize dashboard cards** - Edit `dashboardCards` in `configurableData.ts`
+2. **Add more pages** - Copy existing pages, update with your data
+3. **Brand your theme** - Use browser console: `setThemeColor("primary-color", "#YOUR_COLOR")`
+4. **Deploy** - Build with `npm run build`, deploy `/dist` folder
+
+**Estimated time to fully customize:** 2-4 hours for basic transformation
+
+</details>
+
+## Key Features
+
+### 🎯 High-Value Components
+
+- **DataTable** - Reusable table with sorting, filtering, pagination, custom renderers
+- **Timeline** - Interactive visual timeline with color-coded status indicators
+- **FieldRenderer** - Automatic field type handling (dates, currency, status, priority)
+- **PageLayout** - Universal page wrapper with loading states and configuration
+
+### 🔄 Intelligent Service Layer
+
+- **FallbackEntityService** - Tries API first, falls back to mock data on error
+- **Automatic reconnection** - Retries API every 30 seconds, reconnects when available
+- **Zero configuration** - Developer experience "just works" with or without backend
+
+### 🎨 Interactive Visualizations
+
+- **Timeline Page** - Proportional date positioning, hover tooltips, click details
+- **Color-coded status** - Red (overdue), Yellow (today), Blue (upcoming), Green (completed)
+- **Google Maps integration** - Embedded maps with service locations
+
+### 🏗️ Backend Integration
+
+- **.NET 8.0 API** - ASP.NET Core + Entity Framework Core + SQLite
+- **Custom JSON converters** - Seamless enum serialization between frontend/backend
+- **Repository pattern** - Optional domain-specific queries
+- **Integration tests** - 6 xUnit tests with WebApplicationFactory
 
 ## Business Customization
 
@@ -209,12 +514,40 @@ applyColorPreset("green"); // Nature theme
 
 ### Tech Stack
 
-- **React 19.1.1** + **TypeScript 5.8.3** + **Vite 7.1.0**
-- **Material-UI** + **React Router**
-- **86 Tests** + **Strict TypeScript**
+**Frontend:**
+- React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0
+- Material-UI + React Router
+- 56 tests with Vitest
+
+**Backend:**
+- .NET 8.0 + ASP.NET Core
+- Entity Framework Core + SQLite
+- 6 integration tests with xUnit
 
 <details>
 <summary><strong>Key Abstractions</strong></summary>
+
+**DataTable Component** - Reusable table with all features:
+
+```tsx
+<DataTable
+  data={items}
+  columns={[
+    { field: "title", header: "Title", width: "40%" },
+    {
+      field: "status",
+      header: "Status",
+      render: (value, row) => (
+        <FieldRenderer field="status" value={value} entity={row} variant="chip" />
+      ),
+    },
+  ]}
+  sortable
+  filterable
+  paginated
+  onRowClick={(row) => handleEdit(row)}
+/>
+```
 
 **PageLayout Component** - Universal page wrapper:
 
@@ -230,10 +563,53 @@ applyColorPreset("green"); // Nature theme
 <FieldRenderer field="amount" value={299.99} variant="chip" />
 ```
 
-**useDataOperations Hook** - Generic data manipulation:
+**Timeline Visualization** - Proportional positioning on visual timeline:
 
 ```tsx
-const { filteredData, sortData, filterData } = useDataOperations(orders);
+// See src/pages/Timeline.tsx for interactive timeline with:
+// - Color-coded status indicators
+// - Hover tooltips with task details
+// - Click to expand full information
+// - Proportional date positioning
+```
+
+</details>
+
+<details>
+<summary><strong>Service Layer Patterns</strong></summary>
+
+**FallbackEntityService** - Intelligent API detection with automatic fallback:
+
+```typescript
+// Tries API first, falls back to mock on network errors
+export const todosService = new FallbackEntityService<TodoItem>(
+  "Tasks",
+  "/api/todo",
+  todoItems
+);
+
+// Behavior:
+// - Tries API on every call
+// - Falls back to mock data on error
+// - Console warns: "Tasks API unavailable, using mock data"
+// - Retries API every 30 seconds
+// - Automatically reconnects when backend available
+```
+
+**MockEntityService** - For entities without backend:
+
+```typescript
+export const discussionsService = new MockEntityService<Discussion>(
+  "Discussions",
+  discussions
+);
+```
+
+**BaseEntityService** - For production APIs requiring backend:
+
+```typescript
+// Fails fast if backend unavailable
+export const authService = new BaseEntityService("Auth", "/api/auth");
 ```
 
 </details>
@@ -245,7 +621,68 @@ const { filteredData, sortData, filterData } = useDataOperations(orders);
 - **Lazy loading** for route components
 - **Memoized contexts** prevent cascading updates
 - **Optimized abstractions** handle large datasets efficiently
+- **Layout classes** reduce inline styles and improve consistency
 </details>
+
+## Development Workflow
+
+### Frontend-First Development
+
+```bash
+# Step 1: Start frontend (works immediately)
+npm run dev
+
+# Full CRUD operations with mock data
+# - Add, edit, delete tasks
+# - Filter and sort
+# - All features work offline
+
+# Step 2: Optional - Start backend
+cd PortalAPI
+dotnet run
+
+# Frontend automatically:
+# - Detects API availability
+# - Connects to backend
+# - Switches from mock to real data
+# - Check console: "Tasks API unavailable, using mock data" message disappears
+
+# Step 3: Backend restart
+# Frontend automatically:
+# - Retries connection every 30 seconds
+# - Reconnects when backend available
+# - No page refresh needed
+```
+
+### Development Modes
+
+**Mock Data (backend off):**
+- UI development and styling
+- Component development
+- Frontend-only feature work
+- Rapid prototyping
+
+**Real API (backend on):**
+- API integration testing
+- Database schema changes
+- Backend business logic development
+- Full-stack feature testing
+
+### Testing Workflow
+
+```bash
+# Frontend tests (no backend needed)
+npm test                      # 56 tests
+
+# Backend tests (in-memory database)
+cd PortalAPI
+dotnet test                   # 6 integration tests
+
+# Integration testing
+# 1. Start both frontend and backend
+# 2. Verify console shows API connection
+# 3. Test CRUD operations persist to database
+```
 
 ## Session Management for Claude Code
 
@@ -292,43 +729,114 @@ src/
 │   └── sampleData.ts          # ← Replace with your data
 ├── components/
 │   ├── PageLayout.tsx         # Universal page wrapper
+│   ├── DataTable.tsx          # Reusable table component
 │   ├── FieldRenderer.tsx      # Universal field display
 │   └── StatusChip.tsx         # Configurable status display
 ├── hooks/
 │   ├── useDataOperations.ts   # Generic data manipulation
-│   └── useNavigation.ts       # Navigation utilities
-├── pages/                     # Route components
-├── services/                  # API/auth (ready for backend)
-└── theme/                     # Centralized styling
+│   └── usePageLoading.ts      # Loading state management
+├── pages/
+│   ├── Tasks.tsx              # Task management with filtering
+│   ├── Timeline.tsx           # Interactive timeline visualization
+│   ├── Table.tsx              # DataTable demo page
+│   └── Contact.tsx            # Contact info with Google Maps
+├── services/
+│   ├── fallbackService.ts     # Intelligent API fallback
+│   ├── mockService.ts         # Mock data service
+│   ├── baseService.ts         # API service
+│   └── index.ts               # Service configuration
+├── theme/
+│   ├── portalTheme.ts         # Centralized MUI theme
+│   └── layoutClasses.ts       # Reusable layout patterns
+└── types/                     # TypeScript interfaces
+
+PortalAPI/
+├── Controllers/               # Slim HTTP request handlers
+├── Services/                  # Business logic (ITodoService)
+├── Models/                    # Entity definitions
+├── DTOs/                      # API contracts with validation
+├── Converters/                # Custom JSON converters
+├── Data/                      # DbContext and migrations
+└── Tests/                     # Integration tests
 ```
 
 ## Development Commands
 
 ```bash
-npm run dev        # Development server
+# Frontend
+npm run dev        # Development server (localhost:5173)
 npm run build      # Production build
-npm test           # Run all 86 tests
+npm test           # Run 56 frontend tests
 npm run lint       # Code quality checks
+
+# Backend
+dotnet run         # Start API server (localhost:5276)
+dotnet test        # Run 6 integration tests
+dotnet build       # Verify compilation
 ```
-
-## Customization Priority
-
-1. **High Impact, 5 minutes** - Update `configurableData.ts` and `sampleData.ts`
-2. **Medium Impact, 30 minutes** - Add new status types, field types, actions
-3. **High Impact, 2 hours** - Add new pages using existing abstractions
-4. **Complex, 1 day** - Backend integration and authentication
 
 ## Production Ready Features
 
 <details>
 <summary><strong>Enterprise Features</strong></summary>
 
-- **Environment configuration** ready for deployment
-- **API client** prepared for backend integration
-- **Azure AD authentication** service ready
-- **Error boundaries** for graceful failure handling
-- **TypeScript strict mode** with 100% type coverage
-- **Performance optimized** for large datasets
+**Frontend:**
+- Environment configuration ready for deployment
+- Offline-first architecture with FallbackEntityService
+- Error boundaries for graceful failure handling
+- TypeScript strict mode with 100% type coverage
+- Performance optimized for large datasets
+- Layout classes system for consistent styling
+- State persistence with localStorage
+
+**Backend:**
+- Service layer pattern with dependency injection
+- Custom JSON converters for enum serialization
+- DTO pattern for API contracts
+- Repository pattern ready (optional)
+- Integration tests with WebApplicationFactory
+- In-memory database for testing
+
+**Developer Experience:**
+- Backend optional for frontend development
+- Automatic API detection and reconnection
+- Console warnings show system state
+- Session management for Claude Code
+- Comprehensive documentation (CLAUDE.md)
+
 </details>
 
+<details>
+<summary><strong>Component Library</strong></summary>
+
+**Reusable Components:**
+- DataTable - Sorting, filtering, pagination, custom renderers (219 lines)
+- Timeline - Interactive visual timeline (350 lines)
+- FieldRenderer - Automatic field type handling
+- PageLayout - Universal page wrapper
+- StatusChip - Configurable status badges
+- EmptyState - Standardized empty states
+
+**Patterns:**
+- Configuration-driven design
+- Generic type-safe components (`DataTable<T>`)
+- Intelligent service layer (`FallbackEntityService<T>`)
+- Interactive visualizations (Timeline with proportional positioning)
+- Theme-based styling (no inline styles)
+
+</details>
+
+## Customization Priority
+
+1. **High Impact, 5 minutes** - Update `configurableData.ts` and `sampleData.ts`
+2. **Medium Impact, 30 minutes** - Add new status types, field types, actions
+3. **High Impact, 2 hours** - Add new pages using DataTable and existing abstractions
+4. **Complex, 1 day** - Backend integration and authentication
+
+---
+
 **Ready to fork and customize!** Transform this generic portal into your business application through configuration, not code rewrites.
+
+**Test Coverage:** 62 tests (56 frontend + 6 backend) ✓
+**Frontend-First:** Works without backend, seamlessly connects when available
+**Production-Ready:** Enterprise patterns, performance optimized, fully typed
