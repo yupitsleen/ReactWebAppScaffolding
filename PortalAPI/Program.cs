@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PortalAPI.Data;
+using PortalAPI.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new PriorityConverter());
+        options.JsonSerializerOptions.Converters.Add(new TodoStatusConverter());
     });
 
 // Add Entity Framework

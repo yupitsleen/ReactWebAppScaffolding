@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PortalAPI.Data;
 using PortalAPI.Models;
+using PortalAPI.Converters;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace PortalAPI.Tests;
@@ -14,6 +16,7 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
+    private readonly JsonSerializerOptions _jsonOptions;
 
     public TodoControllerTests(WebApplicationFactory<Program> factory)
     {
@@ -38,6 +41,14 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
         });
 
         _client = _factory.CreateClient();
+
+        // Configure JSON options with custom converters to match API
+        _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        _jsonOptions.Converters.Add(new PriorityConverter());
+        _jsonOptions.Converters.Add(new TodoStatusConverter());
     }
 
     [Fact]
@@ -48,7 +59,7 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 
         // Assert
         response.EnsureSuccessStatusCode();
-        var todos = await response.Content.ReadFromJsonAsync<TodoItem[]>();
+        var todos = await response.Content.ReadFromJsonAsync<TodoItem[]>(_jsonOptions);
         Assert.NotNull(todos);
         Assert.Empty(todos);
     }
@@ -74,7 +85,7 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        var createdTodo = await response.Content.ReadFromJsonAsync<TodoItem>();
+        var createdTodo = await response.Content.ReadFromJsonAsync<TodoItem>(_jsonOptions);
 
         Assert.NotNull(createdTodo);
         Assert.False(string.IsNullOrEmpty(createdTodo.Id));
@@ -111,17 +122,25 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
         };
 
         var createResponse = await _client.PostAsJsonAsync("/api/todo", createTodoDto);
-        var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoItem>();
+        var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoItem>(_jsonOptions);
 
-        // Update the todo
-        createdTodo!.Title = "Updated Title";
-        createdTodo.Status = TodoStatus.Completed;
+        // Update the todo with DTO format
+        var updateDto = new
+        {
+            Title = "Updated Title",
+            Status = "completed"
+        };
 
         // Act
-        var updateResponse = await _client.PutAsJsonAsync($"/api/todo/{createdTodo.Id}", createdTodo);
+        var updateResponse = await _client.PutAsJsonAsync($"/api/todo/{createdTodo.Id}", updateDto);
 
         // Assert
-        Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+
+        var updatedTodo = await updateResponse.Content.ReadFromJsonAsync<TodoItem>(_jsonOptions);
+        Assert.NotNull(updatedTodo);
+        Assert.Equal("Updated Title", updatedTodo.Title);
+        Assert.Equal(TodoStatus.Completed, updatedTodo.Status);
     }
 
     [Fact]
@@ -141,7 +160,7 @@ public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>>
         };
 
         var createResponse = await _client.PostAsJsonAsync("/api/todo", createTodoDto);
-        var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoItem>();
+        var createdTodo = await createResponse.Content.ReadFromJsonAsync<TodoItem>(_jsonOptions);
 
         // Act
         var deleteResponse = await _client.DeleteAsync($"/api/todo/{createdTodo!.Id}");

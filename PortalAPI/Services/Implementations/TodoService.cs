@@ -64,27 +64,28 @@ public class TodoService : ITodoService
         }
     }
 
-    public async Task<bool> UpdateAsync(string id, TodoItem todo)
+    public async Task<TodoItem?> UpdateAsync(string id, TodoUpdateDto dto)
     {
         try
         {
-            if (id != todo.Id)
+            var existingTodo = await _context.TodoItems.FindAsync(id);
+            if (existingTodo == null)
             {
-                _logger.LogWarning("ID mismatch in update request: {PathId} vs {EntityId}", id, todo.Id);
-                return false;
+                _logger.LogWarning("Attempted to update non-existent todo with id {Id}", id);
+                return null;
             }
 
-            _context.Entry(todo).State = EntityState.Modified;
+            dto.ApplyToTodoItem(existingTodo);
 
             var updatedRows = await _context.SaveChangesAsync();
 
             if (updatedRows > 0)
             {
                 _logger.LogInformation("Updated todo with id {Id}", id);
-                return true;
+                return existingTodo;
             }
 
-            return false;
+            return existingTodo;
         }
         catch (DbUpdateConcurrencyException ex)
         {
@@ -92,7 +93,7 @@ public class TodoService : ITodoService
 
             if (!await ExistsAsync(id))
             {
-                return false;
+                return null;
             }
 
             throw;

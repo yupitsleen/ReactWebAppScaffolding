@@ -1,12 +1,13 @@
-import { memo, useState, useMemo } from 'react'
-import { Typography, Card, CardContent, Box, Checkbox, FormControlLabel, Fab, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
-import { Add as AddIcon, Sort as SortIcon } from '@mui/icons-material'
+import { memo, useState, useMemo, useEffect } from 'react'
+import { Typography, Card, CardContent, Box, Checkbox, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material'
+import { Add as AddIcon, Sort as SortIcon, FilterList as FilterListIcon } from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import PageLayout from '../components/PageLayout'
 import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useData } from '../context/ContextProvider'
 import CreateTodoDialog from '../components/CreateTodoDialog'
+import { getFromStorage, setToStorage } from '../utils/helpers'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
@@ -16,9 +17,20 @@ const Tasks = memo(() => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [sortBy, setSortBy] = useState<string>('dueDate')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [hideCompleted, setHideCompleted] = useState<boolean>(() =>
+    getFromStorage('tasks_hideCompleted', false)
+  )
+
+  useEffect(() => {
+    setToStorage('tasks_hideCompleted', hideCompleted)
+  }, [hideCompleted])
 
   const sortedTodos = useMemo(() => {
-    const todosList = [...todos]
+    let todosList = [...todos]
+
+    if (hideCompleted) {
+      todosList = todosList.filter(todo => todo.status !== 'completed')
+    }
 
     return todosList.sort((a, b) => {
       let aValue: string | number | Date
@@ -39,9 +51,13 @@ const Tasks = memo(() => {
         }
         case 'status': {
           // Convert status to numeric for sorting (pending=1, in-progress=2, completed=3)
-          const statusValues = { pending: 1, 'in-progress': 2, completed: 3 }
-          aValue = statusValues[a.status]
-          bValue = statusValues[b.status]
+          const statusValues: Record<string, number> = {
+            'pending': 1,
+            'in-progress': 2,
+            'completed': 3
+          }
+          aValue = statusValues[a.status] ?? 0
+          bValue = statusValues[b.status] ?? 0
           break
         }
         default:
@@ -55,7 +71,7 @@ const Tasks = memo(() => {
 
       return sortDirection === 'desc' ? -comparison : comparison
     })
-  }, [todos, sortBy, sortDirection])
+  }, [todos, sortBy, sortDirection, hideCompleted])
 
   const handleTaskToggle = (taskId: string) => {
     const currentTodo = todos.find(todo => todo.id === taskId)
@@ -68,9 +84,9 @@ const Tasks = memo(() => {
   return (
     <PageLayout loading={loading}>
       <Box sx={{ mt: 3 }}>
-        {/* Sort Controls */}
+        {/* Sort and Filter Controls */}
         {todos.length > 0 && (
-          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
             <SortIcon color="action" />
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel>Sort by</InputLabel>
@@ -98,6 +114,25 @@ const Tasks = memo(() => {
                 <MenuItem value="desc">Descending</MenuItem>
               </Select>
             </FormControl>
+            <Box sx={{ ml: 'auto', display: 'flex', gap: 2 }}>
+              <Button
+                variant={hideCompleted ? "contained" : "outlined"}
+                size="small"
+                startIcon={<FilterListIcon />}
+                onClick={() => setHideCompleted(!hideCompleted)}
+              >
+                {hideCompleted ? "Show Completed" : "Hide Completed"}
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateDialogOpen(true)}
+                color="primary"
+              >
+                Add Task
+              </Button>
+            </Box>
           </Box>
         )}
 
@@ -167,21 +202,6 @@ const Tasks = memo(() => {
             </Card>
           )
         }))}
-
-      {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add task"
-        sx={{
-          position: 'fixed',
-          bottom: { xs: 24, sm: 16 },
-          right: { xs: 20, sm: 16 },
-          zIndex: 1000,
-        }}
-        onClick={() => setCreateDialogOpen(true)}
-      >
-        <AddIcon />
-      </Fab>
 
       {/* Create Task Dialog */}
       <CreateTodoDialog

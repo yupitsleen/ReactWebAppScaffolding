@@ -129,12 +129,10 @@ export function useEntityState<T extends { id: string }>({
     await loadEntities()
   }, [loadEntities])
 
-  // Auto-load entities on mount if none exist
+  // Auto-load entities on mount to ensure fresh data from API
   useEffect(() => {
-    if (entities.length === 0) {
-      loadEntities()
-    }
-  }, []) // Only run once on mount
+    loadEntities()
+  }, [loadEntities])
 
   return {
     entities,
