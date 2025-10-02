@@ -15,6 +15,7 @@ import Payments from './pages/Payments'
 import Documents from './pages/Documents'
 import Discussions from './pages/Discussions'
 import Table from './pages/Table'
+import Timeline from './pages/Timeline'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -31,6 +32,7 @@ function AuthenticatedApp() {
     documents: Documents,
     discussions: Discussions,
     table: Table,
+    timeline: Timeline,
     contact: Contact
   }
 

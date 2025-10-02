@@ -60,6 +60,13 @@ export const appConfig: AppConfig = {
       description: "DataTable component demonstration",
     },
     {
+      id: "timeline",
+      label: "Timeline",
+      path: "/timeline",
+      enabled: true,
+      description: "Visual timeline of task due dates",
+    },
+    {
       id: "contact",
       label: "Contact",
       path: "/contact",
