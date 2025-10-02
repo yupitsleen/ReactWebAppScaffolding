@@ -34,3 +34,6 @@ coverage/
 *.sw?
 nul
 .claude/settings.local.json
+/.vs/ReactWebAppScaffolding/CopilotIndices/18.0.722.55285
+/.vs/ReactWebAppScaffolding/FileContentIndex/fae7f38d-452b-4918-895f-8da4a4906ba1.vsidx
+/.vs
