@@ -172,7 +172,7 @@ useEffect(() => {
 
 **Commit:** `d5fc4c9`
 
----
+### Service Layer Pattern
 
 ## Code Review Findings
 
@@ -265,7 +265,7 @@ With theme class:
 '&.completed': { opacity: 0.6 }
 ```
 
----
+- `PortalAPI.Tests/TodoControllerTests.cs` (updated to DTO format)
 
 ## DRY Violations Summary
 

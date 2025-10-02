@@ -1,13 +1,17 @@
 export { apiClient, type ApiResponse, type ApiError } from './api'
 export { authService, type AuthTokens, type LoginCredentials } from './auth'
 
-import { ServiceFactory } from './serviceFactory'
+import { BaseEntityService } from './baseService'
+import { MockEntityService } from './mockService'
 import { discussions, documents, todoItems } from '../data/sampleData'
 import type { Discussion, Document, TodoItem } from '../types/portal'
 
-export const discussionsService = ServiceFactory.createService<Discussion>('Discussions', '/api/discussions', discussions, true)
-export const documentsService = ServiceFactory.createService<Document>('Documents', '/api/documents', documents, true)
-export const todosService = ServiceFactory.createService<TodoItem>('Tasks', '/api/todo', todoItems)
+// Always use mock data for entities without backend implementation
+export const discussionsService = new MockEntityService<Discussion>('Discussions', discussions)
+export const documentsService = new MockEntityService<Document>('Documents', documents)
+
+// Always use real API for Tasks (backend implemented and tested)
+export const todosService = new BaseEntityService<TodoItem>('Tasks', '/api/todo')
 
 export { ServiceFactory } from './serviceFactory'
 export { BaseEntityService } from './baseService'
