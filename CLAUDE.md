@@ -243,6 +243,39 @@ await authService.login(credentials);
 
 Handles all field types automatically (dates, currency, status, priority)
 
+### DataTable Component
+
+```tsx
+<DataTable
+  data={items}
+  columns={[
+    { field: 'title', header: 'Title', width: '40%' },
+    {
+      field: 'status',
+      header: 'Status',
+      render: (value, row) => <FieldRenderer field="status" value={value} entity={row} variant="chip" />
+    }
+  ]}
+  sortable
+  filterable
+  paginated
+  defaultRowsPerPage={10}
+  onRowClick={(row) => handleEdit(row)}
+/>
+```
+
+**Features:**
+- Type-safe column configuration
+- Built-in sorting, filtering, pagination
+- Custom cell renderers
+- Clickable rows
+- Empty states
+- Responsive design
+
+**Benefits:**
+- Eliminates 100+ lines of boilerplate per table page
+- Consistent table UX across application
+
 ### ServiceFactory
 
 ```typescript

@@ -147,6 +147,31 @@ useEffect(() => {
 
 **Commit:** `eb0cc9d`
 
+### 12. DataTable Component Created ✅
+
+**Created:** High-value reusable table component
+- `src/components/DataTable.tsx` - 219 lines
+- Type-safe generic interface
+- Built-in sorting, filtering, pagination
+- Custom cell renderers
+- Clickable rows support
+- Empty state handling
+- Theme integration
+
+**Demo Page:** `src/pages/Table.tsx`
+- Live demonstration with TodoItem data
+- FieldRenderer integration
+- Added to navigation
+
+**FieldRenderer Improvement:**
+- Removed all label prefixes from chips
+- Status/Priority chips now show clean values
+- Applies everywhere (tables, cards, lists)
+
+**Tests:** 5 new tests, 56/56 total passing ✓
+
+**Commit:** `d5fc4c9`
+
 ---
 
 ## Code Review Findings
@@ -544,6 +569,13 @@ Database: SQLite (portal.db)
    - Integrated into portalTheme.ts
    - Refactored Tasks.tsx (7 inline styles removed)
    - 3 files changed, +118 insertions, -11 deletions
+
+6. **`d5fc4c9`** - Add DataTable component and Table demo page
+   - Created DataTable component with full test coverage
+   - Added Table demo page to navigation
+   - Removed label prefixes from FieldRenderer chips
+   - Updated CLAUDE.md with DataTable documentation
+   - 9 files changed, +531 insertions, -54 deletions
 
 ---
 
