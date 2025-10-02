@@ -14,6 +14,7 @@ import Tasks from './pages/Tasks'
 import Payments from './pages/Payments'
 import Documents from './pages/Documents'
 import Discussions from './pages/Discussions'
+import Table from './pages/Table'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -29,6 +30,7 @@ function AuthenticatedApp() {
     payments: Payments,
     documents: Documents,
     discussions: Discussions,
+    table: Table,
     contact: Contact
   }
 

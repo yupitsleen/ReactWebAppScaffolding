@@ -53,6 +53,13 @@ export const appConfig: AppConfig = {
       description: "",
     },
     {
+      id: "table",
+      label: "Table Demo",
+      path: "/table",
+      enabled: true,
+      description: "DataTable component demonstration",
+    },
+    {
       id: "contact",
       label: "Contact",
       path: "/contact",

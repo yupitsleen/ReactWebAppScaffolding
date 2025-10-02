@@ -143,6 +143,40 @@ theme: {
 - **Desktop-first design** - Sophisticated layouts, minimal whitespace
 - **Flat, geometric aesthetic** - No rounded edges, no shadows
 
+### Layout Classes (#memorize)
+
+**Available theme classes** from `src/theme/layoutClasses.ts`:
+
+**Flex Layouts:**
+```tsx
+<Box className="flex-row">...</Box>           // display: flex, alignItems: center, gap: 16px
+<Box className="flex-row-wrap">...</Box>      // flex-row + flexWrap: wrap
+<Box className="flex-column">...</Box>        // flexDirection: column
+<Box className="actions-right">...</Box>      // marginLeft: auto, display: flex
+```
+
+**Common Patterns:**
+```tsx
+<Box className="empty-state">...</Box>        // textAlign: center, padding: 64px 16px
+<Box className="section-spacing">...</Box>    // marginTop/Bottom: 24px
+<Card className="completed">...</Card>        // opacity: 0.6 for completed items
+```
+
+**Spacing Utilities:**
+```tsx
+<Box className="spacing-top-lg">...</Box>     // marginTop: 24px
+<Box className="spacing-bottom-md">...</Box>  // marginBottom: 16px
+<Box className="spacing-sm">...</Box>         // margin: 8px 0
+// Variants: sm (8px), md (16px), lg (24px)
+// Directions: top, bottom, or both
+```
+
+**When to use sx prop:**
+- Unique one-off styles (e.g., `minWidth: 150`)
+- Dynamic values (e.g., `flex: 1`)
+- Component-specific overrides
+- NOT for common patterns (flex layouts, spacing, empty states)
+
 ## Configuration System
 
 ### Action Buttons

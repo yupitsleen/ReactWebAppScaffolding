@@ -33,7 +33,7 @@ const FieldRenderer = memo<FieldRendererProps>(({
               value={value}
               statusConfig={statusConfig}
               size="small"
-              showLabel={true}
+              showLabel={false}
               sx={{ opacity }}
             />
           )
@@ -48,7 +48,7 @@ const FieldRenderer = memo<FieldRendererProps>(({
               value={value}
               statusConfig={statusConfig}
               size="small"
-              showLabel={true}
+              showLabel={false}
               sx={{ opacity }}
             />
           )
@@ -59,12 +59,9 @@ const FieldRenderer = memo<FieldRendererProps>(({
       case 'createdAt':
       case 'paidDate':
         if (typeof value === 'string') {
-          const label = field === 'dueDate' ? 'Due' :
-                       field === 'createdAt' ? 'Created' :
-                       field === 'paidDate' ? 'Paid' : 'Date'
           return (
             <Chip
-              label={`${label}: ${new Date(value).toLocaleDateString()}`}
+              label={new Date(value).toLocaleDateString()}
               size="small"
               variant="outlined"
               sx={{ opacity }}
@@ -77,7 +74,7 @@ const FieldRenderer = memo<FieldRendererProps>(({
         if (typeof value === 'number') {
           return (
             <Chip
-              label={`Amount: $${value.toFixed(2)}`}
+              label={`$${value.toFixed(2)}`}
               size="small"
               variant="outlined"
               sx={{ opacity }}
@@ -104,7 +101,7 @@ const FieldRenderer = memo<FieldRendererProps>(({
         if (variant === 'chip') {
           return (
             <Chip
-              label={`${field}: ${String(value)}`}
+              label={String(value)}
               size="small"
               variant="outlined"
               sx={{ opacity }}
