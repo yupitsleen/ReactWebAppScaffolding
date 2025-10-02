@@ -74,22 +74,17 @@ public class TodoController : ControllerBase
 
     // PUT: api/todo/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTodo(string id, TodoItem todo)
+    public async Task<ActionResult<TodoItem>> UpdateTodo(string id, TodoUpdateDto todoDto)
     {
-        if (id != todo.Id)
-        {
-            return BadRequest();
-        }
-
         try
         {
-            var success = await _todoService.UpdateAsync(id, todo);
-            if (!success)
+            var updatedTodo = await _todoService.UpdateAsync(id, todoDto);
+            if (updatedTodo == null)
             {
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok(updatedTodo);
         }
         catch (Exception ex)
         {

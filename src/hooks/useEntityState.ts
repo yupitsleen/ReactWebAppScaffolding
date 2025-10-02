@@ -129,11 +129,10 @@ export function useEntityState<T extends { id: string }>({
     await loadEntities()
   }, [loadEntities])
 
-  // Auto-load entities on mount if none exist
+  // Auto-load entities on mount to ensure fresh data from API
   useEffect(() => {
-    if (entities.length === 0) {
-      loadEntities()
-    }
+    loadEntities()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once on mount
 
   return {

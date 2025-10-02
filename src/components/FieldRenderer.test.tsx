@@ -23,7 +23,7 @@ describe('FieldRenderer', () => {
       )
 
       // Priority field
-      expect(screen.getByText('Priority: High Priority')).toBeInTheDocument()
+      expect(screen.getByText('High Priority')).toBeInTheDocument()
 
       // Status field
       rerender(
@@ -31,7 +31,7 @@ describe('FieldRenderer', () => {
           <FieldRenderer field="status" value="completed" statusConfig={mockStatusConfig} />
         </ThemeProvider>
       )
-      expect(screen.getByText('Status: Completed')).toBeInTheDocument()
+      expect(screen.getByText('Completed')).toBeInTheDocument()
 
       // Date field
       rerender(
@@ -39,7 +39,7 @@ describe('FieldRenderer', () => {
           <FieldRenderer field="dueDate" value="2024-01-15T00:00:00Z" />
         </ThemeProvider>
       )
-      expect(screen.getByText('Due: 1/14/2024')).toBeInTheDocument()
+      expect(screen.getByText('1/14/2024')).toBeInTheDocument()
 
       // Amount field
       rerender(
@@ -47,7 +47,7 @@ describe('FieldRenderer', () => {
           <FieldRenderer field="amount" value={299.99} />
         </ThemeProvider>
       )
-      expect(screen.getByText('Amount: $299.99')).toBeInTheDocument()
+      expect(screen.getByText('$299.99')).toBeInTheDocument()
 
       // Shared field
       rerender(
@@ -63,7 +63,7 @@ describe('FieldRenderer', () => {
         <FieldRenderer field="priority" value="unknown" statusConfig={mockStatusConfig} />
       )
 
-      expect(screen.getByText('priority: unknown')).toBeInTheDocument()
+      expect(screen.getByText('unknown')).toBeInTheDocument()
 
       // Non-string priority
       rerender(
@@ -114,7 +114,7 @@ describe('FieldRenderer', () => {
           <FieldRenderer field="customField" value="Custom Value" variant="chip" />
         </ThemeProvider>
       )
-      expect(screen.getByText('customField: Custom Value')).toBeInTheDocument()
+      expect(screen.getByText('Custom Value')).toBeInTheDocument()
     })
   })
 
@@ -143,7 +143,7 @@ describe('FieldRenderer', () => {
           <FieldRenderer field="priority" value="high" statusConfig={mockStatusConfig} isCompleted={true} />
         </ThemeProvider>
       )
-      expect(screen.getByText('Priority: High Priority')).toBeInTheDocument()
+      expect(screen.getByText('High Priority')).toBeInTheDocument()
     })
   })
 

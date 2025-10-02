@@ -129,7 +129,7 @@ applyColorPreset("blue");
 **Configuration:**
 
 ```javascript
-// src/data/mockData.ts
+// src/data/configurableData.ts
 theme: {
   primaryColor: "#312E81",
   secondaryColor: "#F59E0B"
@@ -209,6 +209,39 @@ await authService.login(credentials);
 
 Handles all field types automatically (dates, currency, status, priority)
 
+### DataTable Component
+
+```tsx
+<DataTable
+  data={items}
+  columns={[
+    { field: 'title', header: 'Title', width: '40%' },
+    {
+      field: 'status',
+      header: 'Status',
+      render: (value, row) => <FieldRenderer field="status" value={value} entity={row} variant="chip" />
+    }
+  ]}
+  sortable
+  filterable
+  paginated
+  defaultRowsPerPage={10}
+  onRowClick={(row) => handleEdit(row)}
+/>
+```
+
+**Features:**
+- Type-safe column configuration
+- Built-in sorting, filtering, pagination
+- Custom cell renderers
+- Clickable rows
+- Empty states
+- Responsive design
+
+**Benefits:**
+- Eliminates 100+ lines of boilerplate per table page
+- Consistent table UX across application
+
 ### ServiceFactory
 
 ```typescript
@@ -232,13 +265,6 @@ public interface ITodoService {
 // Registration in Program.cs
 builder.Services.AddScoped<ITodoService, TodoService>();
 ```
-
-#### Service Creation Strategy (#memorize)
-- **Explicit Service Creation**: Direct instantiation based on implementation status in services/index.ts
-- **Mock for Unimplemented**: Always use MockEntityService for entities without backend (Documents, Discussions)
-- **API for Implemented**: Always use BaseEntityService for entities with working backend (Tasks)
-- **Fail Fast Principle**: If production API fails, show errors rather than mock data fallback
-- **Clean Separation**: No mock dependencies in production BaseEntityService code
 
 #### DTO Pattern for API Integration
 
@@ -365,18 +391,11 @@ public interface ITodoRepository : IRepository<TodoItem> {
 - **Minimal tests** - 3-5 essential tests, not exhaustive suites
 - **Incremental changes** - Small changes, test, continue
 
-### Complex Task Management (#memorize)
-
-- **Use TodoWrite tool** for multi-step implementations
-- **Document before commit** - Update CLAUDE.md with new patterns
-- **Three-phase completion** - Update docs → Commit code → Update session
-- **Recovery preparation** - Update CURRENT_SESSION.md with context
-
 ### Configuration Extension (#memorize)
 
 - **Extend existing config** - Add to appConfig/statusConfig
 - **Use type-safe config** - Follow existing TypeScript interfaces
-- **Data-driven features** - Configure in mockData.ts, not hardcode
+- **Data-driven features** - Configure in configurableData.ts, not hardcode
 - **Document config changes** - Update interface definitions
 
 ### TypeScript Best Practices (#memorize)
@@ -406,6 +425,13 @@ public interface ITodoRepository : IRepository<TodoItem> {
 - **Graceful degradation** - Show fallback UI, don't crash
 - **User-friendly messages** - "Unable to load data" not "TypeError"
 - **Console.error for debugging** - Technical details to console only
+
+### Complex Task Management (#memorize)
+
+- **Use TodoWrite tool** for multi-step implementations
+- **Document before commit** - Update CLAUDE.md with new patterns
+- **Three-phase completion** - Update docs → Commit code → Update session
+- **Recovery preparation** - Update CURRENT_SESSION.md with context
 
 ## GitHub Issue Tracking (#memorize)
 

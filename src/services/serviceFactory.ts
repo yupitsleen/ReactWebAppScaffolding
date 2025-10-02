@@ -23,9 +23,10 @@ export class ServiceFactory {
   static createService<T extends { id: string }>(
     entityName: string,
     apiEndpoint: string,
-    initialMockData: T[]
+    initialMockData: T[],
+    forceMock?: boolean
   ): BaseEntityService<T> {
-    if (this.shouldUseMockData()) {
+    if (forceMock || this.shouldUseMockData()) {
       return new MockEntityService<T>(entityName, initialMockData)
     }
 
