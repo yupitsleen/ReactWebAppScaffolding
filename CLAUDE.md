@@ -19,16 +19,24 @@ This file provides guidance to Claude Code when working with this React web appl
 **Development Commands:**
 
 ```bash
-npm run dev     # Start dev server (localhost:5173) - usually already running
+npm run dev     # Start dev server (localhost:5173)
+                # Works with or without backend running
+                # Uses FallbackEntityService for tasks
 npm run build   # Build for production
 npm run lint    # Run ESLint
-npm test        # Run frontend tests (40 tests)
+npm test        # Run frontend tests (56 tests)
 
-# Backend commands
+# Backend commands (OPTIONAL for frontend development)
 dotnet run      # Start API server (localhost:5276)
+                # Frontend auto-connects when available
 dotnet test     # Run backend tests (6 integration tests)
 dotnet build    # Verify compilation
 ```
+
+**Development Modes:**
+- **Frontend only:** Full CRUD with mock data (backend not required)
+- **Frontend + Backend:** Full CRUD with real API
+- **No configuration changes needed** - FallbackEntityService handles switching
 
 **Tech Stack:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI + React Router  
 **Backend Stack:** .NET 8.0 + ASP.NET Core + Entity Framework Core + SQLite
@@ -181,15 +189,41 @@ appConfig.fieldConfig.todoItem = {
 - `useCurrentPage()` - Auto-detect page config from URL
 - `useDataOperations(data)` - Generic filtering, sorting, pagination
 
-### Services
+### Service Layer (#memorize)
 
-```javascript
-import { apiClient } from "../services/api";
-await apiClient.get("/todos");
+**Choose the right service for your entity:**
 
-import { authService } from "../services/auth";
-await authService.login(credentials);
+1. **MockEntityService** - No backend, never will have
+   - Example: Static reference data, demos
+   - All operations in-memory only
+   - Use for: Discussions, Documents (currently)
+
+2. **BaseEntityService** - Backend required, no fallback
+   - Example: Production APIs, auth services
+   - Fails fast if backend unavailable
+   - Use for: Critical APIs that must have backend
+
+3. **FallbackEntityService** - Backend preferred, mock fallback
+   - Example: CRUD entities during development
+   - Seamless offline development
+   - **Use for: Tasks (current implementation)**
+
+**Current Configuration (src/services/index.ts):**
+```typescript
+// FallbackEntityService - tries API, falls back to mock
+export const todosService = new FallbackEntityService<TodoItem>('Tasks', '/api/todo', todoItems)
+
+// MockEntityService - always uses mock data
+export const discussionsService = new MockEntityService<Discussion>('Discussions', discussions)
+export const documentsService = new MockEntityService<Document>('Documents', documents)
 ```
+
+**FallbackEntityService Behavior:**
+- Tries API first on every call
+- Falls back to mock on network error
+- Console warns: "Tasks API unavailable, using mock data"
+- Retries API every 30 seconds
+- Automatically reconnects when backend available
 
 ## Smart Abstractions
 
@@ -242,11 +276,55 @@ Handles all field types automatically (dates, currency, status, priority)
 - Eliminates 100+ lines of boilerplate per table page
 - Consistent table UX across application
 
-### ServiceFactory
+### Interactive Component Patterns
+
+#### Timeline Visualization
+
+**Pattern:** Proportional positioning on visual timeline
 
 ```typescript
-// Automatically switches between mock and API
-ServiceFactory.createService<TodoItem>("tasks", mockTodos);
+// Calculate position based on date range
+const minDate = new Date(Math.min(...dates))
+const maxDate = new Date(Math.max(...dates))
+const range = maxDate.getTime() - minDate.getTime()
+const position = ((date.getTime() - minDate.getTime()) / range) * 100
+
+// Render at calculated position
+<Box sx={{ left: `${position}%`, position: 'absolute' }} />
+```
+
+**Use cases:**
+- Task timelines (src/pages/Timeline.tsx)
+- Project milestones
+- Event schedules
+
+**Best practices:**
+- Use proportional positioning (0-100%) for scalability
+- Handle edge cases (single date, same dates)
+- Provide visual feedback (hover states, tooltips)
+
+#### Color-Coded Status Indicators
+
+**Pattern:** Dynamic color based on multiple conditions
+
+```typescript
+const getStatusColor = (item: TodoItem): string => {
+  const isOverdue = new Date(item.dueDate) < new Date()
+  const isComplete = item.status === 'completed'
+
+  if (isOverdue && !isComplete) return theme.palette.error.main
+  if (isComplete) return theme.palette.success.main
+  return theme.palette.info.main
+}
+```
+
+**⚠️ CRITICAL:** Use theme colors, not hardcoded hex values
+```typescript
+// WRONG
+return '#ef4444'
+
+// RIGHT
+return theme.palette.error.main
 ```
 
 ## Backend Development
@@ -390,6 +468,53 @@ public interface ITodoRepository : IRepository<TodoItem> {
 - **Minimal comments** - Only for complex logic
 - **Minimal tests** - 3-5 essential tests, not exhaustive suites
 - **Incremental changes** - Small changes, test, continue
+
+### Development Workflow (#memorize)
+
+#### Frontend-First Development
+
+1. **Start frontend only** - `npm run dev`
+   - Full CRUD operations with mock data
+   - No backend required
+   - Changes to tasks persist in memory during session
+
+2. **Optional: Start backend** - `dotnet run`
+   - Frontend automatically detects and connects
+   - Switches from mock to real API
+   - Check console for "API unavailable, using mock data" warnings
+
+3. **Backend restart**
+   - Frontend retries connection every 30 seconds
+   - Automatically reconnects when backend available
+   - No page refresh needed
+
+#### Testing Workflow
+
+1. **Frontend tests** - `npm test` (no backend needed)
+2. **Backend tests** - `dotnet test` (uses in-memory database)
+3. **Integration** - Start both, verify API connection in console
+
+#### When to Use Each Mode
+
+**Mock Data (backend off):**
+- UI development and styling
+- Component development
+- Frontend-only feature work
+- Rapid prototyping
+
+**Real API (backend on):**
+- API integration testing
+- Database schema changes
+- Backend business logic development
+- Full-stack feature testing
+
+### Offline Development (#memorize)
+
+- **Design for offline-first** - All services should work without backend
+- **Use FallbackEntityService** - For entities with backend implementation
+- **Console warnings are helpful** - "Using mock data" shows current state
+- **Periodic retry pattern** - 30 seconds is good balance (not too aggressive)
+- **Transparent fallback** - Consumers shouldn't need to know about fallback logic
 
 ### Configuration Extension (#memorize)
 
