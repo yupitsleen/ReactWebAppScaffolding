@@ -1,14 +1,14 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with this React web application.
+This file provides guidance to Claude Code when working with this forked React web application scaffold.
 
 ## Quick Navigation
 
 - [Quick Reference](#quick-reference) - Commands and tech stack
 - [Project Architecture](#project-architecture) - Structure and patterns
 - [Critical Development Rules](#critical-development-rules) - Git workflow and quality gates
+- [Business Customization](#business-customization) - Transform the scaffold
 - [Design System](#design-system) - Color management and visual principles
-- [Configuration System](#configuration-system) - Data-driven customization
 - [Available Utilities](#available-utilities) - Hooks, helpers, and services
 - [Smart Abstractions](#smart-abstractions) - Key reusable components
 - [Backend Development](#backend-development) - .NET Core API patterns
@@ -42,38 +42,60 @@ dotnet build    # Verify compilation
 
 ## Project Architecture
 
+### This is a Forked Scaffold (#memorize)
+
+**Important Context:**
+
+- This codebase was forked from a generic business portal scaffold
+- It contains reusable abstractions designed for ANY business domain
+- Your job is to transform it for a SPECIFIC business purpose
+- The scaffold provides the foundation, you customize for the domain
+
+**What This Means:**
+
+- Generic entity names (TodoItem, Document, Discussion) should be renamed to your domain
+- Sample data is meant to be replaced with your business data
+- Navigation, status configs, and field configs are examples to customize
+- Components are intentionally generic to work with any data structure
+
 ### Frontend Structure
 
 ```
 src/
-├── data/                # configurableData.ts (config), sampleData.ts (data)
-├── components/          # PageLayout, FieldRenderer, StatusChip, DataTable
-├── pages/               # Route components
-├── hooks/               # useDebounce, usePageLoading, useDataOperations
-├── services/            # API client, auth, ServiceFactory
-├── theme/               # Centralized theme provider
-└── types/               # TypeScript interfaces
+├── data/                # ← CUSTOMIZE: Replace with your business data
+│   ├── configurableData.ts  # App config, navigation, theme
+│   └── sampleData.ts        # Replace with your domain entities
+├── components/          # Reusable (usually keep as-is)
+│   ├── DataTable.tsx        # Works with any entity type
+│   ├── FieldRenderer.tsx    # Handles any field types
+│   └── PageLayout.tsx       # Universal page wrapper
+├── pages/               # ← CUSTOMIZE: Rename/create for your domain
+│   ├── Tasks.tsx → Orders.tsx (example transformation)
+│   └── Timeline.tsx         # Visual timeline (adapt or remove)
+├── services/            # ← UPDATE: Configure for your API endpoints
+│   ├── fallbackService.ts   # Keep as-is
+│   └── index.ts             # Configure your services here
+├── types/               # ← EXTEND: Add your domain types
+│   └── portal.ts            # Extend existing interfaces
+└── theme/               # ← CUSTOMIZE: Your brand colors
 ```
 
 ### Backend Structure
 
 ```
 PortalAPI/
-├── Controllers/         # Slim HTTP request handlers
-├── Services/            # Business logic (ITodoService)
-├── Repositories/        # Optional domain queries (ITodoRepository)
-├── Models/              # Entity definitions
-├── DTOs/                # API contracts with validation
-├── Data/                # DbContext and migrations
-└── Tests/               # Integration tests (WebApplicationFactory)
+├── Controllers/         # ← CREATE: Your domain controllers
+├── Services/            # ← CREATE: Your business logic
+├── Models/              # ← CREATE: Your domain entities
+├── DTOs/                # ← CREATE: Your API contracts
+└── Tests/               # ← UPDATE: Tests for your domain
 ```
 
 ### Key Patterns
 
 - **Configuration-Driven** - 90% customization through `src/data/configurableData.ts`
+- **Generic Abstractions** - DataTable, FieldRenderer work with ANY entity type
 - **Service Layer** - Controllers → Services → Repositories → DbContext
-- **Theme-Based Styling** - NO inline styles, all through `src/theme/portalTheme.ts`
-- **Performance Optimized** - React.memo, useMemo/useCallback, lazy loading
 - **Offline-First** - FallbackEntityService enables development without backend
 
 ## Critical Development Rules
@@ -81,39 +103,176 @@ PortalAPI/
 ### Git Workflow (#memorize)
 
 ```bash
-# Work on current feature branch (user creates from main)
-git commit -m "Add field renderer configuration system"
-# NOT: "Add field rendering with Claude assistance"
+# Work on feature branches (user creates from main)
+git commit -m "Replace TodoItem with Order entity"
+git commit -m "Add customer management page"
+# NOT: "Add customer page with Claude assistance"
 
 # Push and create PR when complete
 git push origin [current-branch-name]
-# Then create PR with descriptive title and summary
 
-# User approves/merges PR and creates next fresh branch
+# User approves/merges PR
 ```
 
 **Commit Standards:**
 
-- Imperative mood: "Add", "Fix", "Refactor"
-- Be specific about what changed
+- Imperative mood: "Add", "Replace", "Rename", "Create"
+- Be specific: "Replace TodoItem with Order in all files"
 - No co-author attribution (#memorize)
-- Include scope: "components:", "hooks:", "services:"
-- Minimal comments - only for complex logic
+- Include scope: "entities:", "pages:", "services:"
 
 ### Quality Gates (#memorize)
 
 - **Always run tests** after each working change
+- **Update tests** when renaming entities (TodoItem → Order)
 - **No commits without passing tests** - Frontend: 56/56 ✓, Backend: 6/6 ✓
 - **Dev server assumed running** - localhost:5173 for real-time feedback
 - **Minimal, focused tests** - Test core functionality only
-- **Avoid excessive comments** - Code should be self-explanatory
 
 ### Session Management (#memorize)
 
-- **Maintain CURRENT_SESSION.md** - Update throughout development
-- **Track progress and decisions** - Modified files, architecture choices, next steps
-- **Prepare for compaction** - Thorough updates when approaching conversation limits
-- **Session structure** - Current work, completed items, next priorities, modified files, recovery context
+- **Maintain CURRENT_SESSION.md** - Update throughout customization
+- **Track transformation progress** - What entities renamed, what pages created
+- **Document domain decisions** - Why certain entities, what they represent
+- **Session structure** - Current work, completed transformations, next customizations
+
+## Business Customization
+
+### Phase 1: Identity & Branding (First Session)
+
+**1. Update App Identity** (`src/data/configurableData.ts`):
+
+```typescript
+export const appConfig: AppConfig = {
+  appName: "Your Business Name Portal", // Replace generic name
+  pageTitle: "Your Dashboard",
+
+  navigation: [
+    // Replace generic pages with your business pages
+    { id: "orders", label: "Orders", path: "/orders", enabled: true },
+    { id: "customers", label: "Customers", path: "/customers", enabled: true },
+  ],
+
+  theme: {
+    primaryColor: "#YOUR_BRAND_COLOR", // Your brand primary
+    secondaryColor: "#YOUR_ACCENT_COLOR",
+  },
+};
+```
+
+**2. Replace Sample Data** (`src/data/sampleData.ts`):
+
+```typescript
+// BEFORE (generic scaffold):
+export const todoItems: TodoItem[] = [...]
+
+// AFTER (your business domain):
+export const orders: Order[] = [...]
+export const customers: Customer[] = [...]
+```
+
+**3. Update Types** (`src/types/portal.ts`):
+
+```typescript
+// Add your domain interfaces
+export interface Order {
+  id: string;
+  customerName: string;
+  // ... your fields
+}
+```
+
+### Phase 2: Page Transformation
+
+**Rename/Create Pages for Your Domain:**
+
+```bash
+# Example: Transform Tasks → Orders
+mv src/pages/Tasks.tsx src/pages/Orders.tsx
+```
+
+**Update Page Components:**
+
+```tsx
+// src/pages/Orders.tsx
+import { useData } from '../context/ContextProvider'
+
+const Orders = memo(() => {
+  const { orders } = useData()  // Use your domain data
+
+  return (
+    <PageLayout pageId="orders">
+      <DataTable
+        data={orders}
+        columns={[
+          { field: 'customerName', header: 'Customer' },
+          { field: 'total', header: 'Total' },
+          { field: 'status', header: 'Status', render: ... }
+        ]}
+        sortable
+        filterable
+      />
+    </PageLayout>
+  )
+})
+```
+
+### Phase 3: Status & Field Configuration
+
+**Configure Your Business Statuses:**
+
+```typescript
+statusConfig: {
+  orderStatus: {  // Your domain status
+    pending: { color: "warning", label: "Pending" },
+    processing: { color: "info", label: "Processing" },
+    completed: { color: "success", label: "Completed" }
+  }
+}
+```
+
+**Configure Field Display:**
+
+```typescript
+fieldConfig: {
+  order: {  // Your entity name
+    primary: "customerName",
+    secondary: ["status", "total", "orderDate"],
+    hidden: ["id", "internalNotes"]
+  }
+}
+```
+
+### Customization Checklist (#memorize)
+
+**Data Layer:**
+
+- [ ] Rename generic entities (TodoItem → Order)
+- [ ] Replace sample data with your domain data
+- [ ] Update TypeScript interfaces
+- [ ] Configure status mappings for your domain
+- [ ] Configure field display rules
+
+**UI Layer:**
+
+- [ ] Rename/create pages for your domain
+- [ ] Update navigation configuration
+- [ ] Update page components to use your data
+- [ ] Update App.tsx routing
+- [ ] Customize theme colors
+
+**Service Layer:**
+
+- [ ] Update service configurations for your endpoints
+- [ ] Keep FallbackEntityService pattern
+- [ ] Configure mock data for your entities
+
+**Testing:**
+
+- [ ] Update test data to match your domain
+- [ ] Update test assertions for renamed entities
+- [ ] Verify all 56 frontend tests pass
+- [ ] Add domain-specific test cases
 
 ## Design System
 
@@ -123,63 +282,23 @@ Centralized CSS custom properties system:
 
 **CSS Variables:**
 
-- `--primary-color` (#312E81 - Dark Purple)
-- `--secondary-color` (#F59E0B - Yellow)
-- `--background-color` (#F3F4F6 - Subdued Purple)
+- `--primary-color` - Default: #312E81 (customize to your brand)
+- `--secondary-color` - Default: #F59E0B (customize to your brand)
+- `--background-color` - Default: #F3F4F6
 
 **Live Testing (Browser Console):**
 
 ```javascript
-setThemeColor("primary-color", "#d32f2f");
-applyColorPreset("blue");
-```
-
-**Configuration:**
-
-```javascript
-// src/data/configurableData.ts
-theme: {
-  primaryColor: "#312E81",
-  secondaryColor: "#F59E0B"
-}
+setThemeColor("primary-color", "#YOUR_BRAND_COLOR");
+applyColorPreset("blue"); // Test presets
 ```
 
 ### Styling Rules (#memorize)
 
 - **NEVER use inline styles** - ALL styling through theme provider
 - **Use semantic CSS classes** - `header-section`, `dashboard-section`
-- **Desktop-first design** - Sophisticated layouts, minimal whitespace
-- **Flat, geometric aesthetic** - No rounded edges, no shadows
+- **Desktop-first design** - Sophisticated layouts
 - **Theme colors, not hex** - Use `theme.palette.error.main`, not `'#ef4444'`
-
-## Configuration System
-
-### Action Buttons
-
-```javascript
-appConfig.actions.document = {
-  icon: "Download",
-  variant: "contained",
-  color: "primary",
-};
-```
-
-### Status/Priority System
-
-```javascript
-statusConfig.priority[todo.priority].color;
-appConfig.statusConfig.priority.high = { color: "#dc2626", label: "High" };
-```
-
-### Field Display Configuration
-
-```javascript
-appConfig.fieldConfig.todoItem = {
-  primary: ["title"], // Prominent display
-  secondary: ["priority"], // As chips
-  hidden: ["internalNotes"], // Excluded
-};
-```
 
 ## Available Utilities
 
@@ -192,275 +311,165 @@ appConfig.fieldConfig.todoItem = {
 
 ### Service Layer (#memorize)
 
-**Choose the right service for your entity:**
-
-1. **MockEntityService** - No backend, never will have
-
-   - Use for: Static reference data, demos
-   - Current: Discussions, Documents
-
-2. **BaseEntityService** - Backend required, no fallback
-
-   - Use for: Production APIs, auth services
-   - Fails fast if backend unavailable
-
-3. **FallbackEntityService** - Backend preferred, mock fallback
-   - Use for: CRUD entities during development
-   - Current: Tasks (todosService)
-   - **Behavior:** Tries API first, falls back to mock on error, retries every 30s
-
-**Current Configuration:**
+**Configure services for your domain** (`src/services/index.ts`):
 
 ```typescript
-// src/services/index.ts
-export const todosService = new FallbackEntityService<TodoItem>(
-  "Tasks",
-  "/api/todo",
-  todoItems
+// Your business entities with FallbackEntityService
+export const ordersService = new FallbackEntityService<Order>(
+  "Orders",
+  "/api/orders", // Your API endpoint
+  sampleOrders // Your mock data
 );
-export const discussionsService = new MockEntityService<Discussion>(
-  "Discussions",
-  discussions
-);
-export const documentsService = new MockEntityService<Document>(
-  "Documents",
-  documents
+
+// Static/reference data with MockEntityService
+export const categoriesService = new MockEntityService<Category>(
+  "Categories",
+  categories
 );
 ```
+
+**Service Selection:**
+
+1. **FallbackEntityService** - For CRUD entities (tries API, falls back to mock)
+2. **MockEntityService** - For static reference data (always uses mock)
+3. **BaseEntityService** - For production APIs that must have backend
 
 ## Smart Abstractions
 
-### PageLayout Component
-
-```tsx
-<PageLayout pageId="documents" loading={loading}>
-  {content}
-</PageLayout>
-```
-
-- Auto title/description from navigation config
-- Built-in loading wrapper
-
-### FieldRenderer Component
-
-Handles all field types (dates, currency, status, priority) automatically
-
-### DataTable Component
+### DataTable Component (Works with ANY Entity Type)
 
 ```tsx
 <DataTable
-  data={items}
+  data={yourEntities}  // Any array of objects
   columns={[
-    { field: "title", header: "Title", width: "40%" },
-    {
-      field: "status",
-      header: "Status",
-      render: (value, row) => (
-        <FieldRenderer
-          field="status"
-          value={value}
-          entity={row}
-          variant="chip"
-        />
-      ),
-    },
+    { field: 'anyField', header: 'Any Header' },
+    { field: 'status', header: 'Status', render: (value, row) => <FieldRenderer ... /> }
   ]}
   sortable
   filterable
   paginated
-  onRowClick={(row) => handleEdit(row)}
+  onRowClick={handleEdit}
 />
 ```
 
-**Features:** Type-safe columns, built-in sorting/filtering/pagination, custom renderers, clickable rows
+### PageLayout Component
 
-### Interactive Component Patterns
-
-**Timeline Visualization:**
-
-```typescript
-// Proportional positioning on timeline
-const range = maxDate.getTime() - minDate.getTime()
-const position = ((date.getTime() - minDate.getTime()) / range) * 100
-<Box sx={{ left: `${position}%`, position: 'absolute' }} />
+```tsx
+<PageLayout pageId="your-page-id" loading={loading}>
+  {content}
+</PageLayout>
 ```
 
-**Color-Coded Status:**
+### FieldRenderer Component
 
-```typescript
-// Use theme colors, NOT hardcoded hex
-const getStatusColor = (item: TodoItem): string => {
-  const isOverdue = new Date(item.dueDate) < new Date();
-  if (isOverdue && item.status !== "completed") return theme.palette.error.main; // NOT '#ef4444'
-  return theme.palette.success.main;
-};
-```
+Automatically handles: dates, currency, status, priority, amounts, etc.
 
 ## Backend Development
 
 ### .NET Architecture Patterns (#memorize)
 
-**Service Layer:**
+**Create Controllers for Your Domain:**
 
 ```csharp
-public interface ITodoService {
-    Task<IEnumerable<TodoItem>> GetAllAsync();
-    Task<TodoItem> CreateAsync(TodoCreateDto dto);
-}
-builder.Services.AddScoped<ITodoService, TodoService>();
-```
+// YourEntity Controller
+[ApiController]
+[Route("api/[controller]")]
+public class OrderController : ControllerBase {
+    private readonly IOrderService _service;
 
-**DTO Pattern:**
+    public OrderController(IOrderService service) {
+        _service = service;
+    }
 
-```csharp
-public class TodoCreateDto {
-    [Required]
-    [RegularExpression(@"^(low|medium|high)$")]
-    public string Priority { get; set; } = string.Empty;
-}
-```
-
-**Enum Serialization:**
-
-```csharp
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum Priority {
-    [JsonPropertyName("low")] Low,
-    [JsonPropertyName("medium")] Medium,
-    [JsonPropertyName("high")] High
-}
-```
-
-### Testing Strategy (#memorize)
-
-**xUnit Integration Tests:**
-
-```csharp
-public class TodoControllerTests : IClassFixture<WebApplicationFactory<Program>> {
-    public TodoControllerTests(WebApplicationFactory<Program> factory) {
-        _factory = factory.WithWebHostBuilder(builder => {
-            builder.ConfigureServices(services => {
-                services.AddDbContext<PortalDbContext>(options =>
-                    options.UseInMemoryDatabase("TestDb"));
-            });
-        });
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Order>>> GetAll() {
+        return Ok(await _service.GetAllAsync());
     }
 }
 ```
 
-**Principles:** WebApplicationFactory for HTTP pipeline, in-memory database, Arrange-Act-Assert
-
-### Repository Pattern (Optional) (#memorize)
+**Service Layer Pattern:**
 
 ```csharp
-public interface IRepository<T> where T : class {
-    Task<IEnumerable<T>> GetAllAsync();
+public interface IOrderService {
+    Task<IEnumerable<Order>> GetAllAsync();
+    Task<Order> CreateAsync(OrderCreateDto dto);
 }
 
-public interface ITodoRepository : IRepository<TodoItem> {
-    Task<IEnumerable<TodoItem>> GetByStatusAsync(TodoStatus status);
-}
+builder.Services.AddScoped<IOrderService, OrderService>();
 ```
 
-**When to use:** Complex domain queries, analytics  
-**When to skip:** Simple CRUD works with Service → DbContext  
-**Note:** DbContext IS Unit of Work - no additional pattern needed
+**Testing Your Domain:**
+
+```csharp
+public class OrderControllerTests : IClassFixture<WebApplicationFactory<Program>> {
+    // Test your Order entity CRUD operations
+}
+```
 
 ## Development Preferences
 
 - **Be concise** - Short, focused responses
-- **One feature at a time** - Maintain working state
-- **Assume dev server running** - Changes visible at localhost:5173
+- **One transformation at a time** - Rename entities incrementally
 - **Configuration over code** - Prefer data-driven solutions
-- **Abstraction first** - Ask "Can this be configured?"
-- **Minimal comments** - Only for complex logic
-- **Minimal tests** - 3-5 essential tests, not exhaustive suites
-- **Incremental changes** - Small changes, test, continue
+- **Minimal comments** - Only for complex business logic
+- **Minimal tests** - 3-5 essential tests per domain entity
 
 ### Development Workflow (#memorize)
 
+**Customization Workflow:**
+
+1. **Identify domain entity** - What business concept (Order, Patient, Project)
+2. **Replace generic entity** - Rename TodoItem → YourEntity everywhere
+3. **Update sample data** - Replace with realistic domain data
+4. **Configure statuses** - Define your business statuses
+5. **Update pages** - Rename and customize page components
+6. **Update routing** - Map navigation to new page components
+7. **Run tests** - Update test data and assertions
+8. **Verify in browser** - Check all pages work with new domain
+
 **Frontend-First Development:**
 
-1. `npm run dev` - Full CRUD with mock data (no backend needed)
-2. Optional: `dotnet run` - Frontend auto-connects to API
-3. Backend restart - Frontend retries every 30s, auto-reconnects
+1. `npm run dev` - Customize with mock data (no backend needed)
+2. Optional: `dotnet run` - Connect to real API later
+3. Backend restart - Frontend auto-reconnects
 
-**Testing Workflow:**
+### Transformation Best Practices (#memorize)
 
-1. `npm test` - Frontend tests (no backend needed)
-2. `dotnet test` - Backend tests (in-memory database)
-3. Integration - Start both, verify console shows API connection
+**Entity Renaming Strategy:**
 
-**When to Use Each Mode:**
+1. Start with one entity (TodoItem → Order)
+2. Update types first (`types/portal.ts`)
+3. Update data next (`data/sampleData.ts`)
+4. Update context (`context/ContextProvider.tsx`)
+5. Update page components (`pages/Orders.tsx`)
+6. Update tests (`pages/Orders.test.tsx`)
+7. Verify everything works before next entity
 
-- Mock (backend off): UI dev, components, prototyping
-- API (backend on): Integration testing, DB changes, full-stack features
+**When Customizing:**
 
-### Offline Development (#memorize)
-
-- **Design for offline-first** - All services should work without backend
-- **Use FallbackEntityService** - For entities with backend implementation
-- **Console warnings helpful** - "Using mock data" shows current state
-- **30-second retry** - Good balance for reconnection attempts
-- **Transparent fallback** - Consumers don't need to know about fallback logic
-
-### Configuration Extension (#memorize)
-
-- **Extend existing config** - Add to appConfig/statusConfig
-- **Use type-safe config** - Follow existing TypeScript interfaces
-- **Data-driven features** - Configure in configurableData.ts
-- **Document config changes** - Update interface definitions
-
-### TypeScript Best Practices (#memorize)
-
-- **Use existing interfaces** - Extend, don't create new
-- **Strict type checking** - No `any` types
-- **Type-only imports** - Use `import type` (verbatimModuleSyntax)
-- **Interface over type** - Objects use `interface`, unions use `type`
-
-### Performance Considerations (#memorize)
-
-- **Always use React.memo** for new components
-- **Memoize calculations** - useMemo for data transformations
-- **Memoize callbacks** - useCallback for functions as props
-- **Avoid inline objects/arrays** - Extract or memoize
-
-### File Organization (#memorize)
-
-- **Use existing structure** - Don't create new folders unnecessarily
-- **Naming conventions** - PascalCase for components, camelCase for hooks/utils
-- **Avoid deep nesting** - Maximum 2-3 levels in src/
-- **Barrel exports** - Use index files for clean imports
-
-### Error Handling (#memorize)
-
-- **Use existing ErrorBoundary** - Don't create new ones
-- **Graceful degradation** - Show fallback UI, don't crash
-- **User-friendly messages** - "Unable to load data" not "TypeError"
-- **Console.error for debugging** - Technical details to console only
+- Keep existing abstractions (DataTable, FieldRenderer, PageLayout)
+- Only modify business logic and data structures
+- Reuse generic components for your domain
+- Extend interfaces, don't rewrite them
 
 ### Complex Task Management (#memorize)
 
-- **Use TodoWrite tool** for multi-step implementations
-- **Document before commit** - Update CLAUDE.md with new patterns
-- **Three-phase completion** - Update docs → Commit code → Update session
-- **Recovery preparation** - Update CURRENT_SESSION.md with context
+- **Use TodoWrite tool** for multi-entity transformations
+- **Document domain decisions** - Why these entities, what they represent
+- **Update CURRENT_SESSION.md** - Track transformation progress
+- **Update CLAUDE.md** - Add domain-specific patterns
 
 ## GitHub Issue Tracking (#memorize)
 
-**Issue Workflow:**
+**Customization Workflow:**
 
 ```bash
-git checkout -b feature/backend-foundation  # Reference: Issue #10
-# Link PR: "Closes #10" or "Fixes #10"
-# Issue auto-closes when PR merges
+git checkout -b feature/replace-todoitem-with-order
+# Transform TodoItem → Order across all files
+git commit -m "Replace TodoItem entity with Order"
+git push origin feature/replace-todoitem-with-order
+# Create PR: "Transform scaffold for order management domain"
 ```
 
-**Issue Organization:**
-
-- Phase 1 (#10-13): Local Development MVP
-- Phase 2 (#14-15): Azure Deployment MVP
-- Phase 3 (#16-17): Infrastructure as Code
-- Phase 4 (#18-19): Production Hardening
-
-This scaffold provides a production-ready foundation for React applications with enterprise-grade patterns and comprehensive backend integration.
+This scaffold provides a production-ready foundation. Your job is to transform generic entities into your specific business domain through systematic customization.
