@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage reports
+coverage/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+nul
+.claude/settings.local.json
+/.vs/ReactWebAppScaffolding/CopilotIndices/18.0.722.55285
+/.vs/ReactWebAppScaffolding/FileContentIndex/fae7f38d-452b-4918-895f-8da4a4906ba1.vsidx
+/.vs
