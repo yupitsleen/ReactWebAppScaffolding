@@ -126,7 +126,7 @@ export interface DashboardSection {
   title: string
   dataSource: string
   pageId: string // which navigation page this section relates to
-  filterCriteria?: unknown
+  filterCriteria?: Record<string, unknown>
   maxItems?: number
   enabled: boolean
 }

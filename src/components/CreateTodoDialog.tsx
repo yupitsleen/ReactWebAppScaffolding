@@ -48,9 +48,9 @@ const CreateTodoDialog = ({ open, onClose, onSuccess }: CreateTodoDialogProps) =
   }
 
   const handleSelectChange = (field: keyof TodoFormData) => (
-    event: { target: { value: string } }
+    event: React.ChangeEvent<HTMLInputElement> | { target: { value: unknown; name: string } }
   ) => {
-    setFormData(prev => ({ ...prev, [field]: event.target.value }))
+    setFormData(prev => ({ ...prev, [field]: String(event.target.value) }))
     setError('')
   }
 

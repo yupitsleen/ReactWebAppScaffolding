@@ -80,18 +80,20 @@ class AuthService {
     return now < expirationTime
   }
 
-  private _setTokens(tokens: AuthTokens): void {
-    localStorage.setItem(this.TOKEN_KEY, JSON.stringify(tokens))
-    apiClient.setAuthToken(tokens.accessToken)
-  }
+  // Reserved for future use when backend is implemented
+  // private setTokens(tokens: AuthTokens): void {
+  //   localStorage.setItem(this.TOKEN_KEY, JSON.stringify(tokens))
+  //   apiClient.setAuthToken(tokens.accessToken)
+  // }
 
   private clearTokens(): void {
     localStorage.removeItem(this.TOKEN_KEY)
   }
 
-  private _setUser(user: AuthUser): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user))
-  }
+  // Reserved for future use when backend is implemented
+  // private setUser(user: AuthUser): void {
+  //   localStorage.setItem(this.USER_KEY, JSON.stringify(user))
+  // }
 
   private clearUser(): void {
     localStorage.removeItem(this.USER_KEY)

@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles'
 import type { ThemeConfig } from '../types/portal'
-import { layoutClasses } from './layoutClasses'
+// Layout classes are available but not applied via theme - use className prop on Box components
+// import { layoutClasses } from './layoutClasses'
 
 // Inject CSS custom properties for dynamic color management
 const injectCSSVariables = (themeConfig: ThemeConfig) => {
@@ -335,18 +336,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
       },
     },
-    // Box component for sections
+    // Box component for sections - commented out as MuiBox is not supported in Material-UI v6
+    // Layout classes from layoutClasses.ts should be applied directly to Box components via className prop
+    // Example: <Box className="flex-row spacing-top-lg">...</Box>
+    /*
     MuiBox: {
       styleOverrides: {
         root: {
-          // Layout classes from layoutClasses.ts
           '&.flex-row': layoutClasses.flexRow,
           '&.flex-row-wrap': layoutClasses.flexRowWrap,
           '&.flex-column': layoutClasses.flexColumn,
           '&.empty-state': layoutClasses.emptyState,
           '&.actions-right': layoutClasses.actionsRight,
           '&.section-spacing': layoutClasses.sectionSpacing,
-          // Spacing utilities
           '&.spacing-sm': layoutClasses.spacingSm,
           '&.spacing-top-sm': layoutClasses.spacingTopSm,
           '&.spacing-bottom-sm': layoutClasses.spacingBottomSm,
@@ -356,7 +358,6 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           '&.spacing-lg': layoutClasses.spacingLg,
           '&.spacing-top-lg': layoutClasses.spacingTopLg,
           '&.spacing-bottom-lg': layoutClasses.spacingBottomLg,
-          // Existing section classes
           '&.dashboard-section': {
             marginBottom: '48px',
             textAlign: 'center',
@@ -409,6 +410,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
       },
     },
+    */
     // Paper component defaults
     MuiPaper: {
       styleOverrides: {
@@ -492,7 +494,8 @@ export const portalTheme = createPortalTheme({
   secondaryColor: "#9c27b0",
   mode: "light",
   borderRadius: 12,
-  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
+  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  iconMappings: {}
 })
 
 export default createPortalTheme

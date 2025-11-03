@@ -7,9 +7,12 @@ export const getThemeColor = (colorName: string) => {
   return getComputedStyle(document.documentElement).getPropertyValue(`--${colorName}`);
 };
 
+// Define preset type
+type ColorPreset = 'dark-purple' | 'blue' | 'green' | 'red'
+
 // Quick color presets for testing
-export const applyColorPreset = (preset: 'dark-purple' | 'blue' | 'green' | 'red') => {
-  switch (preset) {
+export const applyColorPreset = (preset: ColorPreset | string) => {
+  switch (preset as ColorPreset) {
     case 'dark-purple':
       setThemeColor('primary-color', '#312E81');
       setThemeColor('secondary-color', '#F59E0B');
@@ -26,6 +29,8 @@ export const applyColorPreset = (preset: 'dark-purple' | 'blue' | 'green' | 'red
       setThemeColor('primary-color', '#d32f2f');
       setThemeColor('secondary-color', '#1976d2');
       break;
+    default:
+      console.warn(`Unknown color preset: ${preset}`);
   }
 };
 

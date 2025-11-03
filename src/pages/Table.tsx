@@ -68,7 +68,7 @@ const Table = memo(() => {
   ]
 
   return (
-    <PageLayout pageId="table" loading={loading}>
+    <PageLayout loading={loading}>
       <Box className="spacing-top-lg">
         <DataTable
           data={todos}
