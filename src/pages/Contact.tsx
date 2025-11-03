@@ -7,7 +7,7 @@ import PageLayout from "../components/PageLayout";
 const Contact = memo(() => {
   // Encode address for Google Maps embed
   const encodedAddress = encodeURIComponent(serviceInfo.contact.address);
-  const mapSrc = `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodedAddress}`;
+  // const mapSrc = `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodedAddress}`;
 
   // Alternative: Use query parameter (works without API key but has limitations)
   const mapSrcQuery = `https://maps.google.com/maps?q=${encodedAddress}&output=embed`;

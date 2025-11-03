@@ -1,6 +1,5 @@
 import { apiClient } from './api'
 import type { ApiResponse } from './api'
-import { appConfig } from '../data/configurableData'
 
 /**
  * Base service class for real API operations

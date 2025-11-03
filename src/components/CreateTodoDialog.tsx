@@ -59,12 +59,12 @@ const CreateTodoDialog = ({ open, onClose, onSuccess }: CreateTodoDialogProps) =
     setError('')
 
     // Basic validation
-    if (!formData.title.trim()) {
+    if (!String(formData.title).trim()) {
       setError('Title is required')
       return
     }
 
-    if (!formData.assignedTo.trim()) {
+    if (!String(formData.assignedTo).trim()) {
       setError('Assigned to is required')
       return
     }

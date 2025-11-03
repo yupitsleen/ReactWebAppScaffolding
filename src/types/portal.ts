@@ -26,6 +26,7 @@ export interface TodoItem {
   category: string
   createdBy: string
   createdAt: string
+  [key: string]: unknown
 }
 
 export interface Payment {
@@ -48,6 +49,7 @@ export interface Document {
   uploadedAt: string
   size: string
   shared: boolean
+  [key: string]: unknown
 }
 
 export interface Discussion {
@@ -60,6 +62,7 @@ export interface Discussion {
   replies: Reply[]
   priority: 'normal' | 'urgent'
   resolved: boolean
+  [key: string]: unknown
 }
 
 export interface Reply {

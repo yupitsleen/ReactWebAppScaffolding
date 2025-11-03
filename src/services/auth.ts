@@ -80,7 +80,7 @@ class AuthService {
     return now < expirationTime
   }
 
-  private setTokens(tokens: AuthTokens): void {
+  private _setTokens(tokens: AuthTokens): void {
     localStorage.setItem(this.TOKEN_KEY, JSON.stringify(tokens))
     apiClient.setAuthToken(tokens.accessToken)
   }
@@ -89,7 +89,7 @@ class AuthService {
     localStorage.removeItem(this.TOKEN_KEY)
   }
 
-  private setUser(user: AuthUser): void {
+  private _setUser(user: AuthUser): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user))
   }
 
