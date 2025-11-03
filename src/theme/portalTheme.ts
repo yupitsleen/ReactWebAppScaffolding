@@ -122,7 +122,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
   },
   spacing: 8,
   shape: {
-    borderRadius: 0,
+    borderRadius: 12,
   },
   components: {
     // Card component defaults
@@ -132,15 +132,15 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       },
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 12,
           border: `1px solid var(--border-color)`,
-          boxShadow: 'none',
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
           transition: 'all 0.3s ease-in-out',
           marginBottom: '24px',
-          textAlign: 'center',
           '&.clickable:hover, &[role="button"]:hover': {
-            boxShadow: 'none',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             borderColor: 'var(--primary-color)',
+            transform: 'translateY(-2px)',
             backgroundColor: themeConfig.mode === 'light' ? 'rgba(49, 46, 129, 0.02)' : 'rgba(49, 46, 129, 0.1)',
           },
           '&.completed': {
@@ -154,10 +154,9 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: '12px',
-          textAlign: 'center',
+          padding: '20px',
           '&:last-child': {
-            paddingBottom: '12px',
+            paddingBottom: '20px',
           },
         },
       },
@@ -166,20 +165,20 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 8,
           textTransform: 'none',
           fontWeight: 500,
-          padding: '8px 24px',
+          padding: '10px 24px',
           boxShadow: 'none',
-          transition: 'all 0.3s ease-in-out',
+          transition: 'all 0.2s ease-in-out',
           '&:hover': {
-            boxShadow: 'none',
-            backgroundColor: 'rgba(49, 46, 129, 0.08)',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            transform: 'translateY(-1px)',
           },
         },
         contained: {
           '&:hover': {
-            backgroundColor: 'rgba(49, 46, 129, 0.9)',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
           },
         },
       },
@@ -188,7 +187,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 16,
           fontWeight: 500,
         },
         colorPrimary: {
@@ -221,22 +220,21 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiContainer: {
       styleOverrides: {
         root: {
-          paddingTop: '16px',
-          paddingBottom: '16px',
-          paddingLeft: '12px',
-          paddingRight: '12px',
-          textAlign: 'center',
+          paddingTop: '24px',
+          paddingBottom: '24px',
+          paddingLeft: '16px',
+          paddingRight: '16px',
           '@media (max-width: 640px)': {
+            paddingTop: '16px',
+            paddingBottom: '16px',
+            paddingLeft: '12px',
+            paddingRight: '12px',
+          },
+          '@media (max-width: 480px)': {
             paddingTop: '12px',
             paddingBottom: '12px',
             paddingLeft: '8px',
             paddingRight: '8px',
-          },
-          '@media (max-width: 480px)': {
-            paddingTop: '8px',
-            paddingBottom: '8px',
-            paddingLeft: '6px',
-            paddingRight: '6px',
           },
         },
       },
@@ -312,16 +310,16 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           },
         },
         body1: {
-          textAlign: 'center',
+          textAlign: 'left',
         },
         body2: {
-          textAlign: 'center',
+          textAlign: 'left',
         },
         subtitle1: {
-          textAlign: 'center',
+          textAlign: 'left',
         },
         subtitle2: {
-          textAlign: 'center',
+          textAlign: 'left',
         },
       },
     },
@@ -415,7 +413,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 12,
         },
       },
     },
@@ -431,9 +429,8 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiListItem: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 8,
           marginBottom: 4,
-          textAlign: 'center',
           '&:hover': {
             backgroundColor: 'rgba(49, 46, 129, 0.04)',
           },
@@ -473,7 +470,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: 0,
+          borderRadius: 12,
         },
       },
     },
@@ -481,7 +478,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 4,
           height: 8,
         },
       },
