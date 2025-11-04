@@ -19,6 +19,7 @@ import DataCard from "../components/DataCard";
 import StatusChip from "../components/StatusChip";
 import AnimatedSection from "../components/AnimatedSection";
 import AnimatedGrid, { AnimatedGridItem } from "../components/AnimatedGrid";
+import DashboardCharts from "../components/DashboardCharts";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { useDataOperations } from "../hooks/useDataOperations";
@@ -56,6 +57,48 @@ const Home = memo(() => {
       unreadDiscussions,
       totalDocuments,
       sharedDocuments
+    };
+  }, [todos, discussions, documents]);
+
+  // Generate sparkline data for the last 7 days
+  const sparklineData = useMemo(() => {
+    const today = new Date();
+    const todoSparkline = [];
+    const discussionSparkline = [];
+    const documentSparkline = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+
+      // Count todos created/updated on this day
+      const dayTodos = todos.filter(todo => {
+        const todoDate = new Date(todo.createdAt || todo.dueDate);
+        return todoDate.toDateString() === date.toDateString();
+      }).length;
+      todoSparkline.push(dayTodos);
+
+      // Count discussions on this day
+      const dayDiscussions = discussions.filter(d => {
+        const discussionDate = new Date(d.createdAt);
+        return discussionDate.toDateString() === date.toDateString();
+      }).length;
+      discussionSparkline.push(dayDiscussions);
+
+      // Count documents on this day
+      const dayDocuments = documents.filter(doc => {
+        if (!doc.uploadedAt) return false;
+        const docDate = new Date(doc.uploadedAt);
+        return docDate.toDateString() === date.toDateString();
+      }).length;
+      documentSparkline.push(dayDocuments);
+    }
+
+    return {
+      todoItems: todoSparkline,
+      discussions: discussionSparkline,
+      documents: documentSparkline,
+      payments: [0, 1, 2, 1, 3, 2, 4] // Mock data for payments
     };
   }, [todos, discussions, documents]);
 
@@ -174,6 +217,8 @@ const Home = memo(() => {
                         card={card}
                         value={getCardValue(card)}
                         onClick={() => handleNavigateToPage(card.dataSource)}
+                        sparklineData={sparklineData[card.dataSource as keyof typeof sparklineData]}
+                        sparklineColor={card.color ? `${card.color}.main` : undefined}
                       />
                     </AnimatedGridItem>
                   </Grid>
@@ -184,7 +229,16 @@ const Home = memo(() => {
         </LoadingWrapper>
       </AnimatedSection>
 
-     
+      {/* Dashboard Charts Section - Only show if Tasks page is enabled */}
+      {isTasksPageEnabled && todos.length > 0 && (
+        <AnimatedSection delay={0.25}>
+          <LoadingWrapper loading={loading} minHeight="300px">
+            <Box className="dashboard-section">
+              <DashboardCharts todos={todos} />
+            </Box>
+          </LoadingWrapper>
+        </AnimatedSection>
+      )}
 
       {/* Dynamic Sections */}
       <AnimatedSection delay={0.3}>

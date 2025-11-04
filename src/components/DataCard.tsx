@@ -3,6 +3,7 @@ import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
 import * as Icons from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import type { DashboardCard } from '../types/portal'
+import Sparkline from './Sparkline'
 
 interface DataCardProps {
   card: DashboardCard
@@ -15,6 +16,8 @@ interface DataCardProps {
     direction: 'up' | 'down'
     value: string
   }
+  sparklineData?: number[]
+  sparklineColor?: string
 }
 
 const DataCard = memo<DataCardProps>(({
@@ -24,7 +27,9 @@ const DataCard = memo<DataCardProps>(({
   icon,
   showClickHint = true,
   children,
-  trend
+  trend,
+  sparklineData,
+  sparklineColor
 }) => {
   const getIconComponent = (iconName: string): ReactNode => {
     const IconComponent = Icons[iconName as keyof typeof Icons] as React.ComponentType
@@ -131,6 +136,18 @@ const DataCard = memo<DataCardProps>(({
         </Box>
 
         {children}
+
+        {/* Sparkline visualization */}
+        {sparklineData && sparklineData.length > 0 && (
+          <Box sx={{ mt: 2, mb: 1 }}>
+            <Sparkline
+              data={sparklineData}
+              color={sparklineColor}
+              height={32}
+              showTrend={false}
+            />
+          </Box>
+        )}
 
         {showClickHint && onClick && (
           <Box

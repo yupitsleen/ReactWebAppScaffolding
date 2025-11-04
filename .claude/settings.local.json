@@ -20,7 +20,12 @@
       "Bash(tasklist)",
       "Bash(findstr:*)",
       "Bash(rm:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git log:*)",
+      "Bash(npm install:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []
