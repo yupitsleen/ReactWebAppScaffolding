@@ -91,15 +91,15 @@ const DataCard = memo<DataCardProps>(({
             <Box
               aria-hidden="true"
               sx={{
-                width: { xs: 48, sm: 56 },
-                height: { xs: 48, sm: 56 },
+                width: 'var(--density-icon-size)',
+                height: 'var(--density-icon-size)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.2)} 100%)`,
                 color: `${card.color}.main`,
-                fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                fontSize: 'calc(1.75rem * var(--density-font-scale))',
               }}
             >
               {displayIcon}

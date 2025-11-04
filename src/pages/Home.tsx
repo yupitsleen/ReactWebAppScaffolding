@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import {
   Typography,
   Grid,
@@ -9,7 +9,10 @@ import {
   ListItem,
   ListItemText,
   LinearProgress,
+  Button,
+  CircularProgress,
 } from "@mui/material";
+import { PictureAsPdf as PdfIcon } from "@mui/icons-material";
 import * as Icons from "@mui/icons-material";
 import { serviceInfo } from "../data/sampleData";
 import { appConfig } from "../data/configurableData";
@@ -25,9 +28,12 @@ import { useEntityActions } from "../hooks/useEntityActions";
 import { useDataOperations } from "../hooks/useDataOperations";
 import { useNavigation } from "../hooks/useNavigation";
 import { useData } from "../context/ContextProvider";
+import { exportDashboardToPDF } from "../utils/pdfExport";
 
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
+  const [exporting, setExporting] = useState(false);
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { todos, discussions, documents } = useData();
   const { getActionHandler } = useEntityActions();
   const { getEnabledPages } = useNavigation();
@@ -162,11 +168,38 @@ const Home = memo(() => {
     return processedData;
   }, [todos, discussions, processData]);
 
+  const handleExportPDF = async () => {
+    try {
+      setExporting(true);
+      await exportDashboardToPDF(dashboardRef.current, {
+        filename: `dashboard-report-${new Date().toISOString().split('T')[0]}.pdf`,
+        title: appConfig.appName + ' Dashboard',
+      });
+      console.log('Dashboard exported to PDF successfully!');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      alert('Failed to export PDF. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <PageLayout
       title={appConfig.pageTitle}
       description={`${serviceInfo.tagline}`}
+      action={
+        <Button
+          variant="outlined"
+          startIcon={exporting ? <CircularProgress size={16} /> : <PdfIcon />}
+          onClick={handleExportPDF}
+          disabled={exporting}
+        >
+          {exporting ? 'Exporting...' : 'Export PDF'}
+        </Button>
+      }
     >
+      <Box ref={dashboardRef}>
        {/* Progress Section - Only show if Tasks page is enabled */}
       {isTasksPageEnabled && (
         <AnimatedSection delay={0.1}>
@@ -354,6 +387,7 @@ const Home = memo(() => {
           </Box>
         </LoadingWrapper>
       </AnimatedSection>
+      </Box>
     </PageLayout>
   );
 });

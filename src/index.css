@@ -35,3 +35,117 @@ html, body {
   display: flex;
   flex-direction: column;
 }
+
+/* Layout Density System */
+:root {
+  --density-spacing: 1; /* Default multiplier for comfortable */
+  --density-card-padding: 24px;
+  --density-section-gap: 32px;
+  --density-row-height: 64px;
+  --density-icon-size: 56px;
+  --density-font-scale: 1;
+}
+
+[data-density="compact"] {
+  --density-spacing: 0.75;
+  --density-card-padding: 16px;
+  --density-section-gap: 20px;
+  --density-row-height: 52px;
+  --density-icon-size: 48px;
+  --density-font-scale: 0.95;
+}
+
+[data-density="comfortable"] {
+  --density-spacing: 1;
+  --density-card-padding: 24px;
+  --density-section-gap: 32px;
+  --density-row-height: 64px;
+  --density-icon-size: 56px;
+  --density-font-scale: 1;
+}
+
+[data-density="spacious"] {
+  --density-spacing: 1.25;
+  --density-card-padding: 32px;
+  --density-section-gap: 48px;
+  --density-row-height: 80px;
+  --density-icon-size: 64px;
+  --density-font-scale: 1.05;
+}
+
+/* Apply density to common components */
+.MuiCard-root {
+  padding: calc(var(--density-card-padding) * var(--density-spacing));
+}
+
+.MuiTableRow-root {
+  height: var(--density-row-height);
+}
+
+/* Section gaps */
+.dashboard-section,
+.page-section {
+  gap: var(--density-section-gap);
+}
+
+/* High Contrast Mode (WCAG AAA 7:1+ contrast ratios) */
+[data-high-contrast="true"] {
+  /* High contrast colors for light mode */
+  --primary-color: #0000CC; /* Deep blue */
+  --secondary-color: #CC0000; /* Deep red */
+  --background-color: #FFFFFF; /* Pure white */
+  --text-primary: #000000; /* Pure black */
+  --text-secondary: #1A1A1A; /* Near black */
+}
+
+[data-high-contrast="true"][data-theme="dark"] {
+  /* High contrast colors for dark mode */
+  --primary-color: #6699FF; /* Bright blue */
+  --secondary-color: #FF6666; /* Bright red */
+  --background-color: #000000; /* Pure black */
+  --text-primary: #FFFFFF; /* Pure white */
+  --text-secondary: #E5E5E5; /* Near white */
+}
+
+/* High contrast borders and outlines */
+[data-high-contrast="true"] .MuiCard-root {
+  border: 2px solid currentColor;
+}
+
+[data-high-contrast="true"] .MuiButton-outlined {
+  border-width: 2px;
+}
+
+[data-high-contrast="true"] *:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* High contrast text */
+[data-high-contrast="true"] {
+  color: var(--text-primary);
+}
+
+[data-high-contrast="true"] body {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+/* Remove subtle shadows in high contrast mode */
+[data-high-contrast="true"] .MuiCard-root,
+[data-high-contrast="true"] .MuiPaper-root {
+  box-shadow: none !important;
+  border: 2px solid var(--text-primary);
+}
+
+/* Stronger link colors */
+[data-high-contrast="true"] a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* Remove background images/gradients */
+[data-high-contrast="true"] * {
+  background-image: none !important;
+}

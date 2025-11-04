@@ -4,11 +4,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useUser, useTheme } from '../context/ContextProvider'
 import { useAuthService } from '../context/MockContext'
 import { useNavigation } from '../hooks/useNavigation'
+import { useHighContrast } from '../hooks/useHighContrast'
 import Footer from '../components/Footer'
 import NotificationBell from '../components/NotificationBell'
 import { ColorPresetSelector } from '../components/ColorPresetSelector'
+import { DensitySelector } from '../components/DensitySelector'
 import { appConfig } from '../data/configurableData'
-import { Menu as MenuIcon, Close as CloseIcon, Palette as PaletteIcon } from '@mui/icons-material'
+import { Menu as MenuIcon, Close as CloseIcon, Palette as PaletteIcon, Contrast as ContrastIcon } from '@mui/icons-material'
 import { setThemeColor } from '../utils/colorManager'
 import styles from './Layout.module.css'
 
@@ -20,6 +22,7 @@ function Layout({ children }: LayoutProps) {
   const navigate = useNavigate()
   const { user, setUser } = useUser()
   const { theme, toggleTheme } = useTheme()
+  const { isHighContrast, toggleHighContrast } = useHighContrast()
   const authService = useAuthService()
   const { isCurrentPage, getEnabledPages } = useNavigation()
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
@@ -187,6 +190,7 @@ function Layout({ children }: LayoutProps) {
                 </div>
               )}
             </div>
+            <DensitySelector />
             <button
               className={styles.iconButton}
               onClick={() => setColorPresetDialogOpen(true)}
@@ -194,6 +198,15 @@ function Layout({ children }: LayoutProps) {
               aria-label="Change color scheme"
             >
               <PaletteIcon />
+            </button>
+            <button
+              className={styles.iconButton}
+              onClick={toggleHighContrast}
+              title={`${isHighContrast ? 'Disable' : 'Enable'} high contrast mode`}
+              aria-label={`${isHighContrast ? 'Disable' : 'Enable'} high contrast mode`}
+              style={{ opacity: isHighContrast ? 1 : 0.7 }}
+            >
+              <ContrastIcon />
             </button>
             <button
               className={styles.themeToggle}
@@ -265,6 +278,12 @@ function Layout({ children }: LayoutProps) {
                 onClick={() => { setColorPresetDialogOpen(true); setMobileMenuOpen(false); }}
               >
                 🎨 Change Colors
+              </button>
+              <button
+                className={styles.mobileNavButton}
+                onClick={() => { toggleHighContrast(); setMobileMenuOpen(false); }}
+              >
+                {isHighContrast ? '🔆 Normal Contrast' : '⚫ High Contrast'}
               </button>
               <button
                 className={styles.mobileNavButton}

@@ -47,6 +47,7 @@ export const KeyboardShortcutsDialog = memo(({ open, onClose }: KeyboardShortcut
   ]
 
   const generalShortcuts = [
+    { keys: 'Ctrl+K', description: 'Open command palette (⌘K on Mac)' },
     defaultShortcuts.escape,
     { keys: '?', description: 'Show keyboard shortcuts' },
     { keys: 'Tab', description: 'Navigate between elements' },

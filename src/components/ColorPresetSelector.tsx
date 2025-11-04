@@ -7,7 +7,6 @@ import {
   IconButton,
   Typography,
   Button,
-  Grid,
   alpha,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
@@ -158,13 +157,23 @@ export const ColorPresetSelector = memo(({
           Choose a color scheme for your application. Changes are saved automatically.
         </Typography>
 
-        <Grid container spacing={2}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
+            gap: 2,
+          }}
+        >
           {colorPresets.map((preset) => {
             const isActive = isPresetActive(preset)
             const isSelected = selectedPreset?.id === preset.id
 
             return (
-              <Grid item xs={12} sm={6} md={4} key={preset.id}>
+              <Box key={preset.id}>
                 <Button
                   onClick={() => handlePresetClick(preset)}
                   sx={{
@@ -236,10 +245,10 @@ export const ColorPresetSelector = memo(({
                     </Typography>
                   </Box>
                 </Button>
-              </Grid>
+              </Box>
             )
           })}
-        </Grid>
+        </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
           <Button onClick={onClose} variant="outlined">

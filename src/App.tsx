@@ -14,6 +14,7 @@ import Layout from './layouts/Layout'
 import PageTransition from './components/PageTransition'
 import { ToastContainer } from './components/Toast'
 import { KeyboardShortcutsDialog } from './components/KeyboardShortcutsDialog'
+import { CommandPalette } from './components/CommandPalette'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import './utils/colorManager'
@@ -32,43 +33,51 @@ const Register = lazy(() => import('./pages/Register'))
 const MyAccount = lazy(() => import('./pages/MyAccount'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
-// Loading fallback component
-const PageLoadingFallback = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '60vh',
-      flexDirection: 'column',
-      gap: 2,
-    }}
-  >
-    <CircularProgress size={48} />
-  </Box>
-)
+// Loading fallback component (used by Suspense for lazy-loaded routes)
+function PageLoadingFallback() {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '60vh',
+        flexDirection: 'column',
+        gap: 2,
+      }}
+    >
+      <CircularProgress size={48} />
+    </Box>
+  )
+}
 
 // Component for authenticated users
 function AuthenticatedApp() {
   const location = useLocation()
   const [shortcutsDialogOpen, setShortcutsDialogOpen] = useState(false)
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
 
   // Enable keyboard shortcuts
   useKeyboardShortcuts({ enabled: true })
 
-  // Listen for "?" key to open shortcuts dialog
+  // Listen for keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === '?' && !event.ctrlKey && !event.metaKey && !event.altKey) {
-        const target = event.target as HTMLElement
-        // Skip if user is typing in an input field
-        if (
-          target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.isContentEditable
-        ) {
-          return
-        }
+      const target = event.target as HTMLElement
+      const isInputField =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+
+      // Cmd/Ctrl+K for command palette
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault()
+        setCommandPaletteOpen(true)
+        return
+      }
+
+      // "?" key to open shortcuts dialog (only when not in input field)
+      if (event.key === '?' && !event.ctrlKey && !event.metaKey && !event.altKey && !isInputField) {
         event.preventDefault()
         setShortcutsDialogOpen(true)
       }
@@ -98,13 +107,17 @@ function AuthenticatedApp() {
             .map(nav => {
               const Component = pageComponents[nav.id as keyof typeof pageComponents]
               return Component ? (
-                <Route key={nav.id} path={nav.path} element={<PageTransition><Suspense fallback={null}><Component /></Suspense></PageTransition>} />
+                <Route key={nav.id} path={nav.path} element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><Component /></Suspense></PageTransition>} />
               ) : null
             })}
-          <Route path="/my-account" element={<PageTransition><Suspense fallback={null}><MyAccount /></Suspense></PageTransition>} />
-          <Route path="*" element={<PageTransition><Suspense fallback={null}><NotFound /></Suspense></PageTransition>} />
+          <Route path="/my-account" element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><MyAccount /></Suspense></PageTransition>} />
+          <Route path="*" element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><NotFound /></Suspense></PageTransition>} />
         </Routes>
       </AnimatePresence>
+      <CommandPalette
+        open={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+      />
       <KeyboardShortcutsDialog
         open={shortcutsDialogOpen}
         onClose={() => setShortcutsDialogOpen(false)}
@@ -117,8 +130,8 @@ function AuthenticatedApp() {
 function UnauthenticatedApp() {
   return (
     <Routes>
-      <Route path="/register" element={<Suspense fallback={null}><Register /></Suspense>} />
-      <Route path="*" element={<Suspense fallback={null}><Login /></Suspense>} />
+      <Route path="/register" element={<Suspense fallback={<PageLoadingFallback />}><Register /></Suspense>} />
+      <Route path="*" element={<Suspense fallback={<PageLoadingFallback />}><Login /></Suspense>} />
     </Routes>
   )
 }
