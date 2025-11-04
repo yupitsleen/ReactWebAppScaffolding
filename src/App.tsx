@@ -79,7 +79,7 @@ function ThemedAppRouter() {
   return (
     <ThemeProvider theme={dynamicTheme}>
       <CssBaseline />
-      <Router>
+      <Router basename="/ReactWebAppScaffolding">
         {isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
       </Router>
     </ThemeProvider>
