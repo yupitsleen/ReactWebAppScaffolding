@@ -6,12 +6,14 @@ import PageLayout from '../components/PageLayout'
 import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useData } from '../context/ContextProvider'
+import { useNotifications } from '../context/NotificationContext'
 import CreateTodoDialog from '../components/CreateTodoDialog'
 import { getFromStorage, setToStorage } from '../utils/helpers'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
   const { todos, updateTodoStatus } = useData()
+  const { addNotification } = useNotifications()
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -78,6 +80,14 @@ const Tasks = memo(() => {
     if (currentTodo) {
       const newStatus = currentTodo.status === 'completed' ? 'pending' : 'completed'
       updateTodoStatus(taskId, newStatus)
+
+      // Show success toast
+      addNotification({
+        type: 'success',
+        title: newStatus === 'completed' ? 'Task Completed!' : 'Task Reopened',
+        message: `"${currentTodo.title}" marked as ${newStatus}`,
+        autoHide: true
+      })
     }
   }
 

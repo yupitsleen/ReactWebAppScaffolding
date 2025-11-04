@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Loading from "./Loading";
 import SkeletonLoader, { type SkeletonVariant } from "./SkeletonLoader";
 
@@ -29,17 +30,37 @@ export default function LoadingWrapper({
   skeletonVariant = "text",
   skeletonCount = 3,
 }: LoadingWrapperProps) {
+  // Crossfade transition configuration
+  const fadeTransition = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.3 }
+  };
+
   if (loading) {
     if (fallback) {
-      return <>{fallback}</>;
+      return (
+        <AnimatePresence mode="wait">
+          <motion.div key="fallback" {...fadeTransition}>
+            {fallback}
+          </motion.div>
+        </AnimatePresence>
+      );
     }
 
     // Use skeleton loader if enabled
     if (skeleton) {
       return (
-        <div style={{ minHeight: minHeight || 'auto' }}>
-          <SkeletonLoader variant={skeletonVariant} count={skeletonCount} />
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="skeleton"
+            {...fadeTransition}
+            style={{ minHeight: minHeight || 'auto' }}
+          >
+            <SkeletonLoader variant={skeletonVariant} count={skeletonCount} />
+          </motion.div>
+        </AnimatePresence>
       );
     }
 
@@ -55,11 +76,19 @@ export default function LoadingWrapper({
     };
 
     return (
-      <div style={loadingStyles}>
-        <Loading text={loadingText} />
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div key="spinner" {...fadeTransition} style={loadingStyles}>
+          <Loading text={loadingText} />
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div key="content" {...fadeTransition}>
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
 }

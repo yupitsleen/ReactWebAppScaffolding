@@ -10,6 +10,7 @@ import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
 import PageTransition from './components/PageTransition'
+import { ToastContainer } from './components/Toast'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
 import Home from './pages/Home'
 import Tasks from './pages/Tasks'
@@ -85,6 +86,7 @@ function ThemedAppRouter() {
   return (
     <ThemeProvider theme={dynamicTheme}>
       <CssBaseline />
+      <ToastContainer />
       <Router basename="/ReactWebAppScaffolding">
         {isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
       </Router>

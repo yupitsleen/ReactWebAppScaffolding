@@ -1,14 +1,36 @@
 import { memo } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { Box } from '@mui/material'
+import { ErrorOutline as ErrorIcon } from '@mui/icons-material'
+import EmptyState from '../components/EmptyState'
 
 const NotFound = memo(() => {
+  const navigate = useNavigate()
+
   return (
-    <div>
-      <h1>404 - Page Not Found</h1>
-      <p>The page you're looking for doesn't exist.</p>
-      <Link to="/">Go back to Home</Link>
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+      }}
+    >
+      <EmptyState
+        variant="custom"
+        icon={ErrorIcon}
+        title="404 - Page Not Found"
+        description="The page you're looking for doesn't exist or has been moved."
+        action={{
+          label: 'Go to Home',
+          onClick: () => navigate('/'),
+        }}
+      />
+    </Box>
   )
 })
+
+NotFound.displayName = 'NotFound'
 
 export default NotFound

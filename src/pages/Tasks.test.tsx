@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
+import { NotificationProvider } from '../context/NotificationContext'
 import Tasks from './Tasks'
 import * as helpers from '../utils/helpers'
 
@@ -63,9 +64,11 @@ describe('Tasks Page - State Persistence', () => {
     getFromStorageSpy.mockReturnValue(true)
 
     render(
-      <MemoryRouter initialEntries={['/tasks']}>
-        <Tasks />
-      </MemoryRouter>
+      <NotificationProvider>
+        <MemoryRouter initialEntries={['/tasks']}>
+          <Tasks />
+        </MemoryRouter>
+      </NotificationProvider>
     )
 
     expect(getFromStorageSpy).toHaveBeenCalledWith('tasks_hideCompleted', false)
@@ -76,9 +79,11 @@ describe('Tasks Page - State Persistence', () => {
     getFromStorageSpy.mockReturnValue(false)
 
     render(
-      <MemoryRouter initialEntries={['/tasks']}>
-        <Tasks />
-      </MemoryRouter>
+      <NotificationProvider>
+        <MemoryRouter initialEntries={['/tasks']}>
+          <Tasks />
+        </MemoryRouter>
+      </NotificationProvider>
     )
 
     const filterButton = screen.getByText('Hide Completed')
@@ -93,9 +98,11 @@ describe('Tasks Page - State Persistence', () => {
     getFromStorageSpy.mockReturnValue(true)
 
     render(
-      <MemoryRouter initialEntries={['/tasks']}>
-        <Tasks />
-      </MemoryRouter>
+      <NotificationProvider>
+        <MemoryRouter initialEntries={['/tasks']}>
+          <Tasks />
+        </MemoryRouter>
+      </NotificationProvider>
     )
 
     // Should show only pending task
@@ -108,9 +115,11 @@ describe('Tasks Page - State Persistence', () => {
     getFromStorageSpy.mockReturnValue(false)
 
     render(
-      <MemoryRouter initialEntries={['/tasks']}>
-        <Tasks />
-      </MemoryRouter>
+      <NotificationProvider>
+        <MemoryRouter initialEntries={['/tasks']}>
+          <Tasks />
+        </MemoryRouter>
+      </NotificationProvider>
     )
 
     // Should show both tasks
@@ -122,9 +131,11 @@ describe('Tasks Page - State Persistence', () => {
     getFromStorageSpy.mockReturnValue(false)
 
     render(
-      <MemoryRouter initialEntries={['/tasks']}>
-        <Tasks />
-      </MemoryRouter>
+      <NotificationProvider>
+        <MemoryRouter initialEntries={['/tasks']}>
+          <Tasks />
+        </MemoryRouter>
+      </NotificationProvider>
     )
 
     // Initially shows both tasks

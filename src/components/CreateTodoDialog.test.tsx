@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ThemeProvider } from '@mui/material/styles'
 import { portalTheme } from '../theme/portalTheme'
+import { NotificationProvider } from '../context/NotificationContext'
 import CreateTodoDialog from './CreateTodoDialog'
 import type { TodoItem } from '../types/portal'
 
@@ -27,11 +28,13 @@ vi.mock('../context/ContextProvider', () => ({
 const renderDialog = (open = true) => {
   return render(
     <ThemeProvider theme={portalTheme}>
-      <CreateTodoDialog
-        open={open}
-        onClose={mockOnClose}
-        onSuccess={mockOnSuccess}
-      />
+      <NotificationProvider>
+        <CreateTodoDialog
+          open={open}
+          onClose={mockOnClose}
+          onSuccess={mockOnSuccess}
+        />
+      </NotificationProvider>
     </ThemeProvider>
   )
 }
