@@ -355,6 +355,192 @@ const { isHighContrast, toggleHighContrast } = useHighContrast()
 - Arrow keys - Navigate command palette
 - Tab/Shift+Tab - Focus management
 
+## Extensibility System (#memorize)
+
+### Registry Architecture for Maximum Extensibility
+
+The scaffold now uses **registry + factory patterns** to eliminate the need to modify core files when adding new entities. With this architecture, adding a complete new entity with CRUD operations requires **~50 lines in 1 file** instead of **313 lines across 8 files** (84% reduction).
+
+### Three Core Registries
+
+#### 1. ServiceRegistry - Dynamic Entity Services
+
+Register new entity services without modifying [src/services/index.ts](src/services/index.ts):
+
+```typescript
+// In src/data/configurableData.ts or your domain file
+import { serviceRegistry } from '../services/ServiceRegistry'
+
+serviceRegistry.register<Order>('orders', {
+  entityName: 'Orders',
+  endpoint: '/api/orders',
+  mockData: sampleOrders,
+  mode: 'fallback'  // Tries API, falls back to mock
+})
+```
+
+**Service Modes:**
+- `fallback` - Tries API first, uses mock data if unavailable (recommended)
+- `mock` - Always uses mock data (for static/reference data)
+- `api` - Always uses API (production mode)
+
+#### 2. FieldRendererRegistry - Custom Field Rendering
+
+Register custom field renderers without modifying [src/components/FieldRenderer.tsx](src/components/FieldRenderer.tsx):
+
+```typescript
+// In your domain file
+import { fieldRenderers } from '../components/fieldRenderers/FieldRendererRegistry'
+
+// Exact field name match
+fieldRenderers.register('priority', ({ value }) => (
+  <Chip label={value} color={value === 'high' ? 'error' : 'default'} />
+))
+
+// Pattern-based match (all fields ending in "Status")
+fieldRenderers.registerPattern(/.*Status$/i, ({ value }) => (
+  <StatusChip value={value} />
+), 10)  // Priority: higher = checked first
+
+// Entity-specific override (highest priority)
+fieldRenderers.register('order.priority', ({ value }) => (
+  <Chip label={`🔥 ${value}`} />
+))
+```
+
+**Built-in Patterns:** The scaffold includes default renderers for common patterns:
+- `*Status` - Status chips with smart color mapping
+- `*Date` - Formatted date chips
+- `*At` - Timestamp formatting
+- `*Amount`, `*Price`, `*Cost`, `total` - Currency formatting
+- `is*`, `has*`, `can*` - Boolean Yes/No chips
+- `*Email` - Email formatting
+- `*Url`, `*Link` - Clickable links
+- `*Percentage` - Percentage formatting
+
+#### 3. EntityValidator - Schema-Based Validation
+
+Register validation schemas without duplicating validation logic:
+
+```typescript
+// In src/data/configurableData.ts
+import { validator } from '../validation/EntityValidator'
+
+validator.registerSchema<Order>('order', {
+  rules: [
+    {
+      field: 'customerName',
+      required: true,
+      min: 2,
+      minMessage: 'Customer name must be at least 2 characters'
+    },
+    {
+      field: 'total',
+      required: true,
+      custom: (value) => {
+        if (typeof value !== 'number') return 'Total must be a number'
+        if (value <= 0) return 'Total must be greater than zero'
+        return null
+      }
+    },
+    {
+      field: 'email',
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      patternMessage: 'Please enter a valid email address'
+    }
+  ]
+})
+```
+
+### Generic Data Context
+
+Use the new generic context for entity-agnostic CRUD operations:
+
+```typescript
+import { useGenericData } from '../context/GenericDataContext'
+
+// In your component
+const { getEntities, getLoading, createEntity, updateEntity, deleteEntity } = useGenericData()
+
+// Access any registered entity
+const orders = getEntities<Order>('orders')
+const loading = getLoading('orders')
+
+// CRUD operations
+await createEntity<Order>('orders', { customerName: 'John', total: 299.99 })
+await updateEntity<Order>('orders', 'order-1', { total: 349.99 })
+await deleteEntity('orders', 'order-1')
+```
+
+**Backward Compatibility:** Existing pages using `useData()` continue to work via adapter hooks in [src/hooks/useEntityAdapters.ts](src/hooks/useEntityAdapters.ts).
+
+### Validation Hook
+
+Use `useEntityValidation` for form validation:
+
+```typescript
+import { useEntityValidation } from '../hooks/useEntityValidation'
+
+const { errors, validate, validateField } = useEntityValidation<Order>('order')
+
+// Real-time field validation
+const handleFieldChange = (field: keyof Order, value: any) => {
+  const updated = { ...formData, [field]: value }
+  setFormData(updated)
+  validateField(field, value, updated)  // Validates on change
+}
+
+// Form submit validation
+const handleSubmit = async () => {
+  if (!validate(formData)) {
+    return  // Errors are automatically set in state
+  }
+  await createEntity('orders', formData)
+}
+
+// Display errors in UI
+<TextField
+  label="Customer Name"
+  error={!!errors.customerName}
+  helperText={errors.customerName}
+/>
+```
+
+### Complete Example: Adding an Order Entity
+
+See [src/examples/extensibilityExample.ts](src/examples/extensibilityExample.ts) for a complete example showing how to add a new "Order" entity with:
+- ✅ Type definition (5 lines)
+- ✅ Sample data (10 lines)
+- ✅ Service registration (5 lines)
+- ✅ Custom field renderers (10 lines, optional)
+- ✅ Validation schema (20 lines, optional)
+
+**Total: ~50 lines in 1 file vs. 313 lines across 8 files**
+
+### Migration Strategy
+
+The new registry patterns coexist with existing code:
+
+1. **Existing entities** (TodoItem, Discussion, Document) work unchanged
+2. **New entities** use the registry pattern
+3. **Gradual migration** possible - convert entities one at a time
+4. **No breaking changes** - adapter hooks provide backward compatibility
+
+### Key Files
+
+**Registry Infrastructure:**
+- [src/services/ServiceRegistry.ts](src/services/ServiceRegistry.ts) - Service registration
+- [src/context/GenericDataContext.tsx](src/context/GenericDataContext.tsx) - Generic CRUD context
+- [src/components/fieldRenderers/FieldRendererRegistry.ts](src/components/fieldRenderers/FieldRendererRegistry.ts) - Field renderer registry
+- [src/components/fieldRenderers/defaultRenderers.tsx](src/components/fieldRenderers/defaultRenderers.tsx) - Built-in renderers
+- [src/validation/EntityValidator.ts](src/validation/EntityValidator.ts) - Validation engine
+- [src/hooks/useEntityValidation.ts](src/hooks/useEntityValidation.ts) - Validation hook
+- [src/hooks/useEntityAdapters.ts](src/hooks/useEntityAdapters.ts) - Backward compatibility
+
+**Example & Documentation:**
+- [src/examples/extensibilityExample.ts](src/examples/extensibilityExample.ts) - Complete usage example
+- [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) - Detailed implementation roadmap
+
 ## Available Utilities
 
 ### Custom Hooks

@@ -20,3 +20,28 @@ export { MockEntityService } from './mockService'
 export { FallbackEntityService } from './fallbackService'
 
 export const isUsingMockData = () => ServiceFactory.isUsingMockData()
+
+// Export ServiceRegistry for extensibility
+export { serviceRegistry, type ServiceConfig, type ServiceMode } from './ServiceRegistry'
+
+// Register existing services in the registry (for new generic context)
+import { serviceRegistry } from './ServiceRegistry'
+
+serviceRegistry.register<TodoItem>('todoItems', {
+  entityName: 'Tasks',
+  endpoint: '/api/todo',
+  mockData: todoItems,
+  mode: 'fallback'
+})
+
+serviceRegistry.register<Discussion>('discussions', {
+  entityName: 'Discussions',
+  mockData: discussions,
+  mode: 'mock'
+})
+
+serviceRegistry.register<Document>('documents', {
+  entityName: 'Documents',
+  mockData: documents,
+  mode: 'mock'
+})
