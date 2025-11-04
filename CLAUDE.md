@@ -13,6 +13,7 @@ This file provides guidance to Claude Code when working with this forked React w
 - [Smart Abstractions](#smart-abstractions) - Key reusable components
 - [Backend Development](#backend-development) - .NET Core API patterns
 - [Development Preferences](#development-preferences) - Coding standards and approach
+- [Deployment](#deployment) - GitHub Pages auto-deployment
 
 ## Quick Reference
 
@@ -473,3 +474,70 @@ git push origin feature/replace-todoitem-with-order
 ```
 
 This scaffold provides a production-ready foundation. Your job is to transform generic entities into your specific business domain through systematic customization.
+
+---
+
+## Deployment
+
+### Live Application
+
+**Production URL:** https://yupitsleen.github.io/ReactWebAppScaffolding
+
+The application is automatically deployed to GitHub Pages on every merge to main.
+
+### Auto-Deployment Workflow (#memorize)
+
+**CI/CD Pipeline:**
+1. **On Pull Request:** Runs tests, linter, and build (validates before merge)
+2. **On Merge to Main:** Runs tests, builds, and deploys to GitHub Pages automatically
+
+**Workflows:**
+- `.github/workflows/ci.yml` - Runs on all PRs (quality gate)
+- `.github/workflows/deploy.yml` - Runs on merge to main (deployment)
+
+### Manual Deployment
+
+```bash
+npm run deploy  # Builds and deploys directly to GitHub Pages
+```
+
+### Deployment Configuration (#memorize)
+
+**Critical Files:**
+- `vite.config.ts` - Contains `base: '/ReactWebAppScaffolding/'` for GitHub Pages subdirectory
+- `src/App.tsx` - Contains `<Router basename="/ReactWebAppScaffolding">` for routing
+- `package.json` - Contains `homepage` URL for deployment
+
+**Important:** These three configurations must match:
+1. Vite `base` path
+2. Router `basename` prop
+3. Package.json `homepage` URL
+
+### Deployment Requirements
+
+**Quality Gates:**
+- ✅ All 89 frontend tests must pass
+- ✅ TypeScript compilation must succeed
+- ✅ Production build must complete
+
+**From CLAUDE.md memorized rules:**
+- Never commit without passing tests
+- All test suites must be green before deployment
+- CI enforces this automatically
+
+### Troubleshooting Deployment
+
+**404 on Page Load:**
+- Check `vite.config.ts` base path matches repo name
+- Verify GitHub Pages is configured to use GitHub Actions (not branch)
+
+**Routing Issues (404 on navigation):**
+- Verify `<Router basename>` matches `vite.config.ts` base path
+- Ensure all three deployment configs are aligned
+
+**Manual Re-deploy:**
+```bash
+git checkout main
+git pull origin main
+npm run deploy  # Forces fresh deployment
+```

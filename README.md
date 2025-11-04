@@ -2,6 +2,8 @@
 
 A production-ready, configuration-driven React portal designed for **instant business customization**. Transform this into domain-specific applications through data configuration, not code rewrites.
 
+**🚀 Live Demo:** https://yupitsleen.github.io/ReactWebAppScaffolding
+
 ## Table of Contents
 
 - [Quick Start](#quick-start)
@@ -13,6 +15,7 @@ A production-ready, configuration-driven React portal designed for **instant bus
 - [Session Management for Claude Code](#session-management-for-claude-code)
 - [Development Commands](#development-commands)
 - [Customization Priority](#customization-priority)
+- [Deployment](#deployment)
 
 ## Architecture Philosophy
 
@@ -470,8 +473,56 @@ dotnet test        # Run 6 integration tests
 
 ---
 
-**Test Coverage:** 62 tests (56 frontend + 6 backend) ✓  
-**Frontend-First:** Works without backend, seamlessly connects when available  
+**Test Coverage:** 89 tests (89 frontend + 6 backend) ✓
+**Frontend-First:** Works without backend, seamlessly connects when available
 **Production-Ready:** Enterprise patterns, performance optimized, fully typed
 
 **Ready to fork and customize!** Transform this into your business application through configuration, not code rewrites.
+
+---
+
+## Deployment
+
+### Live Application
+
+**Production URL:** https://yupitsleen.github.io/ReactWebAppScaffolding
+
+### Auto-Deployment
+
+This application deploys automatically to GitHub Pages on every merge to `main`:
+
+1. **Pull Request** → CI runs tests, linter, and build (quality gate)
+2. **Merge to Main** → Tests + Build + Deploy to GitHub Pages
+3. **Live in ~2 minutes** ✅
+
+### Manual Deployment
+
+```bash
+npm run deploy  # Builds and deploys to GitHub Pages
+```
+
+### Deployment Configuration
+
+Three files must stay synchronized for GitHub Pages:
+
+1. **`vite.config.ts`** - `base: '/ReactWebAppScaffolding/'`
+2. **`src/App.tsx`** - `<Router basename="/ReactWebAppScaffolding">`
+3. **`package.json`** - `homepage: "https://yupitsleen.github.io/ReactWebAppScaffolding"`
+
+**To deploy to a different URL:**
+- Update all three configurations to match your repository name
+- Or rename your GitHub repository to match the desired path
+
+### CI/CD Workflows
+
+- **`.github/workflows/ci.yml`** - Runs on all PRs (tests + lint + build)
+- **`.github/workflows/deploy.yml`** - Runs on merge to main (deploy to GitHub Pages)
+
+### Quality Gates
+
+Every deployment must pass:
+- ✅ All 89 frontend tests
+- ✅ TypeScript compilation
+- ✅ Production build
+
+**See [CLAUDE.md](CLAUDE.md#deployment) for detailed deployment documentation.**
