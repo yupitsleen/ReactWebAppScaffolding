@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Container, Paper, TextField, Button, Typography, Box, Alert, Avatar, Divider } from '@mui/material'
 import { useUser } from '../context/ContextProvider'
-import type { AuthUser } from '../services/auth'
+import type { AuthUser } from '../types/portal'
 
 function Profile() {
   const { user } = useUser()
@@ -23,7 +23,7 @@ function Profile() {
   }, [user])
 
   const handleInputChange = (field: keyof AuthUser) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }))
+    setFormData((prev: Partial<AuthUser>) => ({ ...prev, [field]: e.target.value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -1,9 +1,9 @@
 export { apiClient, type ApiResponse, type ApiError } from './api'
 export { authService, type AuthTokens, type LoginCredentials } from './auth'
 
-import { BaseEntityService } from './baseService'
 import { MockEntityService } from './mockService'
 import { FallbackEntityService } from './fallbackService'
+import { ServiceFactory } from './serviceFactory'
 import { discussions, documents, todoItems } from '../data/sampleData'
 import type { Discussion, Document, TodoItem } from '../types/portal'
 

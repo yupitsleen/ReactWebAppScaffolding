@@ -86,7 +86,7 @@ const Timeline = memo(() => {
 
   if (timelineData.points.length === 0) {
     return (
-      <PageLayout pageId="timeline" loading={loading}>
+      <PageLayout loading={loading}>
         <Box className="spacing-top-lg">
           <Box className="empty-state">
             <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -102,7 +102,7 @@ const Timeline = memo(() => {
   }
 
   return (
-    <PageLayout pageId="timeline" loading={loading}>
+    <PageLayout loading={loading}>
       <Box className="spacing-top-lg">
         {/* Timeline Visualization */}
         <Paper sx={{ p: 4, mb: 3 }}>

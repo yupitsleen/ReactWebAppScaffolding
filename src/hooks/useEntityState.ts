@@ -5,7 +5,7 @@ interface EntityService<T> {
   getAll: () => Promise<T[]>
   create: (data: Omit<T, 'id'>) => Promise<T>
   update: (id: string, data: Partial<T>) => Promise<T>
-  delete?: (id: string) => Promise<void>
+  delete?: (id: string) => Promise<boolean>
 }
 
 interface UseEntityStateOptions<T> {

@@ -74,10 +74,16 @@ class MockAuthService {
     }
 
     // Add to mock database
-    mockAuthUsers.push({
-      ...user,
-      password: data.password
-    })
+    const mockUser = {
+      id: newUserId,
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role || `${data.userType} User`,
+      userType: data.userType,
+      phone: data.phone || ''
+    }
+    mockAuthUsers.push(mockUser as typeof mockAuthUsers[0])
 
     // Store tokens and user directly
     this.setTokens(tokens)
@@ -137,9 +143,9 @@ class MockAuthService {
 
 // Mock notification service for demo functionality
 class MockNotificationService {
-  private addNotification: ((notification: Parameters<typeof useNotifications>['0']['addNotification'][0]) => void) | null = null
+  private addNotification: ((notification: { type: 'success' | 'error' | 'warning' | 'info'; title: string; message: string; autoHide?: boolean }) => void) | null = null
 
-  setNotificationHandler(handler: (notification: Parameters<typeof useNotifications>['0']['addNotification'][0]) => void) {
+  setNotificationHandler(handler: (notification: { type: 'success' | 'error' | 'warning' | 'info'; title: string; message: string; autoHide?: boolean }) => void) {
     this.addNotification = handler
   }
 

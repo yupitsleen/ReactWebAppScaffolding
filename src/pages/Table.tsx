@@ -11,7 +11,7 @@ import type { TodoItem } from '../types/portal'
 const Table = memo(() => {
   const [loading] = usePageLoading(false)
   const { todos } = useData()
-  const { fieldConfig, statusConfig } = appConfig
+  const { statusConfig } = appConfig
 
   const columns: DataTableColumn<TodoItem>[] = [
     {
@@ -68,7 +68,7 @@ const Table = memo(() => {
   ]
 
   return (
-    <PageLayout pageId="table" loading={loading}>
+    <PageLayout loading={loading}>
       <Box className="spacing-top-lg">
         <DataTable
           data={todos}

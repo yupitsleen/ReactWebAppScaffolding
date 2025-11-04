@@ -162,7 +162,7 @@ const Home = memo(() => {
           </Typography>
           <Grid container spacing={3}>
             {enabledDashboardCards.map((card) => (
-              <Grid item xs={12} sm={6} lg={3} key={card.id}>
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
                 <DataCard
                   card={card}
                   value={getCardValue(card)}
@@ -188,7 +188,7 @@ const Home = memo(() => {
               .map((section) => {
                 const sectionData = getSectionData(section);
                 return (
-                  <Grid item xs={12} md={6} key={section.id}>
+                  <Grid size={{ xs: 12, md: 6 }} key={section.id}>
                     <Card
                       sx={{
                         cursor: 'pointer',
@@ -207,7 +207,7 @@ const Home = memo(() => {
                         {sectionData.length > 0 ? (
                           <List dense>
                             {sectionData.map((item) => (
-                              <ListItem key={item.id}>
+                              <ListItem key={String(item.id)}>
                                 {section.dataSource === "todoItems" && (
                                   <>
                                     <Icons.Warning
@@ -215,14 +215,14 @@ const Home = memo(() => {
                                       sx={{ mr: 1 }}
                                     />
                                     <ListItemText
-                                      primary={item.title}
+                                      primary={String(item.title)}
                                       secondary={`Due: ${new Date(
-                                        item.dueDate
+                                        String(item.dueDate)
                                       ).toLocaleDateString()}`}
                                     />
                                     <StatusChip
                                       type="priority"
-                                      value={item.priority as string}
+                                      value={String(item.priority)}
                                       statusConfig={appConfig.statusConfig}
                                       size="small"
                                     />
@@ -231,14 +231,14 @@ const Home = memo(() => {
                                 {section.dataSource === "discussions" && (
                                   <>
                                     <ListItemText
-                                      primary={item.title}
-                                      secondary={`${item.author} · ${new Date(
-                                        item.createdAt
+                                      primary={String(item.title)}
+                                      secondary={`${String(item.author)} · ${new Date(
+                                        String(item.createdAt)
                                       ).toLocaleDateString()}`}
                                     />
                                     <StatusChip
                                       type="priority"
-                                      value={item.priority as string}
+                                      value={String(item.priority)}
                                       statusConfig={appConfig.statusConfig}
                                       size="small"
                                     />

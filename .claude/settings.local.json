@@ -18,7 +18,9 @@
       "Bash(curl -X POST http://localhost:5276/api/todo -H \"Content-Type: application/json\" -d \"{\"\"title\"\":\"\"Test All Combos\"\",\"\"description\"\":\"\"Testing all priority/status combinations\"\",\"\"assignedTo\"\":\"\"User\"\",\"\"priority\"\":\"\"low\"\",\"\"status\"\":\"\"completed\"\",\"\"dueDate\"\":\"\"2025-10-01T12:00:00Z\"\",\"\"category\"\":\"\"Testing\"\",\"\"createdBy\"\":\"\"System\"\"}\")",
       "Bash(curl:*)",
       "Bash(tasklist)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(rm:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
