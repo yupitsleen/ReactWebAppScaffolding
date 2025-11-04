@@ -107,23 +107,51 @@ export const orders = [
 <details>
 <summary><strong>Step 4: Configure Status & Fields (10 minutes)</strong></summary>
 
+**Entity-Scoped Status Configuration** - Each entity can have independent status fields:
+
 ```typescript
 statusConfig: {
-  orderStatus: {
-    pending: { color: "warning", label: "Pending" },
-    processing: { color: "info", label: "Processing" },
-    shipped: { color: "success", label: "Shipped" }
+  // Order entity statuses
+  order: {
+    orderStatus: {
+      pending: { color: "warning", label: "Pending Order", icon: "📋" },
+      processing: { color: "info", label: "Processing", icon: "⚙️" },
+      shipped: { color: "primary", label: "Shipped", icon: "📦" },
+      delivered: { color: "success", label: "Delivered", icon: "✅" }
+    },
+    paymentStatus: {
+      pending: {
+        color: "warning",
+        label: "Payment Pending",
+        icon: "💳",
+        description: "Awaiting payment processing"  // Shows in tooltip
+      },
+      paid: { color: "success", label: "Paid", icon: "✅" }
+    }
+  },
+  // Customer entity statuses (completely independent)
+  customer: {
+    status: {
+      active: { color: "success", label: "Active", icon: "✅" },
+      inactive: { color: "default", label: "Inactive", icon: "⏸️" }
+    }
   }
 },
 
 fieldConfig: {
   order: {
     primary: "customerName",
-    secondary: ["status", "total", "orderDate"],
+    secondary: ["orderStatus", "total", "orderDate"],
     hidden: ["id", "internalNotes"]
   }
 }
 ```
+
+**Benefits:**
+- 🎯 No naming conflicts between entities
+- 🎨 Icons for visual distinction
+- 💡 Tooltips for additional context
+- 🔄 Unlimited status fields per entity
 
 </details>
 
@@ -174,12 +202,43 @@ Update `App.tsx` routing to map navigation id to component
 
 ## Key Features
 
+### Core Components
 - **DataTable** - Reusable table with sorting, filtering, pagination, custom renderers
 - **Timeline** - Interactive visualization with color-coded status indicators
 - **FieldRenderer** - Automatic field type handling (dates, currency, status, priority)
 - **FallbackEntityService** - Tries API first, falls back to mock data, retries every 30s
 - **Google Maps Integration** - Embedded maps with service locations
 - **Backend API** - .NET 8.0 with Entity Framework Core + SQLite
+
+### Extensibility System (NEW! ✨)
+
+**Registry-Based Architecture** - Add new entities with **84% less code** (~50 lines in 1 file vs 313 lines across 8 files):
+
+- **ServiceRegistry** - Dynamic entity service registration without modifying core files
+- **FieldRendererRegistry** - Custom field rendering with pattern matching
+- **EntityValidator** - Schema-based validation with reusable rules
+- **Entity-Scoped Status Config** - Independent status configurations per entity with icons & tooltips
+
+```typescript
+// Register a new entity service
+serviceRegistry.register<Order>('orders', {
+  entityName: 'Orders',
+  endpoint: '/api/orders',
+  mockData: sampleOrders,
+  mode: 'fallback'
+})
+
+// Configure entity-specific statuses with icons
+statusConfig: {
+  order: {
+    orderStatus: {
+      shipped: { color: "primary", label: "Shipped", icon: "📦" }
+    }
+  }
+}
+```
+
+**See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete documentation.**
 
 ## Business Customization
 
@@ -473,11 +532,24 @@ dotnet test        # Run 6 integration tests
 
 ---
 
-**Test Coverage:** 89 tests (89 frontend + 6 backend) ✓
+**Test Coverage:** 97 tests (97 frontend + 6 backend) ✓
 **Frontend-First:** Works without backend, seamlessly connects when available
 **Production-Ready:** Enterprise patterns, performance optimized, fully typed
+**Extensible:** Registry-based architecture for maximum customization with minimal code
 
 **Ready to fork and customize!** Transform this into your business application through configuration, not code rewrites.
+
+---
+
+## Recent Updates
+
+### Phase 2.1: Entity-Scoped Status Configuration ✅
+- **84% code reduction** for adding new entities (from 313 to ~50 lines)
+- **Entity-scoped statuses** - No naming conflicts, icons & tooltips supported
+- **Type-safe helpers** - Full TypeScript support with backward compatibility
+- **Production-ready** - All 97 tests passing
+
+See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete feature roadmap.
 
 ---
 
@@ -521,8 +593,16 @@ Three files must stay synchronized for GitHub Pages:
 ### Quality Gates
 
 Every deployment must pass:
-- ✅ All 89 frontend tests
+- ✅ All 97 frontend tests
 - ✅ TypeScript compilation
 - ✅ Production build
 
 **See [CLAUDE.md](CLAUDE.md#deployment) for detailed deployment documentation.**
+
+---
+
+## Documentation
+
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive development guide (for Claude Code and developers)
+- **[EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md)** - Registry architecture and extensibility features
+- **[DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md)** - Development standards and commit guidelines

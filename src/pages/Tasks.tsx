@@ -196,6 +196,7 @@ const Tasks = memo(() => {
                           field={field}
                           value={todo[field as keyof typeof todo]}
                           entity={todo}
+                          entityType="todoItem"
                           statusConfig={statusConfig}
                           variant="chip"
                           isCompleted={isCompleted}

@@ -194,27 +194,44 @@ export const appConfig: AppConfig = {
     account: [],
   },
   statusConfig: {
-    priority: {
-      high: { color: "error", label: "High Priority" },
-      medium: { color: "warning", label: "Medium" },
-      low: { color: "default", label: "Low" },
-      urgent: { color: "error", label: "Urgent" },
+    // TodoItem entity statuses
+    todoItem: {
+      priority: {
+        high: { color: "error", label: "High Priority", icon: "🔥" },
+        medium: { color: "warning", label: "Medium", icon: "⚠️" },
+        low: { color: "default", label: "Low", icon: "📋" },
+      },
+      status: {
+        pending: { color: "default", label: "Pending", icon: "⏳" },
+        "in-progress": { color: "info", label: "In Progress", icon: "🔄" },
+        completed: { color: "success", label: "Completed", icon: "✅" },
+      },
     },
-    status: {
-      pending: { color: "default", label: "Pending" },
-      "in-progress": { color: "info", label: "In Progress" },
-      completed: { color: "success", label: "Completed" },
-      open: { color: "warning", label: "Open" },
-      resolved: { color: "success", label: "Resolved" },
+    // Payment entity statuses
+    payment: {
+      status: {
+        pending: { color: "warning", label: "Pending Payment", icon: "💳", description: "Payment is awaiting processing" },
+        paid: { color: "success", label: "Paid", icon: "✅", description: "Payment has been completed" },
+        overdue: { color: "error", label: "Overdue", icon: "⚠️", description: "Payment is past due date" },
+      },
     },
-    paymentStatus: {
-      pending: { color: "warning", label: "Pending" },
-      paid: { color: "success", label: "Paid" },
-      overdue: { color: "error", label: "Overdue" },
+    // Document entity statuses
+    document: {
+      shared: {
+        true: { color: "success", label: "Shared", icon: "👥" },
+        false: { color: "default", label: "Private", icon: "🔒" },
+      },
     },
-    documentShared: {
-      true: { color: "success", label: "Shared" },
-      false: { color: "default", label: "Private" },
+    // Discussion entity statuses
+    discussion: {
+      priority: {
+        normal: { color: "default", label: "Normal", icon: "💬" },
+        urgent: { color: "error", label: "Urgent", icon: "🔥" },
+      },
+      resolved: {
+        true: { color: "success", label: "Resolved", icon: "✅" },
+        false: { color: "warning", label: "Open", icon: "💬" },
+      },
     },
   },
   fieldConfig: {

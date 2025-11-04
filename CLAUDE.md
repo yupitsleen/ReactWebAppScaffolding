@@ -220,17 +220,45 @@ const Orders = memo(() => {
 
 ### Phase 3: Status & Field Configuration
 
-**Configure Your Business Statuses:**
+**Configure Your Business Statuses (Entity-Scoped):**
+
+Status configurations are now **entity-scoped** to eliminate naming conflicts. Each entity can have its own status fields with independent configurations:
 
 ```typescript
 statusConfig: {
-  orderStatus: {  // Your domain status
-    pending: { color: "warning", label: "Pending" },
-    processing: { color: "info", label: "Processing" },
-    completed: { color: "success", label: "Completed" }
+  // Order entity statuses
+  order: {
+    orderStatus: {  // Status field for orders
+      pending: { color: "warning", label: "Pending Order", icon: "📋" },
+      processing: { color: "info", label: "Processing", icon: "⚙️" },
+      shipped: { color: "primary", label: "Shipped", icon: "📦" },
+      completed: { color: "success", label: "Delivered", icon: "✅" }
+    },
+    paymentStatus: {  // Separate payment status for orders
+      pending: { color: "warning", label: "Payment Pending", icon: "💳", description: "Awaiting payment" },
+      paid: { color: "success", label: "Paid", icon: "✅", description: "Payment completed" },
+      failed: { color: "error", label: "Failed", icon: "❌", description: "Payment failed" }
+    }
+  },
+  // Customer entity statuses (completely independent from Order)
+  customer: {
+    status: {
+      active: { color: "success", label: "Active", icon: "✅" },
+      inactive: { color: "default", label: "Inactive", icon: "⏸️" }
+    },
+    tier: {
+      platinum: { color: "primary", label: "Platinum", icon: "💎" },
+      gold: { color: "warning", label: "Gold", icon: "🏆" }
+    }
   }
 }
 ```
+
+**Benefits:**
+- ✅ No naming conflicts (Order.status vs Customer.status have different meanings)
+- ✅ Icons for visual distinction
+- ✅ Tooltips via description field
+- ✅ Unlimited status fields per entity
 
 **Configure Field Display:**
 
@@ -361,7 +389,7 @@ const { isHighContrast, toggleHighContrast } = useHighContrast()
 
 The scaffold now uses **registry + factory patterns** to eliminate the need to modify core files when adding new entities. With this architecture, adding a complete new entity with CRUD operations requires **~50 lines in 1 file** instead of **313 lines across 8 files** (84% reduction).
 
-### Three Core Registries
+### Four Core Registries
 
 #### 1. ServiceRegistry - Dynamic Entity Services
 
@@ -451,6 +479,81 @@ validator.registerSchema<Order>('order', {
   ]
 })
 ```
+
+#### 4. Entity-Scoped Status Configuration
+
+Configure statuses per entity without naming conflicts:
+
+```typescript
+// In src/data/configurableData.ts
+import { appConfig } from '../data/configurableData'
+
+appConfig.statusConfig = {
+  // Order entity statuses
+  order: {
+    orderStatus: {
+      pending: { color: "warning", label: "Pending Order", icon: "📋" },
+      processing: { color: "info", label: "Processing", icon: "⚙️" },
+      shipped: { color: "primary", label: "Shipped", icon: "📦" },
+      delivered: { color: "success", label: "Delivered", icon: "✅" }
+    },
+    paymentStatus: {
+      pending: {
+        color: "warning",
+        label: "Payment Pending",
+        icon: "💳",
+        description: "Awaiting payment processing"  // Shows in tooltip
+      },
+      paid: { color: "success", label: "Paid", icon: "✅" }
+    }
+  },
+  // Customer entity statuses (independent from Order)
+  customer: {
+    status: {
+      active: { color: "success", label: "Active", icon: "✅" },
+      inactive: { color: "default", label: "Inactive", icon: "⏸️" }
+    }
+  }
+}
+```
+
+**Helper Functions:**
+```typescript
+import { getStatusConfig, getStatusLabel, getStatusColor } from '../utils/statusHelpers'
+
+// Get full status info
+const statusInfo = getStatusConfig(appConfig.statusConfig, 'order', 'orderStatus', 'shipped')
+// Returns: { color: "primary", label: "Shipped", icon: "📦" }
+
+// Get just the label
+const label = getStatusLabel(appConfig.statusConfig, 'order', 'orderStatus', 'shipped')
+// Returns: "Shipped"
+```
+
+**Usage in Components:**
+```typescript
+import StatusChip from '../components/StatusChip'
+
+// New entity-scoped API
+<StatusChip
+  entityType="order"
+  fieldName="orderStatus"
+  value="shipped"
+  statusConfig={appConfig.statusConfig}
+/>
+// Renders: 📦 Shipped (with appropriate color)
+
+// With tooltip
+<StatusChip
+  entityType="order"
+  fieldName="paymentStatus"
+  value="pending"
+  statusConfig={appConfig.statusConfig}
+/>
+// Renders: 💳 Payment Pending (with tooltip "Awaiting payment processing")
+```
+
+**Backward Compatibility:** Legacy `type` prop still works for gradual migration.
 
 ### Generic Data Context
 

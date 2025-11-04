@@ -142,15 +142,28 @@ export interface ThemeConfig {
   }
 }
 
+export interface StatusInfo {
+  color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
+  label: string
+  variant?: 'filled' | 'outlined'
+  icon?: string
+  description?: string
+}
+
 export interface StatusMapping {
-  [key: string]: {
-    color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
-    label: string
-    variant?: 'filled' | 'outlined'
+  [key: string]: StatusInfo
+}
+
+// Entity-scoped status configuration
+// Each entity type can have multiple status fields with their own mappings
+export interface StatusConfig {
+  [entityType: string]: {
+    [statusField: string]: StatusMapping
   }
 }
 
-export interface StatusConfig {
+// Legacy flat status config (maintained for backward compatibility during migration)
+export interface LegacyStatusConfig {
   priority: StatusMapping
   status: StatusMapping
   paymentStatus: StatusMapping
@@ -177,6 +190,6 @@ export interface AppConfig {
     account: ActionButton[]
     [key: string]: ActionButton[]
   }
-  statusConfig: StatusConfig
+  statusConfig: StatusConfig | LegacyStatusConfig // Support both new and legacy formats
   fieldConfig: FieldConfig
 }
