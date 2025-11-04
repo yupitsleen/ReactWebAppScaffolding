@@ -33,13 +33,13 @@ describe('FieldRenderer', () => {
       )
       expect(screen.getByText('Completed')).toBeInTheDocument()
 
-      // Date field
+      // Date field - use regex to handle timezone differences
       rerender(
         <ThemeProvider theme={portalTheme}>
           <FieldRenderer field="dueDate" value="2024-01-15T00:00:00Z" />
         </ThemeProvider>
       )
-      expect(screen.getByText('1/14/2024')).toBeInTheDocument()
+      expect(screen.getByText(/1\/(14|15)\/2024/)).toBeInTheDocument()
 
       // Amount field
       rerender(
