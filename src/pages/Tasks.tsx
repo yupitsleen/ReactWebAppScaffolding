@@ -6,12 +6,14 @@ import PageLayout from '../components/PageLayout'
 import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useData } from '../context/ContextProvider'
-import CreateTodoDialog from '../components/CreateTodoDialog'
+import { useNotifications } from '../context/NotificationContext'
+import { EntityCreateDialog } from '../components/EntityCreateDialog'
 import { getFromStorage, setToStorage } from '../utils/helpers'
 
 const Tasks = memo(() => {
   const [loading] = usePageLoading(false)
   const { todos, updateTodoStatus } = useData()
+  const { addNotification } = useNotifications()
   const { statusConfig, fieldConfig } = appConfig
   const todoFields = fieldConfig.todoItem
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -78,6 +80,14 @@ const Tasks = memo(() => {
     if (currentTodo) {
       const newStatus = currentTodo.status === 'completed' ? 'pending' : 'completed'
       updateTodoStatus(taskId, newStatus)
+
+      // Show success toast
+      addNotification({
+        type: 'success',
+        title: newStatus === 'completed' ? 'Task Completed!' : 'Task Reopened',
+        message: `"${currentTodo.title}" marked as ${newStatus}`,
+        autoHide: true
+      })
     }
   }
 
@@ -186,6 +196,7 @@ const Tasks = memo(() => {
                           field={field}
                           value={todo[field as keyof typeof todo]}
                           entity={todo}
+                          entityType="todoItem"
                           statusConfig={statusConfig}
                           variant="chip"
                           isCompleted={isCompleted}
@@ -200,11 +211,17 @@ const Tasks = memo(() => {
         }))}
 
       {/* Create Task Dialog */}
-      <CreateTodoDialog
+      <EntityCreateDialog
+        entityKey="todoItem"
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
         onSuccess={() => {
-          // Optional: Show success message or scroll to new task
+          addNotification({
+            type: 'success',
+            title: 'Task Created!',
+            message: 'Your new task has been created successfully',
+            autoHide: true
+          })
         }}
       />
       </Box>

@@ -1,8 +1,10 @@
 import { memo, useMemo, useState } from 'react'
 import { Typography, Box, Paper, Chip, Tooltip } from '@mui/material'
 import { Circle as CircleIcon } from '@mui/icons-material'
+import { motion } from 'framer-motion'
 import PageLayout from '../components/PageLayout'
 import FieldRenderer from '../components/FieldRenderer'
+import AnimatedSection from '../components/AnimatedSection'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useData } from '../context/ContextProvider'
 import { appConfig } from '../data/configurableData'
@@ -105,28 +107,40 @@ const Timeline = memo(() => {
     <PageLayout loading={loading}>
       <Box className="spacing-top-lg">
         {/* Timeline Visualization */}
-        <Paper sx={{ p: 4, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Task Timeline
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            Hover over points to see task details. Click to keep details visible.
-          </Typography>
+        <AnimatedSection delay={0.1}>
+          <Paper sx={{ p: 4, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Task Timeline
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+              Hover over points to see task details. Click to keep details visible.
+            </Typography>
 
           {/* Timeline container */}
           <Box sx={{ position: 'relative', height: 120, mb: 2 }}>
-            {/* Timeline line */}
-            <Box
-              sx={{
+            {/* Timeline line with animation */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+              style={{
                 position: 'absolute',
                 top: '50%',
                 left: 0,
                 right: 0,
                 height: 2,
-                backgroundColor: 'divider',
+                transformOrigin: 'left',
                 transform: 'translateY(-50%)'
               }}
-            />
+            >
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: 'divider'
+                }}
+              />
+            </motion.div>
 
             {/* Start marker */}
             <Box
@@ -156,7 +170,7 @@ const Timeline = memo(() => {
               }}
             />
 
-            {/* Timeline points */}
+            {/* Timeline points with stagger animation */}
             {timelineData.points.map((point, index) => {
               const size = getPointSize(point.tasks)
               const color = getPointColor(point.tasks)
@@ -176,9 +190,20 @@ const Timeline = memo(() => {
                   }
                   arrow
                 >
-                  <Box
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.3 + index * 0.1,
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 20
+                    }}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedPoint(selectedPoint === point ? null : point)}
-                    sx={{
+                    style={{
                       position: 'absolute',
                       left: `${point.position}%`,
                       top: '50%',
@@ -188,17 +213,11 @@ const Timeline = memo(() => {
                       borderRadius: '50%',
                       backgroundColor: color,
                       cursor: 'pointer',
-                      transition: 'all 0.3s ease',
                       zIndex: selectedPoint === point ? 10 : 5,
                       border: selectedPoint === point ? '3px solid white' : 'none',
                       boxShadow: selectedPoint === point
                         ? '0 4px 12px rgba(0,0,0,0.3)'
-                        : '0 2px 4px rgba(0,0,0,0.2)',
-                      '&:hover': {
-                        transform: 'translate(-50%, -50%) scale(1.2)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                        zIndex: 10
-                      }
+                        : '0 2px 4px rgba(0,0,0,0.2)'
                     }}
                   />
                 </Tooltip>
@@ -254,11 +273,18 @@ const Timeline = memo(() => {
               Point size indicates number of tasks
             </Typography>
           </Box>
-        </Paper>
+          </Paper>
+        </AnimatedSection>
 
-        {/* Selected point details */}
+        {/* Selected point details with animation */}
         {selectedPoint && (
-          <Paper sx={{ p: 3 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Paper sx={{ p: 3 }}>
             <Box className="flex-row" sx={{ mb: 2 }}>
               <Typography variant="h6" sx={{ flex: 1 }}>
                 {selectedPoint.dateLabel}
@@ -338,7 +364,8 @@ const Timeline = memo(() => {
                 )
               })}
             </Box>
-          </Paper>
+            </Paper>
+          </motion.div>
         )}
       </Box>
     </PageLayout>

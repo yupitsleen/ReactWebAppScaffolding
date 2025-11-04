@@ -98,6 +98,7 @@ export interface NavigationItem {
   path: string
   enabled: boolean
   description?: string
+  component?: string // Optional custom component path override (e.g., 'custom/SpecialPage')
 }
 
 export interface ActionButton {
@@ -142,15 +143,28 @@ export interface ThemeConfig {
   }
 }
 
+export interface StatusInfo {
+  color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
+  label: string
+  variant?: 'filled' | 'outlined'
+  icon?: string
+  description?: string
+}
+
 export interface StatusMapping {
-  [key: string]: {
-    color: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
-    label: string
-    variant?: 'filled' | 'outlined'
+  [key: string]: StatusInfo
+}
+
+// Entity-scoped status configuration
+// Each entity type can have multiple status fields with their own mappings
+export interface StatusConfig {
+  [entityType: string]: {
+    [statusField: string]: StatusMapping
   }
 }
 
-export interface StatusConfig {
+// Legacy flat status config (maintained for backward compatibility during migration)
+export interface LegacyStatusConfig {
   priority: StatusMapping
   status: StatusMapping
   paymentStatus: StatusMapping
@@ -165,6 +179,60 @@ export interface FieldConfig {
   }
 }
 
+// Form Generation Types
+export type FormFieldType =
+  | 'text'
+  | 'email'
+  | 'number'
+  | 'textarea'
+  | 'select'
+  | 'multiselect'
+  | 'date'
+  | 'datetime'
+  | 'checkbox'
+  | 'radio'
+  | 'autocomplete'
+
+export interface FormFieldOption {
+  value: string | number
+  label: string
+}
+
+export interface FormFieldSchema<T = any> {
+  name: keyof T
+  label: string
+  type: FormFieldType
+  placeholder?: string
+  helperText?: string
+  required?: boolean
+  disabled?: boolean
+  defaultValue?: any
+  options?: FormFieldOption[] // For select, multiselect, radio
+  rows?: number // For textarea
+  min?: number // For number/date
+  max?: number // For number/date
+  step?: number // For number
+  fullWidth?: boolean
+  grid?: {
+    xs?: number
+    sm?: number
+    md?: number
+    lg?: number
+  }
+}
+
+export interface EntityFormSchema<T = any> {
+  fields: FormFieldSchema<T>[]
+  submitLabel?: string
+  cancelLabel?: string
+  title?: string
+  description?: string
+}
+
+export interface FormSchemas {
+  [entityKey: string]: EntityFormSchema<any>
+}
+
 export interface AppConfig {
   appName: string
   navigation: NavigationItem[]
@@ -177,6 +245,7 @@ export interface AppConfig {
     account: ActionButton[]
     [key: string]: ActionButton[]
   }
-  statusConfig: StatusConfig
+  statusConfig: StatusConfig | LegacyStatusConfig // Support both new and legacy formats
   fieldConfig: FieldConfig
+  formSchemas?: FormSchemas // Optional form generation schemas
 }

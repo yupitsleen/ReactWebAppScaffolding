@@ -19,19 +19,19 @@ describe('FieldRenderer', () => {
   describe('Field type handling', () => {
     it('renders different field types correctly', () => {
       const { rerender } = renderWithTheme(
-        <FieldRenderer field="priority" value="high" statusConfig={mockStatusConfig} />
+        <FieldRenderer field="priority" value="high" entityType="todoItem" statusConfig={mockStatusConfig} />
       )
 
-      // Priority field
-      expect(screen.getByText('High Priority')).toBeInTheDocument()
+      // Priority field with icon
+      expect(screen.getByText(/🔥.*High Priority/)).toBeInTheDocument()
 
-      // Status field
+      // Status field with icon
       rerender(
         <ThemeProvider theme={portalTheme}>
-          <FieldRenderer field="status" value="completed" statusConfig={mockStatusConfig} />
+          <FieldRenderer field="status" value="completed" entityType="todoItem" statusConfig={mockStatusConfig} />
         </ThemeProvider>
       )
-      expect(screen.getByText('Completed')).toBeInTheDocument()
+      expect(screen.getByText(/✅.*Completed/)).toBeInTheDocument()
 
       // Date field - use regex to handle timezone differences
       rerender(
@@ -49,18 +49,18 @@ describe('FieldRenderer', () => {
       )
       expect(screen.getByText('$299.99')).toBeInTheDocument()
 
-      // Shared field
+      // Shared field with icon
       rerender(
         <ThemeProvider theme={portalTheme}>
-          <FieldRenderer field="shared" value={true} statusConfig={mockStatusConfig} />
+          <FieldRenderer field="shared" value={true} entityType="document" statusConfig={mockStatusConfig} />
         </ThemeProvider>
       )
-      expect(screen.getByText('Shared')).toBeInTheDocument()
+      expect(screen.getByText(/👥.*Shared/)).toBeInTheDocument()
     })
 
     it('handles unknown and invalid values gracefully', () => {
       const { rerender } = renderWithTheme(
-        <FieldRenderer field="priority" value="unknown" statusConfig={mockStatusConfig} />
+        <FieldRenderer field="priority" value="unknown" entityType="todoItem" statusConfig={mockStatusConfig} />
       )
 
       expect(screen.getByText('unknown')).toBeInTheDocument()
@@ -68,7 +68,7 @@ describe('FieldRenderer', () => {
       // Non-string priority
       rerender(
         <ThemeProvider theme={portalTheme}>
-          <FieldRenderer field="priority" value={123} statusConfig={mockStatusConfig} />
+          <FieldRenderer field="priority" value={123} entityType="todoItem" statusConfig={mockStatusConfig} />
         </ThemeProvider>
       )
       expect(screen.getByText('123')).toBeInTheDocument()
@@ -140,10 +140,10 @@ describe('FieldRenderer', () => {
       // Status chip with completion state
       rerender(
         <ThemeProvider theme={portalTheme}>
-          <FieldRenderer field="priority" value="high" statusConfig={mockStatusConfig} isCompleted={true} />
+          <FieldRenderer field="priority" value="high" entityType="todoItem" statusConfig={mockStatusConfig} isCompleted={true} />
         </ThemeProvider>
       )
-      expect(screen.getByText('High Priority')).toBeInTheDocument()
+      expect(screen.getByText(/🔥.*High Priority/)).toBeInTheDocument()
     })
   })
 

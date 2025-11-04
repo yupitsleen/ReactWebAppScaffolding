@@ -13,6 +13,7 @@ This file provides guidance to Claude Code when working with this forked React w
 - [Smart Abstractions](#smart-abstractions) - Key reusable components
 - [Backend Development](#backend-development) - .NET Core API patterns
 - [Development Preferences](#development-preferences) - Coding standards and approach
+- [Deployment](#deployment) - GitHub Pages auto-deployment
 
 ## Quick Reference
 
@@ -125,7 +126,7 @@ git push origin [current-branch-name]
 
 - **Always run tests** after each working change
 - **Update tests** when renaming entities (TodoItem → Order)
-- **No commits without passing tests** - Frontend: 56/56 ✓, Backend: 6/6 ✓
+- **No commits without passing tests** - Frontend: 97/97 ✓, Backend: 6/6 ✓
 - **Dev server assumed running** - localhost:5173 for real-time feedback
 - **Minimal, focused tests** - Test core functionality only
 
@@ -219,17 +220,45 @@ const Orders = memo(() => {
 
 ### Phase 3: Status & Field Configuration
 
-**Configure Your Business Statuses:**
+**Configure Your Business Statuses (Entity-Scoped):**
+
+Status configurations are now **entity-scoped** to eliminate naming conflicts. Each entity can have its own status fields with independent configurations:
 
 ```typescript
 statusConfig: {
-  orderStatus: {  // Your domain status
-    pending: { color: "warning", label: "Pending" },
-    processing: { color: "info", label: "Processing" },
-    completed: { color: "success", label: "Completed" }
+  // Order entity statuses
+  order: {
+    orderStatus: {  // Status field for orders
+      pending: { color: "warning", label: "Pending Order", icon: "📋" },
+      processing: { color: "info", label: "Processing", icon: "⚙️" },
+      shipped: { color: "primary", label: "Shipped", icon: "📦" },
+      completed: { color: "success", label: "Delivered", icon: "✅" }
+    },
+    paymentStatus: {  // Separate payment status for orders
+      pending: { color: "warning", label: "Payment Pending", icon: "💳", description: "Awaiting payment" },
+      paid: { color: "success", label: "Paid", icon: "✅", description: "Payment completed" },
+      failed: { color: "error", label: "Failed", icon: "❌", description: "Payment failed" }
+    }
+  },
+  // Customer entity statuses (completely independent from Order)
+  customer: {
+    status: {
+      active: { color: "success", label: "Active", icon: "✅" },
+      inactive: { color: "default", label: "Inactive", icon: "⏸️" }
+    },
+    tier: {
+      platinum: { color: "primary", label: "Platinum", icon: "💎" },
+      gold: { color: "warning", label: "Gold", icon: "🏆" }
+    }
   }
 }
 ```
+
+**Benefits:**
+- ✅ No naming conflicts (Order.status vs Customer.status have different meanings)
+- ✅ Icons for visual distinction
+- ✅ Tooltips via description field
+- ✅ Unlimited status fields per entity
 
 **Configure Field Display:**
 
@@ -300,14 +329,471 @@ applyColorPreset("blue"); // Test presets
 - **Desktop-first design** - Sophisticated layouts
 - **Theme colors, not hex** - Use `theme.palette.error.main`, not `'#ef4444'`
 
+## User Preferences & Accessibility
+
+### Layout Density System
+
+**Three density modes** for user customization:
+
+- **Compact** (75% spacing) - Maximum data on screen for power users
+- **Comfortable** (100% spacing) - Balanced default
+- **Spacious** (125% spacing) - Extra breathing room for accessibility
+
+**Implementation:**
+```typescript
+import { useDensity } from '../hooks/useLayoutDensity'
+
+const { density, setDensity } = useDensity()
+// Persists to localStorage automatically
+```
+
+**CSS Variables:**
+- `--density-spacing` - Spacing multiplier
+- `--density-card-padding` - Card padding
+- `--density-row-height` - Table row height
+- `--density-icon-size` - Icon dimensions
+- `--density-font-scale` - Font size scaling
+
+### High Contrast Mode
+
+**WCAG AAA compliance** (7:1+ contrast ratios):
+
+```typescript
+import { useHighContrast } from '../hooks/useHighContrast'
+
+const { isHighContrast, toggleHighContrast } = useHighContrast()
+// Persists to localStorage automatically
+```
+
+**Features:**
+- Removes subtle shadows and gradients
+- Strong 2px borders on all components
+- Enhanced focus indicators (3px outlines)
+- Works in both light and dark themes
+- Automatic color adjustments
+
+### Keyboard Navigation
+
+**Global shortcuts** - Press `?` to see all:
+
+- `Ctrl+K` - Open command palette (power users)
+- `Ctrl+H` - Navigate to Home
+- `Ctrl+T` - Navigate to Tasks
+- `Escape` - Close dialogs/modals
+- Arrow keys - Navigate command palette
+- Tab/Shift+Tab - Focus management
+
+## Extensibility System (#memorize)
+
+### Registry Architecture for Maximum Extensibility
+
+The scaffold now uses **registry + factory patterns** to eliminate the need to modify core files when adding new entities. With this architecture, adding a complete new entity with CRUD operations requires **~50 lines in 1 file** instead of **313 lines across 8 files** (84% reduction).
+
+### Four Core Registries
+
+#### 1. ServiceRegistry - Dynamic Entity Services
+
+Register new entity services without modifying [src/services/index.ts](src/services/index.ts):
+
+```typescript
+// In src/data/configurableData.ts or your domain file
+import { serviceRegistry } from '../services/ServiceRegistry'
+
+serviceRegistry.register<Order>('orders', {
+  entityName: 'Orders',
+  endpoint: '/api/orders',
+  mockData: sampleOrders,
+  mode: 'fallback'  // Tries API, falls back to mock
+})
+```
+
+**Service Modes:**
+- `fallback` - Tries API first, uses mock data if unavailable (recommended)
+- `mock` - Always uses mock data (for static/reference data)
+- `api` - Always uses API (production mode)
+
+#### 2. FieldRendererRegistry - Custom Field Rendering
+
+Register custom field renderers without modifying [src/components/FieldRenderer.tsx](src/components/FieldRenderer.tsx):
+
+```typescript
+// In your domain file
+import { fieldRenderers } from '../components/fieldRenderers/FieldRendererRegistry'
+
+// Exact field name match
+fieldRenderers.register('priority', ({ value }) => (
+  <Chip label={value} color={value === 'high' ? 'error' : 'default'} />
+))
+
+// Pattern-based match (all fields ending in "Status")
+fieldRenderers.registerPattern(/.*Status$/i, ({ value }) => (
+  <StatusChip value={value} />
+), 10)  // Priority: higher = checked first
+
+// Entity-specific override (highest priority)
+fieldRenderers.register('order.priority', ({ value }) => (
+  <Chip label={`🔥 ${value}`} />
+))
+```
+
+**Built-in Patterns:** The scaffold includes default renderers for common patterns:
+- `*Status` - Status chips with smart color mapping
+- `*Date` - Formatted date chips
+- `*At` - Timestamp formatting
+- `*Amount`, `*Price`, `*Cost`, `total` - Currency formatting
+- `is*`, `has*`, `can*` - Boolean Yes/No chips
+- `*Email` - Email formatting
+- `*Url`, `*Link` - Clickable links
+- `*Percentage` - Percentage formatting
+
+#### 3. EntityValidator - Schema-Based Validation
+
+Register validation schemas without duplicating validation logic:
+
+```typescript
+// In src/data/configurableData.ts
+import { validator } from '../validation/EntityValidator'
+
+validator.registerSchema<Order>('order', {
+  rules: [
+    {
+      field: 'customerName',
+      required: true,
+      min: 2,
+      minMessage: 'Customer name must be at least 2 characters'
+    },
+    {
+      field: 'total',
+      required: true,
+      custom: (value) => {
+        if (typeof value !== 'number') return 'Total must be a number'
+        if (value <= 0) return 'Total must be greater than zero'
+        return null
+      }
+    },
+    {
+      field: 'email',
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      patternMessage: 'Please enter a valid email address'
+    }
+  ]
+})
+```
+
+#### 4. Entity-Scoped Status Configuration
+
+Configure statuses per entity without naming conflicts:
+
+```typescript
+// In src/data/configurableData.ts
+import { appConfig } from '../data/configurableData'
+
+appConfig.statusConfig = {
+  // Order entity statuses
+  order: {
+    orderStatus: {
+      pending: { color: "warning", label: "Pending Order", icon: "📋" },
+      processing: { color: "info", label: "Processing", icon: "⚙️" },
+      shipped: { color: "primary", label: "Shipped", icon: "📦" },
+      delivered: { color: "success", label: "Delivered", icon: "✅" }
+    },
+    paymentStatus: {
+      pending: {
+        color: "warning",
+        label: "Payment Pending",
+        icon: "💳",
+        description: "Awaiting payment processing"  // Shows in tooltip
+      },
+      paid: { color: "success", label: "Paid", icon: "✅" }
+    }
+  },
+  // Customer entity statuses (independent from Order)
+  customer: {
+    status: {
+      active: { color: "success", label: "Active", icon: "✅" },
+      inactive: { color: "default", label: "Inactive", icon: "⏸️" }
+    }
+  }
+}
+```
+
+**Helper Functions:**
+```typescript
+import { getStatusConfig, getStatusLabel, getStatusColor } from '../utils/statusHelpers'
+
+// Get full status info
+const statusInfo = getStatusConfig(appConfig.statusConfig, 'order', 'orderStatus', 'shipped')
+// Returns: { color: "primary", label: "Shipped", icon: "📦" }
+
+// Get just the label
+const label = getStatusLabel(appConfig.statusConfig, 'order', 'orderStatus', 'shipped')
+// Returns: "Shipped"
+```
+
+**Usage in Components:**
+```typescript
+import StatusChip from '../components/StatusChip'
+
+// New entity-scoped API
+<StatusChip
+  entityType="order"
+  fieldName="orderStatus"
+  value="shipped"
+  statusConfig={appConfig.statusConfig}
+/>
+// Renders: 📦 Shipped (with appropriate color)
+
+// With tooltip
+<StatusChip
+  entityType="order"
+  fieldName="paymentStatus"
+  value="pending"
+  statusConfig={appConfig.statusConfig}
+/>
+// Renders: 💳 Payment Pending (with tooltip "Awaiting payment processing")
+```
+
+**Backward Compatibility:** Legacy `type` prop still works for gradual migration.
+
+### Generic Data Context
+
+Use the new generic context for entity-agnostic CRUD operations:
+
+```typescript
+import { useGenericData } from '../context/GenericDataContext'
+
+// In your component
+const { getEntities, getLoading, createEntity, updateEntity, deleteEntity } = useGenericData()
+
+// Access any registered entity
+const orders = getEntities<Order>('orders')
+const loading = getLoading('orders')
+
+// CRUD operations
+await createEntity<Order>('orders', { customerName: 'John', total: 299.99 })
+await updateEntity<Order>('orders', 'order-1', { total: 349.99 })
+await deleteEntity('orders', 'order-1')
+```
+
+**Backward Compatibility:** Existing pages using `useData()` continue to work via adapter hooks in [src/hooks/useEntityAdapters.ts](src/hooks/useEntityAdapters.ts).
+
+### Validation Hook
+
+Use `useEntityValidation` for form validation:
+
+```typescript
+import { useEntityValidation } from '../hooks/useEntityValidation'
+
+const { errors, validate, validateField } = useEntityValidation<Order>('order')
+
+// Real-time field validation
+const handleFieldChange = (field: keyof Order, value: any) => {
+  const updated = { ...formData, [field]: value }
+  setFormData(updated)
+  validateField(field, value, updated)  // Validates on change
+}
+
+// Form submit validation
+const handleSubmit = async () => {
+  if (!validate(formData)) {
+    return  // Errors are automatically set in state
+  }
+  await createEntity('orders', formData)
+}
+
+// Display errors in UI
+<TextField
+  label="Customer Name"
+  error={!!errors.customerName}
+  helperText={errors.customerName}
+/>
+```
+
+### Form Generation System (#memorize)
+
+**Phase 2** adds schema-driven form generation - define forms once in configuration, use everywhere automatically.
+
+#### Form Schema Configuration
+
+Define form schemas in `configurableData.ts`:
+
+```typescript
+// In src/data/configurableData.ts
+export const appConfig: AppConfig = {
+  // ... other config
+
+  formSchemas: {
+    order: {
+      title: "Order",
+      description: "Create a new customer order",
+      submitLabel: "Create Order",
+      cancelLabel: "Cancel",
+      fields: [
+        {
+          name: "customerName",
+          label: "Customer Name",
+          type: "text",
+          placeholder: "Enter customer name",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12, md: 6 }
+        },
+        {
+          name: "total",
+          label: "Order Total",
+          type: "number",
+          required: true,
+          min: 0,
+          step: 0.01,
+          grid: { xs: 12, md: 6 }
+        },
+        {
+          name: "status",
+          label: "Status",
+          type: "select",
+          required: true,
+          defaultValue: "pending",
+          options: [
+            { value: "pending", label: "Pending" },
+            { value: "processing", label: "Processing" },
+            { value: "shipped", label: "Shipped" }
+          ],
+          grid: { xs: 12, md: 6 }
+        },
+        {
+          name: "notes",
+          label: "Notes",
+          type: "textarea",
+          rows: 4,
+          placeholder: "Add any special instructions",
+          grid: { xs: 12 }
+        }
+      ]
+    }
+  }
+}
+```
+
+**Supported Field Types:**
+- `text`, `email`, `number` - Standard inputs
+- `textarea` - Multi-line text (specify `rows`)
+- `select`, `multiselect` - Dropdown selections (provide `options`)
+- `checkbox` - Boolean toggle
+- `radio` - Radio button group (provide `options`)
+- `date`, `datetime` - Date pickers
+- `autocomplete` - Searchable dropdown (provide `options`)
+
+#### Generic Create/Edit Dialogs
+
+Use the generic dialogs in your pages - one line replaces entire custom dialog components:
+
+```typescript
+// In your page component (e.g., Orders.tsx)
+import { EntityCreateDialog, EntityEditDialog } from '../components'
+
+// Create dialog - one line!
+<EntityCreateDialog
+  entityKey="order"
+  open={createDialogOpen}
+  onClose={() => setCreateDialogOpen(false)}
+  onSuccess={() => showSuccessMessage()}
+/>
+
+// Edit dialog - one line!
+<EntityEditDialog
+  entityKey="order"
+  entity={selectedOrder}
+  open={editDialogOpen}
+  onClose={() => setEditDialogOpen(false)}
+  onSuccess={() => showSuccessMessage()}
+/>
+```
+
+**Features Included Automatically:**
+- ✅ Form rendering from schema
+- ✅ Real-time validation (integrates with EntityValidator)
+- ✅ Error display
+- ✅ Loading states during submission
+- ✅ CRUD operations (create/update via GenericDataContext)
+- ✅ Success/error handling
+
+#### Form Generator Component
+
+For custom form layouts, use `EntityFormGenerator` directly:
+
+```typescript
+import { EntityFormGenerator } from '../components/forms/EntityFormGenerator'
+
+<EntityFormGenerator
+  entityKey="order"
+  schema={appConfig.formSchemas.order}
+  initialData={existingOrder}  // For edit mode
+  onChange={setFormData}
+  onValidate={setIsValid}
+/>
+```
+
+### Complete Example: Adding an Order Entity
+
+See [src/examples/extensibilityExample.ts](src/examples/extensibilityExample.ts) for a complete example showing how to add a new "Order" entity with:
+- ✅ Type definition (5 lines)
+- ✅ Sample data (10 lines)
+- ✅ Service registration (5 lines)
+- ✅ Form schema (30 lines) - **NEW in Phase 2**
+- ✅ Custom field renderers (10 lines, optional)
+- ✅ Validation schema (20 lines, optional)
+
+**Total: ~50 lines in 1 file vs. 313 lines across 8 files**
+**Forms:** Define once, use everywhere (create/edit dialogs automatic)
+
+### Migration Strategy
+
+The new registry patterns coexist with existing code:
+
+1. **Existing entities** (TodoItem, Discussion, Document) work unchanged
+2. **New entities** use the registry pattern
+3. **Gradual migration** possible - convert entities one at a time
+4. **No breaking changes** - adapter hooks provide backward compatibility
+
+### Key Files
+
+**Phase 1 - Registry Infrastructure:**
+- [src/services/ServiceRegistry.ts](src/services/ServiceRegistry.ts) - Service registration
+- [src/context/GenericDataContext.tsx](src/context/GenericDataContext.tsx) - Generic CRUD context
+- [src/components/fieldRenderers/FieldRendererRegistry.ts](src/components/fieldRenderers/FieldRendererRegistry.ts) - Field renderer registry
+- [src/components/fieldRenderers/defaultRenderers.tsx](src/components/fieldRenderers/defaultRenderers.tsx) - Built-in renderers
+- [src/validation/EntityValidator.ts](src/validation/EntityValidator.ts) - Validation engine
+- [src/hooks/useEntityValidation.ts](src/hooks/useEntityValidation.ts) - Validation hook
+- [src/hooks/useEntityAdapters.ts](src/hooks/useEntityAdapters.ts) - Backward compatibility
+
+**Phase 2 - Form Generation:**
+- [src/components/forms/FormField.tsx](src/components/forms/FormField.tsx) - Universal form field component
+- [src/components/forms/EntityFormGenerator.tsx](src/components/forms/EntityFormGenerator.tsx) - Schema-driven form generator
+- [src/components/EntityCreateDialog.tsx](src/components/EntityCreateDialog.tsx) - Generic create dialog
+- [src/components/EntityEditDialog.tsx](src/components/EntityEditDialog.tsx) - Generic edit dialog
+
+**Example & Documentation:**
+- [src/examples/extensibilityExample.ts](src/examples/extensibilityExample.ts) - Complete usage example
+- [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) - Detailed implementation roadmap
+
 ## Available Utilities
 
 ### Custom Hooks
 
+**Core Hooks:**
 - `useDebounce(value, delay)` - Debounce for search/input
 - `usePageLoading(delay?)` - Page-level loading states
 - `useCurrentPage()` - Auto-detect page config from URL
 - `useDataOperations(data)` - Generic filtering, sorting, pagination
+
+**User Preference Hooks:**
+- `useDensity()` - Layout density (compact/comfortable/spacious) with localStorage persistence
+- `useHighContrast()` - High contrast mode for WCAG AAA accessibility
+- `useKeyboardShortcuts(options)` - Global keyboard navigation (Ctrl+H, Ctrl+K, etc.)
+
+**Utility Hooks:**
+- `useEntityActions()` - Generic CRUD action handlers for any entity type
+- `useNavigation()` - Navigation helpers (isCurrentPage, getEnabledPages)
 
 ### Service Layer (#memorize)
 
@@ -355,7 +841,11 @@ export const categoriesService = new MockEntityService<Category>(
 ### PageLayout Component
 
 ```tsx
-<PageLayout pageId="your-page-id" loading={loading}>
+<PageLayout
+  pageId="your-page-id"
+  loading={loading}
+  action={<Button onClick={handleAction}>Action</Button>}  // Optional action button
+>
   {content}
 </PageLayout>
 ```
@@ -363,6 +853,37 @@ export const categoriesService = new MockEntityService<Category>(
 ### FieldRenderer Component
 
 Automatically handles: dates, currency, status, priority, amounts, etc.
+
+### Command Palette Component
+
+**Keyboard-first navigation** - Access with `Cmd/Ctrl+K`:
+
+```tsx
+// Automatically available in authenticated app
+// Search across all pages, settings, and actions
+// Arrow keys to navigate, Enter to select, Esc to close
+```
+
+### PDF Export Utilities
+
+**Export dashboard or tables to PDF**:
+
+```typescript
+import { exportDashboardToPDF, exportTableToPDF } from '../utils/pdfExport'
+
+// Export dashboard with charts
+await exportDashboardToPDF(dashboardRef.current, {
+  filename: 'dashboard-report.pdf',
+  title: 'My Dashboard',
+  quality: 2  // High quality (2x scale)
+})
+
+// Export data table
+await exportTableToPDF(tableRef.current, {
+  filename: 'table-export.pdf',
+  title: 'Table Data'
+})
+```
 
 ## Backend Development
 
@@ -473,3 +994,70 @@ git push origin feature/replace-todoitem-with-order
 ```
 
 This scaffold provides a production-ready foundation. Your job is to transform generic entities into your specific business domain through systematic customization.
+
+---
+
+## Deployment
+
+### Live Application
+
+**Production URL:** https://yupitsleen.github.io/ReactWebAppScaffolding
+
+The application is automatically deployed to GitHub Pages on every merge to main.
+
+### Auto-Deployment Workflow (#memorize)
+
+**CI/CD Pipeline:**
+1. **On Pull Request:** Runs tests, linter, and build (validates before merge)
+2. **On Merge to Main:** Runs tests, builds, and deploys to GitHub Pages automatically
+
+**Workflows:**
+- `.github/workflows/ci.yml` - Runs on all PRs (quality gate)
+- `.github/workflows/deploy.yml` - Runs on merge to main (deployment)
+
+### Manual Deployment
+
+```bash
+npm run deploy  # Builds and deploys directly to GitHub Pages
+```
+
+### Deployment Configuration (#memorize)
+
+**Critical Files:**
+- `vite.config.ts` - Contains `base: '/ReactWebAppScaffolding/'` for GitHub Pages subdirectory
+- `src/App.tsx` - Contains `<Router basename="/ReactWebAppScaffolding">` for routing
+- `package.json` - Contains `homepage` URL for deployment
+
+**Important:** These three configurations must match:
+1. Vite `base` path
+2. Router `basename` prop
+3. Package.json `homepage` URL
+
+### Deployment Requirements
+
+**Quality Gates:**
+- ✅ All 89 frontend tests must pass
+- ✅ TypeScript compilation must succeed
+- ✅ Production build must complete
+
+**From CLAUDE.md memorized rules:**
+- Never commit without passing tests
+- All test suites must be green before deployment
+- CI enforces this automatically
+
+### Troubleshooting Deployment
+
+**404 on Page Load:**
+- Check `vite.config.ts` base path matches repo name
+- Verify GitHub Pages is configured to use GitHub Actions (not branch)
+
+**Routing Issues (404 on navigation):**
+- Verify `<Router basename>` matches `vite.config.ts` base path
+- Ensure all three deployment configs are aligned
+
+**Manual Re-deploy:**
+```bash
+git checkout main
+git pull origin main
+npm run deploy  # Forces fresh deployment
+```

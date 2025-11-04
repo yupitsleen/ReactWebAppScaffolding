@@ -3,6 +3,7 @@ import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
 import * as Icons from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import type { DashboardCard } from '../types/portal'
+import Sparkline from './Sparkline'
 
 interface DataCardProps {
   card: DashboardCard
@@ -15,6 +16,8 @@ interface DataCardProps {
     direction: 'up' | 'down'
     value: string
   }
+  sparklineData?: number[]
+  sparklineColor?: string
 }
 
 const DataCard = memo<DataCardProps>(({
@@ -24,7 +27,9 @@ const DataCard = memo<DataCardProps>(({
   icon,
   showClickHint = true,
   children,
-  trend
+  trend,
+  sparklineData,
+  sparklineColor
 }) => {
   const getIconComponent = (iconName: string): ReactNode => {
     const IconComponent = Icons[iconName as keyof typeof Icons] as React.ComponentType
@@ -37,16 +42,44 @@ const DataCard = memo<DataCardProps>(({
 
   return (
     <Card
+      component={onClick ? 'button' : 'div'}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={onClick ? `${card.title}: ${value}. ${card.subtitle}. Click to view details.` : `${card.title}: ${value}. ${card.subtitle}`}
+      onKeyDown={onClick ? (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick()
+        }
+      } : undefined}
       sx={{
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        border: 'none',
+        textAlign: 'inherit',
         ...(onClick && {
           '&:hover': {
             transform: 'translateY(-4px)',
             boxShadow: '0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.08)',
+          },
+          '&:focus-visible': {
+            outline: '2px solid',
+            outlineColor: 'primary.main',
+            outlineOffset: '2px',
+          },
+          // Disable hover transform on mobile (prevents awkward touch behavior)
+          '@media (hover: none)': {
+            '&:hover': {
+              transform: 'none',
+              boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+            },
+            '&:active': {
+              transform: 'scale(0.98)',
+              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            }
           }
         })
       }}
@@ -56,16 +89,17 @@ const DataCard = memo<DataCardProps>(({
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           {displayIcon && (
             <Box
+              aria-hidden="true"
               sx={{
-                width: 56,
-                height: 56,
+                width: 'var(--density-icon-size)',
+                height: 'var(--density-icon-size)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.2)} 100%)`,
                 color: `${card.color}.main`,
-                fontSize: '1.75rem',
+                fontSize: 'calc(1.75rem * var(--density-font-scale))',
               }}
             >
               {displayIcon}
@@ -73,6 +107,8 @@ const DataCard = memo<DataCardProps>(({
           )}
           {trend && (
             <Box
+              role="status"
+              aria-label={`Trend: ${trend.direction === 'up' ? 'increasing' : 'decreasing'} by ${trend.value}`}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -83,7 +119,7 @@ const DataCard = memo<DataCardProps>(({
                 color: trend.direction === 'up' ? '#047857' : '#DC2626',
               }}
             >
-              {trend.direction === 'up' ? <TrendUpIcon sx={{ fontSize: '1rem' }} /> : <TrendDownIcon sx={{ fontSize: '1rem' }} />}
+              {trend.direction === 'up' ? <TrendUpIcon sx={{ fontSize: '1rem' }} aria-hidden="true" /> : <TrendDownIcon sx={{ fontSize: '1rem' }} aria-hidden="true" />}
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
                 {trend.value}
               </Typography>
@@ -120,6 +156,18 @@ const DataCard = memo<DataCardProps>(({
         </Box>
 
         {children}
+
+        {/* Sparkline visualization */}
+        {sparklineData && sparklineData.length > 0 && (
+          <Box sx={{ mt: 2, mb: 1 }}>
+            <Sparkline
+              data={sparklineData}
+              color={sparklineColor}
+              height={32}
+              showTrend={false}
+            />
+          </Box>
+        )}
 
         {showClickHint && onClick && (
           <Box

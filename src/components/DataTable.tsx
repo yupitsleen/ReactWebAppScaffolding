@@ -12,7 +12,11 @@ import {
   TextField,
   InputAdornment,
   Typography,
-  TablePagination
+  TablePagination,
+  Card,
+  CardContent,
+  useMediaQuery,
+  useTheme
 } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
 
@@ -35,6 +39,8 @@ interface DataTableProps<T> {
   defaultRowsPerPage?: number
   emptyMessage?: string
   onRowClick?: (row: T) => void
+  striped?: boolean
+  dense?: boolean
 }
 
 function DataTableInner<T extends Record<string, any>>({
@@ -46,7 +52,9 @@ function DataTableInner<T extends Record<string, any>>({
   rowsPerPageOptions = [5, 10, 25, 50],
   defaultRowsPerPage = 10,
   emptyMessage = 'No data available',
-  onRowClick
+  onRowClick,
+  striped = true,
+  dense = false
 }: DataTableProps<T>) {
   const [orderBy, setOrderBy] = useState<keyof T | string | null>(null)
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
@@ -109,41 +117,209 @@ function DataTableInner<T extends Record<string, any>>({
     return row[column.field as keyof T]
   }
 
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  // Mobile Card View Component
+  const MobileCardView = () => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {paginatedData.length === 0 ? (
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                py: 4,
+                textAlign: 'center',
+                color: 'text.secondary',
+              }}
+            >
+              <SearchIcon
+                sx={{
+                  fontSize: 48,
+                  mb: 2,
+                  opacity: 0.3,
+                }}
+              />
+              <Typography variant="body1" fontWeight={500} gutterBottom>
+                {emptyMessage}
+              </Typography>
+              {filterText && (
+                <Typography variant="body2" color="text.secondary">
+                  Try adjusting your search terms
+                </Typography>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      ) : (
+        paginatedData.map((row, index) => (
+          <Card
+            key={index}
+            component={onRowClick ? 'button' : 'div'}
+            onClick={() => onRowClick?.(row)}
+            tabIndex={onRowClick ? 0 : undefined}
+            role={onRowClick ? 'button' : undefined}
+            aria-label={onRowClick ? `Item ${index + 1}. Click to view details.` : undefined}
+            onKeyDown={onRowClick ? (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onRowClick(row)
+              }
+            } : undefined}
+            sx={{
+              cursor: onRowClick ? 'pointer' : 'default',
+              transition: 'all 0.2s ease-in-out',
+              border: 'none',
+              textAlign: 'inherit',
+              width: '100%',
+              ...(onRowClick && {
+                '&:hover': {
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  transform: 'translateY(-2px)',
+                },
+                '&:active': {
+                  transform: 'scale(0.98)',
+                },
+                '&:focus-visible': {
+                  outline: '2px solid',
+                  outlineColor: 'primary.main',
+                  outlineOffset: '2px',
+                }
+              })
+            }}
+          >
+            <CardContent>
+              {columns.map((column, colIndex) => (
+                <Box
+                  key={String(column.field)}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    py: 1,
+                    borderBottom: colIndex < columns.length - 1 ? '1px solid' : 'none',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      color: 'text.secondary',
+                      textTransform: 'uppercase',
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.05em',
+                      minWidth: '40%',
+                    }}
+                  >
+                    {column.header}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      textAlign: 'right',
+                      color: 'text.primary',
+                      fontWeight: 500,
+                      maxWidth: '55%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {column.render
+                      ? column.render(getCellValue(row, column), row)
+                      : String(getCellValue(row, column) ?? '')}
+                  </Typography>
+                </Box>
+              ))}
+            </CardContent>
+          </Card>
+        ))
+      )}
+    </Box>
+  )
+
   return (
     <Box>
       {filterable && (
         <Box className="spacing-bottom-md">
           <TextField
             size="small"
-            placeholder="Search..."
+            placeholder="Search across all columns..."
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+            aria-label="Search table data"
+            inputProps={{
+              'aria-label': 'Search table data',
+              'aria-describedby': 'search-helper-text'
             }}
-            sx={{ maxWidth: 400 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} aria-hidden="true" />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{
+              maxWidth: { xs: '100%', sm: 400 },
+              width: { xs: '100%', sm: 'auto' },
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+                '&.Mui-focused': {
+                  backgroundColor: 'white',
+                  boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                },
+              },
+            }}
           />
+          <Typography id="search-helper-text" sx={{ display: 'none' }}>
+            Type to search across all table columns
+          </Typography>
         </Box>
       )}
 
-      <TableContainer component={Paper}>
-        <Table>
+      {/* Render mobile card view on small screens, table view on larger screens */}
+      {isMobile ? (
+        <MobileCardView />
+      ) : (
+        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+        <Table size={dense ? 'small' : 'medium'} aria-label="Data table">
           <TableHead>
-            <TableRow>
+            <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}>
               {columns.map((column) => (
                 <TableCell
                   key={String(column.field)}
                   style={{ width: column.width }}
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: 'text.secondary',
+                    borderBottom: '2px solid',
+                    borderBottomColor: 'divider',
+                  }}
                 >
                   {sortable && column.sortable !== false ? (
                     <TableSortLabel
                       active={orderBy === column.field}
                       direction={orderBy === column.field ? order : 'asc'}
                       onClick={() => handleSort(column.field)}
+                      aria-label={`Sort by ${column.header}`}
+                      sx={{
+                        '&.Mui-active': {
+                          color: 'primary.main',
+                          '& .MuiTableSortLabel-icon': {
+                            color: 'primary.main',
+                          },
+                        },
+                      }}
                     >
                       {column.header}
                     </TableSortLabel>
@@ -158,10 +334,28 @@ function DataTableInner<T extends Record<string, any>>({
             {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length}>
-                  <Box className="empty-state">
-                    <Typography variant="body2" color="text.secondary">
+                  <Box
+                    sx={{
+                      py: 8,
+                      textAlign: 'center',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    <SearchIcon
+                      sx={{
+                        fontSize: 48,
+                        mb: 2,
+                        opacity: 0.3,
+                      }}
+                    />
+                    <Typography variant="body1" fontWeight={500} gutterBottom>
                       {emptyMessage}
                     </Typography>
+                    {filterText && (
+                      <Typography variant="body2" color="text.secondary">
+                        Try adjusting your search terms
+                      </Typography>
+                    )}
                   </Box>
                 </TableCell>
               </TableRow>
@@ -171,8 +365,28 @@ function DataTableInner<T extends Record<string, any>>({
                   key={index}
                   hover={!!onRowClick}
                   onClick={() => onRowClick?.(row)}
+                  tabIndex={onRowClick ? 0 : undefined}
+                  role={onRowClick ? 'button' : undefined}
+                  aria-label={onRowClick ? `Row ${index + 1}. Click to view details.` : undefined}
+                  onKeyDown={onRowClick ? (e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onRowClick(row)
+                    }
+                  } : undefined}
                   sx={{
                     cursor: onRowClick ? 'pointer' : 'default',
+                    backgroundColor: striped && index % 2 === 1 ? 'rgba(0, 0, 0, 0.02)' : 'transparent',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      backgroundColor: onRowClick ? 'rgba(59, 130, 246, 0.08)' : striped && index % 2 === 1 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.02)',
+                      transform: onRowClick ? 'translateX(4px)' : 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: '2px solid',
+                      outlineColor: 'primary.main',
+                      outlineOffset: '-2px',
+                    },
                   }}
                 >
                   {columns.map((column) => (
@@ -188,6 +402,7 @@ function DataTableInner<T extends Record<string, any>>({
           </TableBody>
         </Table>
       </TableContainer>
+      )}
 
       {paginated && sortedData.length > 0 && (
         <TablePagination
@@ -198,6 +413,36 @@ function DataTableInner<T extends Record<string, any>>({
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            backgroundColor: 'rgba(0, 0, 0, 0.01)',
+            '& .MuiTablePagination-toolbar': {
+              minHeight: 56,
+            },
+            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              fontSize: '0.875rem',
+              color: 'text.secondary',
+            },
+            '& .MuiTablePagination-select': {
+              borderRadius: 1,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+              },
+            },
+            '& .MuiIconButton-root': {
+              borderRadius: 1,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                transform: 'scale(1.05)',
+              },
+              '&.Mui-disabled': {
+                opacity: 0.3,
+              },
+            },
+          }}
         />
       )}
     </Box>

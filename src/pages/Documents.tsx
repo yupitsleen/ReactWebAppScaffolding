@@ -32,6 +32,7 @@ const Documents = memo(() => {
                     field={field}
                     value={document[field as keyof typeof document]}
                     entity={document}
+                    entityType="document"
                     statusConfig={statusConfig}
                     variant="chip"
                   />

@@ -13,6 +13,7 @@ const getInitialState = (): AppState => {
     todos: getFromStorage('app_todos', []),
     discussions: getFromStorage('app_discussions', []),
     documents: getFromStorage('app_documents', []),
+    entities: {}, // Initialize empty entities registry
   }
 }
 

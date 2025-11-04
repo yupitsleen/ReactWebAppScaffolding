@@ -14,6 +14,7 @@ import {
   Alert,
 } from '@mui/material'
 import { useData, useUser } from '../context/ContextProvider'
+import { useNotifications } from '../context/NotificationContext'
 import type { TodoItem } from '../types/portal'
 
 interface CreateTodoDialogProps {
@@ -27,6 +28,7 @@ type TodoFormData = Omit<TodoItem, 'id' | 'createdAt' | 'createdBy'>
 const CreateTodoDialog = ({ open, onClose, onSuccess }: CreateTodoDialogProps) => {
   const { createTodo } = useData()
   const { user } = useUser()
+  const { addNotification } = useNotifications()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -91,10 +93,27 @@ const CreateTodoDialog = ({ open, onClose, onSuccess }: CreateTodoDialogProps) =
         category: 'General',
       })
 
+      // Show success toast
+      addNotification({
+        type: 'success',
+        title: 'Task Created!',
+        message: `"${newTodo.title}" has been added successfully`,
+        autoHide: true
+      })
+
       onSuccess?.(newTodo)
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create task')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create task'
+      setError(errorMessage)
+
+      // Show error toast
+      addNotification({
+        type: 'error',
+        title: 'Creation Failed',
+        message: errorMessage,
+        autoHide: true
+      })
     } finally {
       setLoading(false)
     }

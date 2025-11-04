@@ -2,6 +2,8 @@
 
 A production-ready, configuration-driven React portal designed for **instant business customization**. Transform this into domain-specific applications through data configuration, not code rewrites.
 
+**🚀 Live Demo:** https://yupitsleen.github.io/ReactWebAppScaffolding
+
 ## Table of Contents
 
 - [Quick Start](#quick-start)
@@ -13,13 +15,15 @@ A production-ready, configuration-driven React portal designed for **instant bus
 - [Session Management for Claude Code](#session-management-for-claude-code)
 - [Development Commands](#development-commands)
 - [Customization Priority](#customization-priority)
+- [Deployment](#deployment)
 
 ## Architecture Philosophy
 
 - **Configuration Over Code** - 90% customization through data files
 - **Smart Abstractions** - Generic components adapt to any business domain
+- **Convention-Based Routing** - Pages auto-discovered from navigation config
 - **Offline-First Development** - Full CRUD operations without backend running
-- **Quality Assured** - 62 tests (56 frontend + 6 backend) ensure stability
+- **Quality Assured** - 97 tests (97 frontend + 6 backend) ensure stability
 - **Performance First** - React.memo, memoization, lazy loading throughout
 
 ## Quick Start
@@ -104,23 +108,51 @@ export const orders = [
 <details>
 <summary><strong>Step 4: Configure Status & Fields (10 minutes)</strong></summary>
 
+**Entity-Scoped Status Configuration** - Each entity can have independent status fields:
+
 ```typescript
 statusConfig: {
-  orderStatus: {
-    pending: { color: "warning", label: "Pending" },
-    processing: { color: "info", label: "Processing" },
-    shipped: { color: "success", label: "Shipped" }
+  // Order entity statuses
+  order: {
+    orderStatus: {
+      pending: { color: "warning", label: "Pending Order", icon: "📋" },
+      processing: { color: "info", label: "Processing", icon: "⚙️" },
+      shipped: { color: "primary", label: "Shipped", icon: "📦" },
+      delivered: { color: "success", label: "Delivered", icon: "✅" }
+    },
+    paymentStatus: {
+      pending: {
+        color: "warning",
+        label: "Payment Pending",
+        icon: "💳",
+        description: "Awaiting payment processing"  // Shows in tooltip
+      },
+      paid: { color: "success", label: "Paid", icon: "✅" }
+    }
+  },
+  // Customer entity statuses (completely independent)
+  customer: {
+    status: {
+      active: { color: "success", label: "Active", icon: "✅" },
+      inactive: { color: "default", label: "Inactive", icon: "⏸️" }
+    }
   }
 },
 
 fieldConfig: {
   order: {
     primary: "customerName",
-    secondary: ["status", "total", "orderDate"],
+    secondary: ["orderStatus", "total", "orderDate"],
     hidden: ["id", "internalNotes"]
   }
 }
 ```
+
+**Benefits:**
+- 🎯 No naming conflicts between entities
+- 🎨 Icons for visual distinction
+- 💡 Tooltips for additional context
+- 🔄 Unlimited status fields per entity
 
 </details>
 
@@ -163,7 +195,7 @@ const Orders = memo(() => {
 });
 ```
 
-Update `App.tsx` routing to map navigation id to component
+**Note:** With Phase 3's convention-based routing, pages are auto-discovered! Just ensure your file name matches the capitalized navigation ID (e.g., `navigation.id='orders'` → `pages/Orders.tsx`)
 
 </details>
 
@@ -171,12 +203,49 @@ Update `App.tsx` routing to map navigation id to component
 
 ## Key Features
 
+### Core Components
 - **DataTable** - Reusable table with sorting, filtering, pagination, custom renderers
 - **Timeline** - Interactive visualization with color-coded status indicators
 - **FieldRenderer** - Automatic field type handling (dates, currency, status, priority)
 - **FallbackEntityService** - Tries API first, falls back to mock data, retries every 30s
 - **Google Maps Integration** - Embedded maps with service locations
 - **Backend API** - .NET 8.0 with Entity Framework Core + SQLite
+
+### Extensibility System (✨ All 3 Phases Complete!)
+
+**Registry-Based Architecture** - Add new entities with **84% less code** (~50 lines in 1 file vs 313 lines across 8 files):
+
+#### Phase 1 & 2: Core Infrastructure ✅
+- **ServiceRegistry** - Dynamic entity service registration without modifying core files
+- **FieldRendererRegistry** - Custom field rendering with pattern matching
+- **EntityValidator** - Schema-based validation with reusable rules
+- **Entity-Scoped Status Config** - Independent status configurations per entity with icons & tooltips
+- **Form Generation** - Schema-driven forms with automatic validation
+
+#### Phase 3: Developer Experience ✅
+- **Convention-Based Routing** - Pages auto-discovered from navigation config (zero manual routing)
+- **Data Factories** - Type-safe test data generation with sensible defaults
+
+```typescript
+// 1. Register a new entity service (5 lines)
+serviceRegistry.register<Order>('orders', {
+  entityName: 'Orders',
+  endpoint: '/api/orders',
+  mockData: sampleOrders,
+  mode: 'fallback'
+})
+
+// 2. Add to navigation - route auto-generates! (3 lines)
+navigation: [
+  { id: "orders", label: "Orders", path: "/orders", enabled: true }
+  // Creates route to pages/Orders.tsx automatically
+]
+
+// 3. Generate test data with factories (1 line)
+const orders = orderFactory.createMany(10, { status: 'shipped' })
+```
+
+**See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete documentation.**
 
 ## Business Customization
 
@@ -272,9 +341,9 @@ applyColorPreset("green"); // Nature theme
 
 ### Tech Stack
 
-**Frontend:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI  
-**Backend:** .NET 8.0 + ASP.NET Core + Entity Framework Core + SQLite  
-**Tests:** 62 tests (56 frontend + 6 backend)
+**Frontend:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI
+**Backend:** .NET 8.0 + ASP.NET Core + Entity Framework Core + SQLite
+**Tests:** 103 tests (97 frontend + 6 backend)
 
 <details>
 <summary><strong>Key Abstractions</strong></summary>
@@ -358,7 +427,7 @@ cd PortalAPI && dotnet run
 **Testing:**
 
 ```bash
-npm test           # 56 frontend tests (no backend needed)
+npm test           # 97 frontend tests (no backend needed)
 cd PortalAPI
 dotnet test        # 6 backend integration tests
 ```
@@ -398,15 +467,24 @@ claude code --file CLAUDE.md --file CURRENT_SESSION.md "Continue where we left o
 src/
 ├── data/
 │   ├── configurableData.ts    # Main customization file
-│   └── sampleData.ts          # Replace with your data
+│   ├── sampleData.ts          # Replace with your data
+│   └── factories/             # Test data generators ✨ NEW
+│       ├── BaseEntityFactory.ts
+│       └── TodoItemFactory.ts
 ├── components/
 │   ├── DataTable.tsx          # Reusable table
 │   ├── FieldRenderer.tsx      # Field type handling
-│   └── PageLayout.tsx         # Page wrapper
-├── pages/                     # Route components
+│   ├── PageLayout.tsx         # Page wrapper
+│   └── fieldRenderers/        # Custom renderers ✨
+├── routing/
+│   └── RouteGenerator.tsx     # Convention-based routing ✨ NEW
+├── pages/                     # Route components (auto-discovered!)
 ├── services/
+│   ├── ServiceRegistry.ts     # Dynamic service registration ✨
 │   ├── fallbackService.ts     # Intelligent API fallback
 │   └── index.ts               # Service configuration
+├── validation/
+│   └── EntityValidator.ts     # Schema-based validation ✨
 └── theme/                     # Centralized styling
 
 PortalAPI/
@@ -423,7 +501,7 @@ PortalAPI/
 # Frontend
 npm run dev        # Dev server (localhost:5173)
 npm run build      # Production build
-npm test           # Run 56 tests
+npm test           # Run 97 tests
 npm run lint       # Code quality
 
 # Backend (optional)
@@ -470,8 +548,78 @@ dotnet test        # Run 6 integration tests
 
 ---
 
-**Test Coverage:** 62 tests (56 frontend + 6 backend) ✓  
-**Frontend-First:** Works without backend, seamlessly connects when available  
+**Test Coverage:** 97 tests (97 frontend + 6 backend) ✓
+**Frontend-First:** Works without backend, seamlessly connects when available
 **Production-Ready:** Enterprise patterns, performance optimized, fully typed
+**Extensible:** Registry-based architecture for maximum customization with minimal code
 
 **Ready to fork and customize!** Transform this into your business application through configuration, not code rewrites.
+
+---
+
+## Recent Updates
+
+### Phase 3: Developer Experience Complete ✅
+- **Convention-Based Routing** - Pages auto-discovered from navigation config (zero manual routing!)
+- **Data Factories** - Type-safe test data generation with BaseEntityFactory pattern
+- **84% code reduction** - Add entities with ~50 lines in 1 file (down from 313 lines across 8 files)
+- **All 3 phases complete** - Service registry, form generation, routing, and factories production-ready
+- **103 passing tests** - 97 frontend + 6 backend ✓
+
+See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete architecture documentation.
+
+---
+
+## Deployment
+
+### Live Application
+
+**Production URL:** https://yupitsleen.github.io/ReactWebAppScaffolding
+
+### Auto-Deployment
+
+This application deploys automatically to GitHub Pages on every merge to `main`:
+
+1. **Pull Request** → CI runs tests, linter, and build (quality gate)
+2. **Merge to Main** → Tests + Build + Deploy to GitHub Pages
+3. **Live in ~2 minutes** ✅
+
+### Manual Deployment
+
+```bash
+npm run deploy  # Builds and deploys to GitHub Pages
+```
+
+### Deployment Configuration
+
+Three files must stay synchronized for GitHub Pages:
+
+1. **`vite.config.ts`** - `base: '/ReactWebAppScaffolding/'`
+2. **`src/App.tsx`** - `<Router basename="/ReactWebAppScaffolding">`
+3. **`package.json`** - `homepage: "https://yupitsleen.github.io/ReactWebAppScaffolding"`
+
+**To deploy to a different URL:**
+- Update all three configurations to match your repository name
+- Or rename your GitHub repository to match the desired path
+
+### CI/CD Workflows
+
+- **`.github/workflows/ci.yml`** - Runs on all PRs (tests + lint + build)
+- **`.github/workflows/deploy.yml`** - Runs on merge to main (deploy to GitHub Pages)
+
+### Quality Gates
+
+Every deployment must pass:
+- ✅ All 97 frontend tests
+- ✅ TypeScript compilation
+- ✅ Production build
+
+**See [CLAUDE.md](CLAUDE.md#deployment) for detailed deployment documentation.**
+
+---
+
+## Documentation
+
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive development guide (for Claude Code and developers)
+- **[EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md)** - Registry architecture and extensibility features
+- **[DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md)** - Development standards and commit guidelines

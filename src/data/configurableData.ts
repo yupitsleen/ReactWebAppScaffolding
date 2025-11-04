@@ -194,27 +194,44 @@ export const appConfig: AppConfig = {
     account: [],
   },
   statusConfig: {
-    priority: {
-      high: { color: "error", label: "High Priority" },
-      medium: { color: "warning", label: "Medium" },
-      low: { color: "default", label: "Low" },
-      urgent: { color: "error", label: "Urgent" },
+    // TodoItem entity statuses
+    todoItem: {
+      priority: {
+        high: { color: "error", label: "High Priority", icon: "🔥" },
+        medium: { color: "warning", label: "Medium", icon: "⚠️" },
+        low: { color: "default", label: "Low", icon: "📋" },
+      },
+      status: {
+        pending: { color: "default", label: "Pending", icon: "⏳" },
+        "in-progress": { color: "info", label: "In Progress", icon: "🔄" },
+        completed: { color: "success", label: "Completed", icon: "✅" },
+      },
     },
-    status: {
-      pending: { color: "default", label: "Pending" },
-      "in-progress": { color: "info", label: "In Progress" },
-      completed: { color: "success", label: "Completed" },
-      open: { color: "warning", label: "Open" },
-      resolved: { color: "success", label: "Resolved" },
+    // Payment entity statuses
+    payment: {
+      status: {
+        pending: { color: "warning", label: "Pending Payment", icon: "💳", description: "Payment is awaiting processing" },
+        paid: { color: "success", label: "Paid", icon: "✅", description: "Payment has been completed" },
+        overdue: { color: "error", label: "Overdue", icon: "⚠️", description: "Payment is past due date" },
+      },
     },
-    paymentStatus: {
-      pending: { color: "warning", label: "Pending" },
-      paid: { color: "success", label: "Paid" },
-      overdue: { color: "error", label: "Overdue" },
+    // Document entity statuses
+    document: {
+      shared: {
+        true: { color: "success", label: "Shared", icon: "👥" },
+        false: { color: "default", label: "Private", icon: "🔒" },
+      },
     },
-    documentShared: {
-      true: { color: "success", label: "Shared" },
-      false: { color: "default", label: "Private" },
+    // Discussion entity statuses
+    discussion: {
+      priority: {
+        normal: { color: "default", label: "Normal", icon: "💬" },
+        urgent: { color: "error", label: "Urgent", icon: "🔥" },
+      },
+      resolved: {
+        true: { color: "success", label: "Resolved", icon: "✅" },
+        false: { color: "warning", label: "Open", icon: "💬" },
+      },
     },
   },
   fieldConfig: {
@@ -237,6 +254,171 @@ export const appConfig: AppConfig = {
       primary: "title",
       secondary: ["priority", "resolved", "author", "createdAt"],
       hidden: ["id", "authorRole"],
+    },
+  },
+  formSchemas: {
+    todoItem: {
+      title: "Task",
+      description: "Create a new task to track work items",
+      submitLabel: "Create Task",
+      cancelLabel: "Cancel",
+      fields: [
+        {
+          name: "title",
+          label: "Title",
+          type: "text",
+          placeholder: "Enter task title",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12 },
+        },
+        {
+          name: "description",
+          label: "Description",
+          type: "textarea",
+          placeholder: "Enter task description",
+          rows: 3,
+          fullWidth: true,
+          grid: { xs: 12 },
+        },
+        {
+          name: "assignedTo",
+          label: "Assigned To",
+          type: "text",
+          placeholder: "Enter assignee email",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12, md: 6 },
+        },
+        {
+          name: "category",
+          label: "Category",
+          type: "select",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12, md: 6 },
+          options: [
+            { value: "maintenance", label: "Maintenance" },
+            { value: "repair", label: "Repair" },
+            { value: "inspection", label: "Inspection" },
+            { value: "general", label: "General" },
+          ],
+        },
+        {
+          name: "priority",
+          label: "Priority",
+          type: "select",
+          required: true,
+          defaultValue: "medium",
+          fullWidth: true,
+          grid: { xs: 12, md: 6 },
+          options: [
+            { value: "low", label: "Low" },
+            { value: "medium", label: "Medium" },
+            { value: "high", label: "High" },
+          ],
+        },
+        {
+          name: "status",
+          label: "Status",
+          type: "select",
+          required: true,
+          defaultValue: "pending",
+          fullWidth: true,
+          grid: { xs: 12, md: 6 },
+          options: [
+            { value: "pending", label: "Pending" },
+            { value: "in-progress", label: "In Progress" },
+            { value: "completed", label: "Completed" },
+          ],
+        },
+        {
+          name: "dueDate",
+          label: "Due Date",
+          type: "date",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12 },
+        },
+      ],
+    },
+    document: {
+      title: "Document",
+      description: "Upload a new document",
+      submitLabel: "Upload",
+      cancelLabel: "Cancel",
+      fields: [
+        {
+          name: "name",
+          label: "Document Name",
+          type: "text",
+          placeholder: "Enter document name",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12 },
+        },
+        {
+          name: "type",
+          label: "Document Type",
+          type: "select",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12, md: 6 },
+          options: [
+            { value: "contract", label: "Contract" },
+            { value: "invoice", label: "Invoice" },
+            { value: "report", label: "Report" },
+            { value: "other", label: "Other" },
+          ],
+        },
+        {
+          name: "shared",
+          label: "Share Document",
+          type: "checkbox",
+          defaultValue: false,
+          grid: { xs: 12, md: 6 },
+        },
+      ],
+    },
+    discussion: {
+      title: "Discussion",
+      description: "Start a new discussion thread",
+      submitLabel: "Post",
+      cancelLabel: "Cancel",
+      fields: [
+        {
+          name: "title",
+          label: "Title",
+          type: "text",
+          placeholder: "Enter discussion title",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12 },
+        },
+        {
+          name: "content",
+          label: "Content",
+          type: "textarea",
+          placeholder: "Enter your message",
+          required: true,
+          rows: 5,
+          fullWidth: true,
+          grid: { xs: 12 },
+        },
+        {
+          name: "priority",
+          label: "Priority",
+          type: "select",
+          required: true,
+          defaultValue: "normal",
+          fullWidth: true,
+          grid: { xs: 12, md: 6 },
+          options: [
+            { value: "normal", label: "Normal" },
+            { value: "urgent", label: "Urgent" },
+          ],
+        },
+      ],
     },
   },
 };

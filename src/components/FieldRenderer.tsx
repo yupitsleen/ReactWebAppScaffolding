@@ -1,13 +1,14 @@
 import { memo, type ReactNode } from 'react'
 import { Typography, Chip } from '@mui/material'
-import type { StatusConfig } from '../types/portal'
+import type { StatusConfig, LegacyStatusConfig } from '../types/portal'
 import StatusChip from './StatusChip'
 
 interface FieldRendererProps {
   field: string
   value: unknown
   entity?: Record<string, unknown>
-  statusConfig?: StatusConfig
+  entityType?: string // Entity type for entity-scoped status lookup
+  statusConfig?: StatusConfig | LegacyStatusConfig
   variant?: 'primary' | 'secondary' | 'chip'
   isCompleted?: boolean
   children?: ReactNode
@@ -16,6 +17,7 @@ interface FieldRendererProps {
 const FieldRenderer = memo<FieldRendererProps>(({
   field,
   value,
+  entityType,
   statusConfig,
   variant = 'secondary',
   isCompleted = false,
@@ -29,7 +31,9 @@ const FieldRenderer = memo<FieldRendererProps>(({
         if (statusConfig && typeof value === 'string') {
           return (
             <StatusChip
-              type="priority"
+              entityType={entityType}
+              fieldName="priority"
+              type={entityType ? undefined : "priority"} // Legacy fallback
               value={value}
               statusConfig={statusConfig}
               size="small"
@@ -44,7 +48,9 @@ const FieldRenderer = memo<FieldRendererProps>(({
         if (statusConfig && typeof value === 'string') {
           return (
             <StatusChip
-              type="status"
+              entityType={entityType}
+              fieldName="status"
+              type={entityType ? undefined : "status"} // Legacy fallback
               value={value}
               statusConfig={statusConfig}
               size="small"
@@ -87,7 +93,24 @@ const FieldRenderer = memo<FieldRendererProps>(({
         if (statusConfig && typeof value === 'boolean') {
           return (
             <StatusChip
-              type="documentShared"
+              entityType={entityType}
+              fieldName="shared"
+              type={entityType ? undefined : "documentShared"} // Legacy fallback
+              value={value}
+              statusConfig={statusConfig}
+              size="small"
+              sx={{ opacity }}
+            />
+          )
+        }
+        break
+
+      case 'resolved':
+        if (statusConfig && typeof value === 'boolean') {
+          return (
+            <StatusChip
+              entityType={entityType}
+              fieldName="resolved"
               value={value}
               statusConfig={statusConfig}
               size="small"

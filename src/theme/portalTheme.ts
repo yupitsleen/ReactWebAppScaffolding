@@ -165,23 +165,228 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     // Button component defaults
     MuiButton: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           borderRadius: 8,
           textTransform: 'none',
-          fontWeight: 500,
+          fontWeight: 600,
           padding: '10px 24px',
+          fontSize: '0.9375rem',
           boxShadow: 'none',
           transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            transform: 'translateY(-1px)',
+          position: 'relative',
+          overflow: 'hidden',
+
+          // Focus ring for accessibility
+          '&:focus-visible': {
+            outline: '2px solid',
+            outlineColor: theme.palette.primary.main,
+            outlineOffset: '2px',
           },
+
+          // Disabled state
+          '&.Mui-disabled': {
+            opacity: 0.5,
+            cursor: 'not-allowed',
+          },
+        }),
+
+        // Size variants
+        sizeSmall: {
+          padding: '6px 16px',
+          fontSize: '0.8125rem',
+          fontWeight: 500,
         },
+        sizeMedium: {
+          padding: '10px 24px',
+          fontSize: '0.9375rem',
+        },
+        sizeLarge: {
+          padding: '14px 32px',
+          fontSize: '1rem',
+          fontWeight: 600,
+        },
+
+        // Contained variant (primary action)
         contained: {
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+
           '&:hover': {
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            transform: 'translateY(-2px)',
+          },
+
+          '&:active': {
+            transform: 'translateY(0px)',
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
           },
         },
+
+        // Contained Primary
+        containedPrimary: ({ theme }) => ({
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+
+          '&:hover': {
+            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+          },
+        }),
+
+        // Contained Secondary
+        containedSecondary: ({ theme }) => ({
+          background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+
+          '&:hover': {
+            background: `linear-gradient(135deg, ${theme.palette.secondary.dark} 0%, ${theme.palette.secondary.main} 100%)`,
+          },
+        }),
+
+        // Outlined variant (secondary action)
+        outlined: {
+          borderWidth: '2px',
+
+          '&:hover': {
+            borderWidth: '2px',
+            transform: 'translateY(-1px)',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          },
+
+          '&:active': {
+            transform: 'translateY(0px)',
+            boxShadow: 'none',
+          },
+        },
+
+        // Outlined Primary
+        outlinedPrimary: ({ theme }) => ({
+          borderColor: theme.palette.primary.main,
+
+          '&:hover': {
+            borderColor: theme.palette.primary.dark,
+            backgroundColor: theme.palette.mode === 'light'
+              ? 'rgba(59, 130, 246, 0.04)'
+              : 'rgba(59, 130, 246, 0.12)',
+          },
+        }),
+
+        // Outlined Secondary
+        outlinedSecondary: ({ theme }) => ({
+          borderColor: theme.palette.secondary.main,
+
+          '&:hover': {
+            borderColor: theme.palette.secondary.dark,
+            backgroundColor: theme.palette.mode === 'light'
+              ? 'rgba(139, 92, 246, 0.04)'
+              : 'rgba(139, 92, 246, 0.12)',
+          },
+        }),
+
+        // Text variant (tertiary action)
+        text: ({ theme }) => ({
+          padding: '10px 16px',
+
+          '&:hover': {
+            transform: 'translateY(-1px)',
+            backgroundColor: theme.palette.mode === 'light'
+              ? 'rgba(0, 0, 0, 0.04)'
+              : 'rgba(255, 255, 255, 0.08)',
+          },
+
+          '&:active': {
+            transform: 'translateY(0px)',
+          },
+        }),
+
+        // Text Primary
+        textPrimary: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'light'
+              ? 'rgba(59, 130, 246, 0.04)'
+              : 'rgba(59, 130, 246, 0.12)',
+          },
+        }),
+
+        // Text Secondary
+        textSecondary: ({ theme }) => ({
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'light'
+              ? 'rgba(139, 92, 246, 0.04)'
+              : 'rgba(139, 92, 246, 0.12)',
+          },
+        }),
+      },
+    },
+    // IconButton component defaults
+    MuiIconButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          transition: 'all 0.2s ease-in-out',
+
+          '&:hover': {
+            transform: 'scale(1.1)',
+            backgroundColor: theme.palette.mode === 'light'
+              ? 'rgba(0, 0, 0, 0.04)'
+              : 'rgba(255, 255, 255, 0.08)',
+          },
+
+          '&:active': {
+            transform: 'scale(0.95)',
+          },
+
+          // Focus ring for accessibility
+          '&:focus-visible': {
+            outline: '2px solid',
+            outlineColor: theme.palette.primary.main,
+            outlineOffset: '2px',
+          },
+        }),
+
+        // Size variants
+        sizeSmall: {
+          padding: '4px',
+          fontSize: '1.125rem',
+        },
+        sizeMedium: {
+          padding: '8px',
+          fontSize: '1.5rem',
+        },
+        sizeLarge: {
+          padding: '12px',
+          fontSize: '1.75rem',
+        },
+      },
+    },
+    // Fab (Floating Action Button) component defaults
+    MuiFab: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          transition: 'all 0.2s ease-in-out',
+
+          '&:hover': {
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            transform: 'translateY(-2px) scale(1.05)',
+          },
+
+          '&:active': {
+            transform: 'translateY(0px) scale(1)',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          },
+        },
+
+        primary: ({ theme }) => ({
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+
+          '&:hover': {
+            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+          },
+        }),
+
+        secondary: ({ theme }) => ({
+          background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+
+          '&:hover': {
+            background: `linear-gradient(135deg, ${theme.palette.secondary.dark} 0%, ${theme.palette.secondary.main} 100%)`,
+          },
+        }),
       },
     },
     // Chip component defaults
@@ -453,6 +658,75 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       styleOverrides: {
         root: {
           marginBottom: '16px',
+        },
+      },
+    },
+    // OutlinedInput defaults
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          },
+          '&.Mui-focused': {
+            backgroundColor: 'white',
+            boxShadow: `0 0 0 3px ${themeConfig.primaryColor}1A`, // 10% opacity
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeConfig.primaryColor,
+              borderWidth: '2px',
+            },
+          },
+          '&.Mui-error': {
+            '&.Mui-focused': {
+              boxShadow: '0 0 0 3px rgba(239, 68, 68, 0.1)',
+            },
+          },
+        },
+        notchedOutline: {
+          borderColor: 'rgba(0, 0, 0, 0.12)',
+          transition: 'all 0.2s ease-in-out',
+        },
+      },
+    },
+    // Input label defaults
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          '&.Mui-focused': {
+            fontWeight: 600,
+            color: themeConfig.primaryColor,
+          },
+          '&.Mui-error': {
+            '&.Mui-focused': {
+              color: '#EF4444',
+            },
+          },
+        },
+      },
+    },
+    // FormHelperText defaults
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          marginLeft: 4,
+          fontSize: '0.75rem',
+          '&.Mui-error': {
+            fontWeight: 500,
+          },
+        },
+      },
+    },
+    // Select component defaults
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          '&:focus': {
+            backgroundColor: 'transparent',
+          },
         },
       },
     },
