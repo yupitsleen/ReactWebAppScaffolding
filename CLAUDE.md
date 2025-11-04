@@ -126,7 +126,7 @@ git push origin [current-branch-name]
 
 - **Always run tests** after each working change
 - **Update tests** when renaming entities (TodoItem → Order)
-- **No commits without passing tests** - Frontend: 56/56 ✓, Backend: 6/6 ✓
+- **No commits without passing tests** - Frontend: 97/97 ✓, Backend: 6/6 ✓
 - **Dev server assumed running** - localhost:5173 for real-time feedback
 - **Minimal, focused tests** - Test core functionality only
 
@@ -301,14 +301,78 @@ applyColorPreset("blue"); // Test presets
 - **Desktop-first design** - Sophisticated layouts
 - **Theme colors, not hex** - Use `theme.palette.error.main`, not `'#ef4444'`
 
+## User Preferences & Accessibility
+
+### Layout Density System
+
+**Three density modes** for user customization:
+
+- **Compact** (75% spacing) - Maximum data on screen for power users
+- **Comfortable** (100% spacing) - Balanced default
+- **Spacious** (125% spacing) - Extra breathing room for accessibility
+
+**Implementation:**
+```typescript
+import { useDensity } from '../hooks/useLayoutDensity'
+
+const { density, setDensity } = useDensity()
+// Persists to localStorage automatically
+```
+
+**CSS Variables:**
+- `--density-spacing` - Spacing multiplier
+- `--density-card-padding` - Card padding
+- `--density-row-height` - Table row height
+- `--density-icon-size` - Icon dimensions
+- `--density-font-scale` - Font size scaling
+
+### High Contrast Mode
+
+**WCAG AAA compliance** (7:1+ contrast ratios):
+
+```typescript
+import { useHighContrast } from '../hooks/useHighContrast'
+
+const { isHighContrast, toggleHighContrast } = useHighContrast()
+// Persists to localStorage automatically
+```
+
+**Features:**
+- Removes subtle shadows and gradients
+- Strong 2px borders on all components
+- Enhanced focus indicators (3px outlines)
+- Works in both light and dark themes
+- Automatic color adjustments
+
+### Keyboard Navigation
+
+**Global shortcuts** - Press `?` to see all:
+
+- `Ctrl+K` - Open command palette (power users)
+- `Ctrl+H` - Navigate to Home
+- `Ctrl+T` - Navigate to Tasks
+- `Escape` - Close dialogs/modals
+- Arrow keys - Navigate command palette
+- Tab/Shift+Tab - Focus management
+
 ## Available Utilities
 
 ### Custom Hooks
 
+**Core Hooks:**
 - `useDebounce(value, delay)` - Debounce for search/input
 - `usePageLoading(delay?)` - Page-level loading states
 - `useCurrentPage()` - Auto-detect page config from URL
 - `useDataOperations(data)` - Generic filtering, sorting, pagination
+
+**User Preference Hooks:**
+- `useDensity()` - Layout density (compact/comfortable/spacious) with localStorage persistence
+- `useHighContrast()` - High contrast mode for WCAG AAA accessibility
+- `useKeyboardShortcuts(options)` - Global keyboard navigation (Ctrl+H, Ctrl+K, etc.)
+
+**Utility Hooks:**
+- `useEntityActions()` - Generic CRUD action handlers for any entity type
+- `useNavigation()` - Navigation helpers (isCurrentPage, getEnabledPages)
 
 ### Service Layer (#memorize)
 
@@ -356,7 +420,11 @@ export const categoriesService = new MockEntityService<Category>(
 ### PageLayout Component
 
 ```tsx
-<PageLayout pageId="your-page-id" loading={loading}>
+<PageLayout
+  pageId="your-page-id"
+  loading={loading}
+  action={<Button onClick={handleAction}>Action</Button>}  // Optional action button
+>
   {content}
 </PageLayout>
 ```
@@ -364,6 +432,37 @@ export const categoriesService = new MockEntityService<Category>(
 ### FieldRenderer Component
 
 Automatically handles: dates, currency, status, priority, amounts, etc.
+
+### Command Palette Component
+
+**Keyboard-first navigation** - Access with `Cmd/Ctrl+K`:
+
+```tsx
+// Automatically available in authenticated app
+// Search across all pages, settings, and actions
+// Arrow keys to navigate, Enter to select, Esc to close
+```
+
+### PDF Export Utilities
+
+**Export dashboard or tables to PDF**:
+
+```typescript
+import { exportDashboardToPDF, exportTableToPDF } from '../utils/pdfExport'
+
+// Export dashboard with charts
+await exportDashboardToPDF(dashboardRef.current, {
+  filename: 'dashboard-report.pdf',
+  title: 'My Dashboard',
+  quality: 2  // High quality (2x scale)
+})
+
+// Export data table
+await exportTableToPDF(tableRef.current, {
+  filename: 'table-export.pdf',
+  title: 'Table Data'
+})
+```
 
 ## Backend Development
 
