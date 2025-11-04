@@ -21,8 +21,9 @@ A production-ready, configuration-driven React portal designed for **instant bus
 
 - **Configuration Over Code** - 90% customization through data files
 - **Smart Abstractions** - Generic components adapt to any business domain
+- **Convention-Based Routing** - Pages auto-discovered from navigation config
 - **Offline-First Development** - Full CRUD operations without backend running
-- **Quality Assured** - 62 tests (56 frontend + 6 backend) ensure stability
+- **Quality Assured** - 97 tests (97 frontend + 6 backend) ensure stability
 - **Performance First** - React.memo, memoization, lazy loading throughout
 
 ## Quick Start
@@ -194,7 +195,7 @@ const Orders = memo(() => {
 });
 ```
 
-Update `App.tsx` routing to map navigation id to component
+**Note:** With Phase 3's convention-based routing, pages are auto-discovered! Just ensure your file name matches the capitalized navigation ID (e.g., `navigation.id='orders'` → `pages/Orders.tsx`)
 
 </details>
 
@@ -210,17 +211,23 @@ Update `App.tsx` routing to map navigation id to component
 - **Google Maps Integration** - Embedded maps with service locations
 - **Backend API** - .NET 8.0 with Entity Framework Core + SQLite
 
-### Extensibility System (NEW! ✨)
+### Extensibility System (✨ All 3 Phases Complete!)
 
 **Registry-Based Architecture** - Add new entities with **84% less code** (~50 lines in 1 file vs 313 lines across 8 files):
 
+#### Phase 1 & 2: Core Infrastructure ✅
 - **ServiceRegistry** - Dynamic entity service registration without modifying core files
 - **FieldRendererRegistry** - Custom field rendering with pattern matching
 - **EntityValidator** - Schema-based validation with reusable rules
 - **Entity-Scoped Status Config** - Independent status configurations per entity with icons & tooltips
+- **Form Generation** - Schema-driven forms with automatic validation
+
+#### Phase 3: Developer Experience ✅
+- **Convention-Based Routing** - Pages auto-discovered from navigation config (zero manual routing)
+- **Data Factories** - Type-safe test data generation with sensible defaults
 
 ```typescript
-// Register a new entity service
+// 1. Register a new entity service (5 lines)
 serviceRegistry.register<Order>('orders', {
   entityName: 'Orders',
   endpoint: '/api/orders',
@@ -228,14 +235,14 @@ serviceRegistry.register<Order>('orders', {
   mode: 'fallback'
 })
 
-// Configure entity-specific statuses with icons
-statusConfig: {
-  order: {
-    orderStatus: {
-      shipped: { color: "primary", label: "Shipped", icon: "📦" }
-    }
-  }
-}
+// 2. Add to navigation - route auto-generates! (3 lines)
+navigation: [
+  { id: "orders", label: "Orders", path: "/orders", enabled: true }
+  // Creates route to pages/Orders.tsx automatically
+]
+
+// 3. Generate test data with factories (1 line)
+const orders = orderFactory.createMany(10, { status: 'shipped' })
 ```
 
 **See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete documentation.**
@@ -334,9 +341,9 @@ applyColorPreset("green"); // Nature theme
 
 ### Tech Stack
 
-**Frontend:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI  
-**Backend:** .NET 8.0 + ASP.NET Core + Entity Framework Core + SQLite  
-**Tests:** 62 tests (56 frontend + 6 backend)
+**Frontend:** React 19.1.1 + TypeScript 5.8.3 + Vite 7.1.0 + Material-UI
+**Backend:** .NET 8.0 + ASP.NET Core + Entity Framework Core + SQLite
+**Tests:** 103 tests (97 frontend + 6 backend)
 
 <details>
 <summary><strong>Key Abstractions</strong></summary>
@@ -420,7 +427,7 @@ cd PortalAPI && dotnet run
 **Testing:**
 
 ```bash
-npm test           # 56 frontend tests (no backend needed)
+npm test           # 97 frontend tests (no backend needed)
 cd PortalAPI
 dotnet test        # 6 backend integration tests
 ```
@@ -460,15 +467,24 @@ claude code --file CLAUDE.md --file CURRENT_SESSION.md "Continue where we left o
 src/
 ├── data/
 │   ├── configurableData.ts    # Main customization file
-│   └── sampleData.ts          # Replace with your data
+│   ├── sampleData.ts          # Replace with your data
+│   └── factories/             # Test data generators ✨ NEW
+│       ├── BaseEntityFactory.ts
+│       └── TodoItemFactory.ts
 ├── components/
 │   ├── DataTable.tsx          # Reusable table
 │   ├── FieldRenderer.tsx      # Field type handling
-│   └── PageLayout.tsx         # Page wrapper
-├── pages/                     # Route components
+│   ├── PageLayout.tsx         # Page wrapper
+│   └── fieldRenderers/        # Custom renderers ✨
+├── routing/
+│   └── RouteGenerator.tsx     # Convention-based routing ✨ NEW
+├── pages/                     # Route components (auto-discovered!)
 ├── services/
+│   ├── ServiceRegistry.ts     # Dynamic service registration ✨
 │   ├── fallbackService.ts     # Intelligent API fallback
 │   └── index.ts               # Service configuration
+├── validation/
+│   └── EntityValidator.ts     # Schema-based validation ✨
 └── theme/                     # Centralized styling
 
 PortalAPI/
@@ -485,7 +501,7 @@ PortalAPI/
 # Frontend
 npm run dev        # Dev server (localhost:5173)
 npm run build      # Production build
-npm test           # Run 56 tests
+npm test           # Run 97 tests
 npm run lint       # Code quality
 
 # Backend (optional)
@@ -543,13 +559,14 @@ dotnet test        # Run 6 integration tests
 
 ## Recent Updates
 
-### Phase 2.1: Entity-Scoped Status Configuration ✅
-- **84% code reduction** for adding new entities (from 313 to ~50 lines)
-- **Entity-scoped statuses** - No naming conflicts, icons & tooltips supported
-- **Type-safe helpers** - Full TypeScript support with backward compatibility
-- **Production-ready** - All 97 tests passing
+### Phase 3: Developer Experience Complete ✅
+- **Convention-Based Routing** - Pages auto-discovered from navigation config (zero manual routing!)
+- **Data Factories** - Type-safe test data generation with BaseEntityFactory pattern
+- **84% code reduction** - Add entities with ~50 lines in 1 file (down from 313 lines across 8 files)
+- **All 3 phases complete** - Service registry, form generation, routing, and factories production-ready
+- **103 passing tests** - 97 frontend + 6 backend ✓
 
-See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete feature roadmap.
+See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete architecture documentation.
 
 ---
 

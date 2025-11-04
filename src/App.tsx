@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense, useMemo } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import { Box, CircularProgress } from '@mui/material'
@@ -18,17 +18,10 @@ import { KeyboardShortcutsDialog } from './components/KeyboardShortcutsDialog'
 import { CommandPalette } from './components/CommandPalette'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { generateRoutesFromConfig } from './routing/RouteGenerator'
 import './utils/colorManager'
 
-// Lazy load route components for code splitting
-const Home = lazy(() => import('./pages/Home'))
-const Tasks = lazy(() => import('./pages/Tasks'))
-const Payments = lazy(() => import('./pages/Payments'))
-const Documents = lazy(() => import('./pages/Documents'))
-const Discussions = lazy(() => import('./pages/Discussions'))
-const Table = lazy(() => import('./pages/Table'))
-const Timeline = lazy(() => import('./pages/Timeline'))
-const Contact = lazy(() => import('./pages/Contact'))
+// Lazy load special route components (not in navigation config)
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const MyAccount = lazy(() => import('./pages/MyAccount'))
@@ -57,6 +50,9 @@ function AuthenticatedApp() {
   const location = useLocation()
   const [shortcutsDialogOpen, setShortcutsDialogOpen] = useState(false)
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+
+  // Generate routes from configuration (convention-based routing)
+  const routes = useMemo(() => generateRoutesFromConfig(appConfig), [])
 
   // Enable keyboard shortcuts
   useKeyboardShortcuts({ enabled: true })
@@ -88,29 +84,25 @@ function AuthenticatedApp() {
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [])
 
-  const pageComponents = {
-    home: Home,
-    tasks: Tasks,
-    payments: Payments,
-    documents: Documents,
-    discussions: Discussions,
-    table: Table,
-    timeline: Timeline,
-    contact: Contact
-  }
-
   return (
     <Layout>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          {appConfig.navigation
-            .filter(nav => nav.enabled)
-            .map(nav => {
-              const Component = pageComponents[nav.id as keyof typeof pageComponents]
-              return Component ? (
-                <Route key={nav.id} path={nav.path} element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><Component /></Suspense></PageTransition>} />
-              ) : null
-            })}
+          {/* Convention-based routes from navigation config */}
+          {routes.map(route => (
+            <Route
+              key={route.id}
+              path={route.path}
+              element={
+                <PageTransition>
+                  <Suspense fallback={<PageLoadingFallback />}>
+                    <route.Component />
+                  </Suspense>
+                </PageTransition>
+              }
+            />
+          ))}
+          {/* Special routes not in navigation config */}
           <Route path="/my-account" element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><MyAccount /></Suspense></PageTransition>} />
           <Route path="*" element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><NotFound /></Suspense></PageTransition>} />
         </Routes>

@@ -98,6 +98,7 @@ export interface NavigationItem {
   path: string
   enabled: boolean
   description?: string
+  component?: string // Optional custom component path override (e.g., 'custom/SpecialPage')
 }
 
 export interface ActionButton {

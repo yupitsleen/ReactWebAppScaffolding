@@ -1,3 +1,18 @@
+/**
+ * Sample Data for Development and Testing
+ *
+ * This file contains hardcoded sample data for the scaffold's demo entities.
+ *
+ * **Note:** For dynamic test data generation, consider using the factory pattern:
+ * ```typescript
+ * import { todoItemFactory, documentFactory } from './factories'
+ *
+ * const todos = todoItemFactory.createMany(10)
+ * const urgentTodo = todoItemFactory.create({ priority: 'high' })
+ * ```
+ *
+ * See `src/data/factories/` for available entity factories.
+ */
 import type {
   User,
   TodoItem,
