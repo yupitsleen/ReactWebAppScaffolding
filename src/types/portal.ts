@@ -178,6 +178,60 @@ export interface FieldConfig {
   }
 }
 
+// Form Generation Types
+export type FormFieldType =
+  | 'text'
+  | 'email'
+  | 'number'
+  | 'textarea'
+  | 'select'
+  | 'multiselect'
+  | 'date'
+  | 'datetime'
+  | 'checkbox'
+  | 'radio'
+  | 'autocomplete'
+
+export interface FormFieldOption {
+  value: string | number
+  label: string
+}
+
+export interface FormFieldSchema<T = any> {
+  name: keyof T
+  label: string
+  type: FormFieldType
+  placeholder?: string
+  helperText?: string
+  required?: boolean
+  disabled?: boolean
+  defaultValue?: any
+  options?: FormFieldOption[] // For select, multiselect, radio
+  rows?: number // For textarea
+  min?: number // For number/date
+  max?: number // For number/date
+  step?: number // For number
+  fullWidth?: boolean
+  grid?: {
+    xs?: number
+    sm?: number
+    md?: number
+    lg?: number
+  }
+}
+
+export interface EntityFormSchema<T = any> {
+  fields: FormFieldSchema<T>[]
+  submitLabel?: string
+  cancelLabel?: string
+  title?: string
+  description?: string
+}
+
+export interface FormSchemas {
+  [entityKey: string]: EntityFormSchema<any>
+}
+
 export interface AppConfig {
   appName: string
   navigation: NavigationItem[]
@@ -192,4 +246,5 @@ export interface AppConfig {
   }
   statusConfig: StatusConfig | LegacyStatusConfig // Support both new and legacy formats
   fieldConfig: FieldConfig
+  formSchemas?: FormSchemas // Optional form generation schemas
 }

@@ -7,6 +7,7 @@ import { AnimatePresence } from 'framer-motion'
 import createPortalTheme from './theme/portalTheme'
 import { appConfig } from './data/configurableData'
 import { ContextProvider, useUser, useTheme } from './context/ContextProvider'
+import { GenericDataProvider } from './context/GenericDataContext'
 import { MockProvider, MockNotificationHandler } from './context/MockContext'
 import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -166,10 +167,12 @@ function App() {
     <ErrorBoundary>
       <MockProvider forceMock={true}>
         <ContextProvider>
-          <NotificationProvider>
-            <MockNotificationHandler />
-            <ThemedAppRouter />
-          </NotificationProvider>
+          <GenericDataProvider>
+            <NotificationProvider>
+              <MockNotificationHandler />
+              <ThemedAppRouter />
+            </NotificationProvider>
+          </GenericDataProvider>
         </ContextProvider>
       </MockProvider>
     </ErrorBoundary>

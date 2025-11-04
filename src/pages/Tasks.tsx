@@ -7,7 +7,7 @@ import FieldRenderer from '../components/FieldRenderer'
 import { usePageLoading } from '../hooks/usePageLoading'
 import { useData } from '../context/ContextProvider'
 import { useNotifications } from '../context/NotificationContext'
-import CreateTodoDialog from '../components/CreateTodoDialog'
+import { EntityCreateDialog } from '../components/EntityCreateDialog'
 import { getFromStorage, setToStorage } from '../utils/helpers'
 
 const Tasks = memo(() => {
@@ -211,11 +211,17 @@ const Tasks = memo(() => {
         }))}
 
       {/* Create Task Dialog */}
-      <CreateTodoDialog
+      <EntityCreateDialog
+        entityKey="todoItem"
         open={createDialogOpen}
         onClose={() => setCreateDialogOpen(false)}
         onSuccess={() => {
-          // Optional: Show success message or scroll to new task
+          addNotification({
+            type: 'success',
+            title: 'Task Created!',
+            message: 'Your new task has been created successfully',
+            autoHide: true
+          })
         }}
       />
       </Box>

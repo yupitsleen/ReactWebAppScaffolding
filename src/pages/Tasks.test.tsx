@@ -51,6 +51,17 @@ vi.mock('../hooks/usePageLoading', () => ({
   usePageLoading: () => [false]
 }))
 
+vi.mock('../context/GenericDataContext', () => ({
+  useGenericData: () => ({
+    getEntities: vi.fn(() => []),
+    getLoading: vi.fn(() => false),
+    createEntity: vi.fn(),
+    updateEntity: vi.fn(),
+    deleteEntity: vi.fn(),
+    refreshEntities: vi.fn()
+  })
+}))
+
 // Spy on localStorage helpers
 const getFromStorageSpy = vi.spyOn(helpers, 'getFromStorage')
 const setToStorageSpy = vi.spyOn(helpers, 'setToStorage')

@@ -609,16 +609,142 @@ const handleSubmit = async () => {
 />
 ```
 
+### Form Generation System (#memorize)
+
+**Phase 2** adds schema-driven form generation - define forms once in configuration, use everywhere automatically.
+
+#### Form Schema Configuration
+
+Define form schemas in `configurableData.ts`:
+
+```typescript
+// In src/data/configurableData.ts
+export const appConfig: AppConfig = {
+  // ... other config
+
+  formSchemas: {
+    order: {
+      title: "Order",
+      description: "Create a new customer order",
+      submitLabel: "Create Order",
+      cancelLabel: "Cancel",
+      fields: [
+        {
+          name: "customerName",
+          label: "Customer Name",
+          type: "text",
+          placeholder: "Enter customer name",
+          required: true,
+          fullWidth: true,
+          grid: { xs: 12, md: 6 }
+        },
+        {
+          name: "total",
+          label: "Order Total",
+          type: "number",
+          required: true,
+          min: 0,
+          step: 0.01,
+          grid: { xs: 12, md: 6 }
+        },
+        {
+          name: "status",
+          label: "Status",
+          type: "select",
+          required: true,
+          defaultValue: "pending",
+          options: [
+            { value: "pending", label: "Pending" },
+            { value: "processing", label: "Processing" },
+            { value: "shipped", label: "Shipped" }
+          ],
+          grid: { xs: 12, md: 6 }
+        },
+        {
+          name: "notes",
+          label: "Notes",
+          type: "textarea",
+          rows: 4,
+          placeholder: "Add any special instructions",
+          grid: { xs: 12 }
+        }
+      ]
+    }
+  }
+}
+```
+
+**Supported Field Types:**
+- `text`, `email`, `number` - Standard inputs
+- `textarea` - Multi-line text (specify `rows`)
+- `select`, `multiselect` - Dropdown selections (provide `options`)
+- `checkbox` - Boolean toggle
+- `radio` - Radio button group (provide `options`)
+- `date`, `datetime` - Date pickers
+- `autocomplete` - Searchable dropdown (provide `options`)
+
+#### Generic Create/Edit Dialogs
+
+Use the generic dialogs in your pages - one line replaces entire custom dialog components:
+
+```typescript
+// In your page component (e.g., Orders.tsx)
+import { EntityCreateDialog, EntityEditDialog } from '../components'
+
+// Create dialog - one line!
+<EntityCreateDialog
+  entityKey="order"
+  open={createDialogOpen}
+  onClose={() => setCreateDialogOpen(false)}
+  onSuccess={() => showSuccessMessage()}
+/>
+
+// Edit dialog - one line!
+<EntityEditDialog
+  entityKey="order"
+  entity={selectedOrder}
+  open={editDialogOpen}
+  onClose={() => setEditDialogOpen(false)}
+  onSuccess={() => showSuccessMessage()}
+/>
+```
+
+**Features Included Automatically:**
+- ✅ Form rendering from schema
+- ✅ Real-time validation (integrates with EntityValidator)
+- ✅ Error display
+- ✅ Loading states during submission
+- ✅ CRUD operations (create/update via GenericDataContext)
+- ✅ Success/error handling
+
+#### Form Generator Component
+
+For custom form layouts, use `EntityFormGenerator` directly:
+
+```typescript
+import { EntityFormGenerator } from '../components/forms/EntityFormGenerator'
+
+<EntityFormGenerator
+  entityKey="order"
+  schema={appConfig.formSchemas.order}
+  initialData={existingOrder}  // For edit mode
+  onChange={setFormData}
+  onValidate={setIsValid}
+/>
+```
+
 ### Complete Example: Adding an Order Entity
 
 See [src/examples/extensibilityExample.ts](src/examples/extensibilityExample.ts) for a complete example showing how to add a new "Order" entity with:
 - ✅ Type definition (5 lines)
 - ✅ Sample data (10 lines)
 - ✅ Service registration (5 lines)
+- ✅ Form schema (30 lines) - **NEW in Phase 2**
 - ✅ Custom field renderers (10 lines, optional)
 - ✅ Validation schema (20 lines, optional)
 
 **Total: ~50 lines in 1 file vs. 313 lines across 8 files**
+**Forms:** Define once, use everywhere (create/edit dialogs automatic)
 
 ### Migration Strategy
 
@@ -631,7 +757,7 @@ The new registry patterns coexist with existing code:
 
 ### Key Files
 
-**Registry Infrastructure:**
+**Phase 1 - Registry Infrastructure:**
 - [src/services/ServiceRegistry.ts](src/services/ServiceRegistry.ts) - Service registration
 - [src/context/GenericDataContext.tsx](src/context/GenericDataContext.tsx) - Generic CRUD context
 - [src/components/fieldRenderers/FieldRendererRegistry.ts](src/components/fieldRenderers/FieldRendererRegistry.ts) - Field renderer registry
@@ -639,6 +765,12 @@ The new registry patterns coexist with existing code:
 - [src/validation/EntityValidator.ts](src/validation/EntityValidator.ts) - Validation engine
 - [src/hooks/useEntityValidation.ts](src/hooks/useEntityValidation.ts) - Validation hook
 - [src/hooks/useEntityAdapters.ts](src/hooks/useEntityAdapters.ts) - Backward compatibility
+
+**Phase 2 - Form Generation:**
+- [src/components/forms/FormField.tsx](src/components/forms/FormField.tsx) - Universal form field component
+- [src/components/forms/EntityFormGenerator.tsx](src/components/forms/EntityFormGenerator.tsx) - Schema-driven form generator
+- [src/components/EntityCreateDialog.tsx](src/components/EntityCreateDialog.tsx) - Generic create dialog
+- [src/components/EntityEditDialog.tsx](src/components/EntityEditDialog.tsx) - Generic edit dialog
 
 **Example & Documentation:**
 - [src/examples/extensibilityExample.ts](src/examples/extensibilityExample.ts) - Complete usage example
