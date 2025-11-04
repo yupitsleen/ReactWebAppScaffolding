@@ -164,9 +164,21 @@ describe('CreateTodoDialog', () => {
   })
 
   it('disables form during submission', async () => {
-    mockCreateTodo.mockImplementation(
-      () => new Promise(resolve => setTimeout(resolve, 100))
-    )
+    let resolvePromise: () => void
+    const promise = new Promise<TodoItem>((resolve) => {
+      resolvePromise = () => resolve({
+        id: 'new-1',
+        title: 'Test',
+        assignedTo: 'John',
+        priority: 'medium',
+        status: 'pending',
+        category: 'Work',
+        createdBy: 'Test User',
+        createdAt: new Date().toISOString()
+      })
+    })
+
+    mockCreateTodo.mockReturnValue(promise)
 
     renderDialog()
 
@@ -189,5 +201,11 @@ describe('CreateTodoDialog', () => {
 
     const titleInput = screen.getByLabelText(/Task Title/i)
     expect(titleInput).toBeDisabled()
+
+    // Resolve the promise to allow cleanup
+    resolvePromise!()
+    await waitFor(() => {
+      expect(mockOnClose).toHaveBeenCalled()
+    })
   })
 })
