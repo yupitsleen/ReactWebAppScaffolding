@@ -124,7 +124,7 @@ const Home = memo(() => {
     >
        {/* Progress Section - Only show if Tasks page is enabled */}
       {isTasksPageEnabled && (
-        <LoadingWrapper loading={loading} minHeight="120px">
+        <LoadingWrapper loading={loading} minHeight="120px" skeleton skeletonVariant="card" skeletonCount={1}>
           <Box className="dashboard-section">
             <Card>
               <CardContent>
@@ -155,7 +155,7 @@ const Home = memo(() => {
       )}
       
       {/* Summary Cards Section */}
-      <LoadingWrapper loading={loading} minHeight="200px">
+      <LoadingWrapper loading={loading} minHeight="200px" skeleton skeletonVariant="card" skeletonCount={4}>
         <Box className="dashboard-section">
           <Typography variant="h5" component="h2">
             Overview
@@ -177,7 +177,7 @@ const Home = memo(() => {
      
 
       {/* Dynamic Sections */}
-      <LoadingWrapper loading={loading} minHeight="300px">
+      <LoadingWrapper loading={loading} minHeight="300px" skeleton skeletonVariant="list" skeletonCount={5}>
         <Box className="dashboard-section">
           <Grid container spacing={3}>
             {appConfig.dashboardSections

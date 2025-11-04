@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Loading from "./Loading";
+import SkeletonLoader, { type SkeletonVariant } from "./SkeletonLoader";
 
 interface LoadingWrapperProps {
   loading: boolean;
@@ -9,6 +10,12 @@ interface LoadingWrapperProps {
   loadingText?: string;
   /** Custom minimum height to prevent layout shift */
   minHeight?: string | number;
+  /** Use skeleton loading instead of spinner */
+  skeleton?: boolean;
+  /** Skeleton variant type */
+  skeletonVariant?: SkeletonVariant;
+  /** Number of skeleton items */
+  skeletonCount?: number;
 }
 
 export default function LoadingWrapper({
@@ -18,12 +25,25 @@ export default function LoadingWrapper({
   preserveLayout = true,
   loadingText = "Loading...",
   minHeight,
+  skeleton = false,
+  skeletonVariant = "text",
+  skeletonCount = 3,
 }: LoadingWrapperProps) {
   if (loading) {
     if (fallback) {
       return <>{fallback}</>;
     }
 
+    // Use skeleton loader if enabled
+    if (skeleton) {
+      return (
+        <div style={{ minHeight: minHeight || 'auto' }}>
+          <SkeletonLoader variant={skeletonVariant} count={skeletonCount} />
+        </div>
+      );
+    }
+
+    // Use spinner (default)
     const loadingStyles: React.CSSProperties = {
       ...(minHeight && { minHeight }),
       ...(preserveLayout && {
