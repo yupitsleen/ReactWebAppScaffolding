@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://yupitsleen.github.io/ReactWebAppScaffolding",
+  "homepage": "https://yupitsleen.github.io/SampleApp",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
