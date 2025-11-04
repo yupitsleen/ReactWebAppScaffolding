@@ -456,6 +456,75 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
       },
     },
+    // OutlinedInput defaults
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          },
+          '&.Mui-focused': {
+            backgroundColor: 'white',
+            boxShadow: `0 0 0 3px ${themeConfig.primaryColor}1A`, // 10% opacity
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: themeConfig.primaryColor,
+              borderWidth: '2px',
+            },
+          },
+          '&.Mui-error': {
+            '&.Mui-focused': {
+              boxShadow: '0 0 0 3px rgba(239, 68, 68, 0.1)',
+            },
+          },
+        },
+        notchedOutline: {
+          borderColor: 'rgba(0, 0, 0, 0.12)',
+          transition: 'all 0.2s ease-in-out',
+        },
+      },
+    },
+    // Input label defaults
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          '&.Mui-focused': {
+            fontWeight: 600,
+            color: themeConfig.primaryColor,
+          },
+          '&.Mui-error': {
+            '&.Mui-focused': {
+              color: '#EF4444',
+            },
+          },
+        },
+      },
+    },
+    // FormHelperText defaults
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          marginLeft: 4,
+          fontSize: '0.75rem',
+          '&.Mui-error': {
+            fontWeight: 500,
+          },
+        },
+      },
+    },
+    // Select component defaults
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          '&:focus': {
+            backgroundColor: 'transparent',
+          },
+        },
+      },
+    },
     // Table components
     MuiTableCell: {
       styleOverrides: {
