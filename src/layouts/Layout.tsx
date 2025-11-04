@@ -6,8 +6,10 @@ import { useAuthService } from '../context/MockContext'
 import { useNavigation } from '../hooks/useNavigation'
 import Footer from '../components/Footer'
 import NotificationBell from '../components/NotificationBell'
+import { ColorPresetSelector } from '../components/ColorPresetSelector'
 import { appConfig } from '../data/configurableData'
-import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material'
+import { Menu as MenuIcon, Close as CloseIcon, Palette as PaletteIcon } from '@mui/icons-material'
+import { setThemeColor } from '../utils/colorManager'
 import styles from './Layout.module.css'
 
 interface LayoutProps {
@@ -22,6 +24,7 @@ function Layout({ children }: LayoutProps) {
   const { isCurrentPage, getEnabledPages } = useNavigation()
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [colorPresetDialogOpen, setColorPresetDialogOpen] = useState(false)
   const accountMenuRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
@@ -79,9 +82,35 @@ function Layout({ children }: LayoutProps) {
     toggleTheme()
   }
 
+  const handleColorPresetSelect = (primaryColor: string, secondaryColor: string) => {
+    // Update colors in the color manager
+    setThemeColor('primary-color', primaryColor)
+    setThemeColor('secondary-color', secondaryColor)
+
+    // Save to localStorage for persistence
+    localStorage.setItem('color-preset-primary', primaryColor)
+    localStorage.setItem('color-preset-secondary', secondaryColor)
+  }
+
+  // Load saved color preset on mount
+  useEffect(() => {
+    const savedPrimary = localStorage.getItem('color-preset-primary')
+    const savedSecondary = localStorage.getItem('color-preset-secondary')
+
+    if (savedPrimary && savedSecondary) {
+      setThemeColor('primary-color', savedPrimary)
+      setThemeColor('secondary-color', savedSecondary)
+    }
+  }, [])
+
   return (
     <div className={styles.layout}>
-      <header className={styles.header}>
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className={styles.skipLink}>
+        Skip to main content
+      </a>
+
+      <header className={styles.header} role="banner">
         <div className={styles.headerContent}>
           <div className={styles.logo}>{appConfig.appName}</div>
 
@@ -95,12 +124,13 @@ function Layout({ children }: LayoutProps) {
           </button>
 
           {/* Desktop Navigation */}
-          <nav className={styles.nav}>
+          <nav className={styles.nav} aria-label="Main navigation">
             {getEnabledPages().map(nav => (
               <Link
                 key={nav.id}
                 to={nav.path}
                 className={`${styles.navLink} ${isCurrentPage(nav.path) ? styles.active : ''}`}
+                aria-current={isCurrentPage(nav.path) ? 'page' : undefined}
               >
                 {nav.label}
               </Link>
@@ -109,6 +139,9 @@ function Layout({ children }: LayoutProps) {
               <button
                 className={styles.accountButton}
                 onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                aria-expanded={accountMenuOpen}
+                aria-haspopup="true"
+                aria-label="Account menu"
               >
                 Account ▼
               </button>
@@ -155,9 +188,18 @@ function Layout({ children }: LayoutProps) {
               )}
             </div>
             <button
+              className={styles.iconButton}
+              onClick={() => setColorPresetDialogOpen(true)}
+              title="Change color scheme"
+              aria-label="Change color scheme"
+            >
+              <PaletteIcon />
+            </button>
+            <button
               className={styles.themeToggle}
               onClick={handleToggleTheme}
               title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
@@ -168,7 +210,7 @@ function Layout({ children }: LayoutProps) {
         {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
           <div className={styles.mobileMenuOverlay} ref={mobileMenuRef}>
-            <nav className={styles.mobileNav}>
+            <nav className={styles.mobileNav} aria-label="Mobile navigation">
               {getEnabledPages().map(nav => (
                 <Link
                   key={nav.id}
@@ -220,6 +262,12 @@ function Layout({ children }: LayoutProps) {
               <div className={styles.mobileDivider} />
               <button
                 className={styles.mobileNavButton}
+                onClick={() => { setColorPresetDialogOpen(true); setMobileMenuOpen(false); }}
+              >
+                🎨 Change Colors
+              </button>
+              <button
+                className={styles.mobileNavButton}
                 onClick={() => { handleToggleTheme(); setMobileMenuOpen(false); }}
               >
                 {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
@@ -228,10 +276,17 @@ function Layout({ children }: LayoutProps) {
           </div>
         )}
       </header>
-      <main className={styles.main}>
+      <main id="main-content" className={styles.main} role="main" tabIndex={-1}>
         {children}
       </main>
       <Footer />
+      <ColorPresetSelector
+        open={colorPresetDialogOpen}
+        onClose={() => setColorPresetDialogOpen(false)}
+        currentPrimary={appConfig.theme.primaryColor}
+        currentSecondary={appConfig.theme.secondaryColor}
+        onPresetSelect={handleColorPresetSelect}
+      />
     </div>
   )
 }

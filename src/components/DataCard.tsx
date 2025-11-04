@@ -42,16 +42,33 @@ const DataCard = memo<DataCardProps>(({
 
   return (
     <Card
+      component={onClick ? 'button' : 'div'}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={onClick ? `${card.title}: ${value}. ${card.subtitle}. Click to view details.` : `${card.title}: ${value}. ${card.subtitle}`}
+      onKeyDown={onClick ? (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick()
+        }
+      } : undefined}
       sx={{
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        border: 'none',
+        textAlign: 'inherit',
         ...(onClick && {
           '&:hover': {
             transform: 'translateY(-4px)',
             boxShadow: '0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.08)',
+          },
+          '&:focus-visible': {
+            outline: '2px solid',
+            outlineColor: 'primary.main',
+            outlineOffset: '2px',
           },
           // Disable hover transform on mobile (prevents awkward touch behavior)
           '@media (hover: none)': {
@@ -72,6 +89,7 @@ const DataCard = memo<DataCardProps>(({
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           {displayIcon && (
             <Box
+              aria-hidden="true"
               sx={{
                 width: { xs: 48, sm: 56 },
                 height: { xs: 48, sm: 56 },
@@ -89,6 +107,8 @@ const DataCard = memo<DataCardProps>(({
           )}
           {trend && (
             <Box
+              role="status"
+              aria-label={`Trend: ${trend.direction === 'up' ? 'increasing' : 'decreasing'} by ${trend.value}`}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -99,7 +119,7 @@ const DataCard = memo<DataCardProps>(({
                 color: trend.direction === 'up' ? '#047857' : '#DC2626',
               }}
             >
-              {trend.direction === 'up' ? <TrendUpIcon sx={{ fontSize: '1rem' }} /> : <TrendDownIcon sx={{ fontSize: '1rem' }} />}
+              {trend.direction === 'up' ? <TrendUpIcon sx={{ fontSize: '1rem' }} aria-hidden="true" /> : <TrendDownIcon sx={{ fontSize: '1rem' }} aria-hidden="true" />}
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
                 {trend.value}
               </Typography>

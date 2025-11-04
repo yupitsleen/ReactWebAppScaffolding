@@ -1,5 +1,7 @@
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
+import { Box, CircularProgress } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
 import { AnimatePresence } from 'framer-motion'
 import createPortalTheme from './theme/portalTheme'
@@ -11,24 +13,70 @@ import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
 import PageTransition from './components/PageTransition'
 import { ToastContainer } from './components/Toast'
+import { KeyboardShortcutsDialog } from './components/KeyboardShortcutsDialog'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
-import Home from './pages/Home'
-import Tasks from './pages/Tasks'
-import Payments from './pages/Payments'
-import Documents from './pages/Documents'
-import Discussions from './pages/Discussions'
-import Table from './pages/Table'
-import Timeline from './pages/Timeline'
-import Contact from './pages/Contact'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import MyAccount from './pages/MyAccount'
-import NotFound from './pages/NotFound'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import './utils/colorManager'
+
+// Lazy load route components for code splitting
+const Home = lazy(() => import('./pages/Home'))
+const Tasks = lazy(() => import('./pages/Tasks'))
+const Payments = lazy(() => import('./pages/Payments'))
+const Documents = lazy(() => import('./pages/Documents'))
+const Discussions = lazy(() => import('./pages/Discussions'))
+const Table = lazy(() => import('./pages/Table'))
+const Timeline = lazy(() => import('./pages/Timeline'))
+const Contact = lazy(() => import('./pages/Contact'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+const MyAccount = lazy(() => import('./pages/MyAccount'))
+const NotFound = lazy(() => import('./pages/NotFound'))
+
+// Loading fallback component
+const PageLoadingFallback = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+      flexDirection: 'column',
+      gap: 2,
+    }}
+  >
+    <CircularProgress size={48} />
+  </Box>
+)
 
 // Component for authenticated users
 function AuthenticatedApp() {
   const location = useLocation()
+  const [shortcutsDialogOpen, setShortcutsDialogOpen] = useState(false)
+
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts({ enabled: true })
+
+  // Listen for "?" key to open shortcuts dialog
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === '?' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        const target = event.target as HTMLElement
+        // Skip if user is typing in an input field
+        if (
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable
+        ) {
+          return
+        }
+        event.preventDefault()
+        setShortcutsDialogOpen(true)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [])
 
   const pageComponents = {
     home: Home,
@@ -50,13 +98,17 @@ function AuthenticatedApp() {
             .map(nav => {
               const Component = pageComponents[nav.id as keyof typeof pageComponents]
               return Component ? (
-                <Route key={nav.id} path={nav.path} element={<PageTransition><Component /></PageTransition>} />
+                <Route key={nav.id} path={nav.path} element={<PageTransition><Suspense fallback={null}><Component /></Suspense></PageTransition>} />
               ) : null
             })}
-          <Route path="/my-account" element={<PageTransition><MyAccount /></PageTransition>} />
-          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+          <Route path="/my-account" element={<PageTransition><Suspense fallback={null}><MyAccount /></Suspense></PageTransition>} />
+          <Route path="*" element={<PageTransition><Suspense fallback={null}><NotFound /></Suspense></PageTransition>} />
         </Routes>
       </AnimatePresence>
+      <KeyboardShortcutsDialog
+        open={shortcutsDialogOpen}
+        onClose={() => setShortcutsDialogOpen(false)}
+      />
     </Layout>
   )
 }
@@ -65,8 +117,8 @@ function AuthenticatedApp() {
 function UnauthenticatedApp() {
   return (
     <Routes>
-      <Route path="/register" element={<Register />} />
-      <Route path="*" element={<Login />} />
+      <Route path="/register" element={<Suspense fallback={null}><Register /></Suspense>} />
+      <Route path="*" element={<Suspense fallback={null}><Login /></Suspense>} />
     </Routes>
   )
 }

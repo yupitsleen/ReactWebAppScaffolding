@@ -155,10 +155,23 @@ function DataTableInner<T extends Record<string, any>>({
         paginatedData.map((row, index) => (
           <Card
             key={index}
+            component={onRowClick ? 'button' : 'div'}
             onClick={() => onRowClick?.(row)}
+            tabIndex={onRowClick ? 0 : undefined}
+            role={onRowClick ? 'button' : undefined}
+            aria-label={onRowClick ? `Item ${index + 1}. Click to view details.` : undefined}
+            onKeyDown={onRowClick ? (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onRowClick(row)
+              }
+            } : undefined}
             sx={{
               cursor: onRowClick ? 'pointer' : 'default',
               transition: 'all 0.2s ease-in-out',
+              border: 'none',
+              textAlign: 'inherit',
+              width: '100%',
               ...(onRowClick && {
                 '&:hover': {
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -166,6 +179,11 @@ function DataTableInner<T extends Record<string, any>>({
                 },
                 '&:active': {
                   transform: 'scale(0.98)',
+                },
+                '&:focus-visible': {
+                  outline: '2px solid',
+                  outlineColor: 'primary.main',
+                  outlineOffset: '2px',
                 }
               })
             }}
@@ -229,11 +247,16 @@ function DataTableInner<T extends Record<string, any>>({
             placeholder="Search across all columns..."
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
+            aria-label="Search table data"
+            inputProps={{
+              'aria-label': 'Search table data',
+              'aria-describedby': 'search-helper-text'
+            }}
             slotProps={{
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                    <SearchIcon sx={{ color: 'text.secondary' }} aria-hidden="true" />
                   </InputAdornment>
                 ),
               },
@@ -255,6 +278,9 @@ function DataTableInner<T extends Record<string, any>>({
               },
             }}
           />
+          <Typography id="search-helper-text" sx={{ display: 'none' }}>
+            Type to search across all table columns
+          </Typography>
         </Box>
       )}
 
@@ -263,7 +289,7 @@ function DataTableInner<T extends Record<string, any>>({
         <MobileCardView />
       ) : (
         <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
-        <Table size={dense ? 'small' : 'medium'}>
+        <Table size={dense ? 'small' : 'medium'} aria-label="Data table">
           <TableHead>
             <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}>
               {columns.map((column) => (
@@ -285,6 +311,7 @@ function DataTableInner<T extends Record<string, any>>({
                       active={orderBy === column.field}
                       direction={orderBy === column.field ? order : 'asc'}
                       onClick={() => handleSort(column.field)}
+                      aria-label={`Sort by ${column.header}`}
                       sx={{
                         '&.Mui-active': {
                           color: 'primary.main',
@@ -338,6 +365,15 @@ function DataTableInner<T extends Record<string, any>>({
                   key={index}
                   hover={!!onRowClick}
                   onClick={() => onRowClick?.(row)}
+                  tabIndex={onRowClick ? 0 : undefined}
+                  role={onRowClick ? 'button' : undefined}
+                  aria-label={onRowClick ? `Row ${index + 1}. Click to view details.` : undefined}
+                  onKeyDown={onRowClick ? (e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onRowClick(row)
+                    }
+                  } : undefined}
                   sx={{
                     cursor: onRowClick ? 'pointer' : 'default',
                     backgroundColor: striped && index % 2 === 1 ? 'rgba(0, 0, 0, 0.02)' : 'transparent',
@@ -345,6 +381,11 @@ function DataTableInner<T extends Record<string, any>>({
                     '&:hover': {
                       backgroundColor: onRowClick ? 'rgba(59, 130, 246, 0.08)' : striped && index % 2 === 1 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.02)',
                       transform: onRowClick ? 'translateX(4px)' : 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: '2px solid',
+                      outlineColor: 'primary.main',
+                      outlineOffset: '-2px',
                     },
                   }}
                 >

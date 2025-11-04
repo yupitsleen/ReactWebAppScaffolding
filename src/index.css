@@ -4,11 +4,30 @@
   box-sizing: border-box;
 }
 
+/* Smooth transitions for all elements during theme changes */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Disable transitions for elements that shouldn't animate */
+* [aria-busy="true"],
+* [data-loading="true"],
+.no-transition {
+  transition: none !important;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--background-color, #F3F4F6);
+  /* Smooth color transitions for theme changes */
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #root {
