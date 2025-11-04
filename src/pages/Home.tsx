@@ -17,6 +17,8 @@ import PageLayout from "../components/PageLayout";
 import LoadingWrapper from "../components/LoadingWrapper";
 import DataCard from "../components/DataCard";
 import StatusChip from "../components/StatusChip";
+import AnimatedSection from "../components/AnimatedSection";
+import AnimatedGrid, { AnimatedGridItem } from "../components/AnimatedGrid";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { useDataOperations } from "../hooks/useDataOperations";
@@ -124,82 +126,93 @@ const Home = memo(() => {
     >
        {/* Progress Section - Only show if Tasks page is enabled */}
       {isTasksPageEnabled && (
-        <LoadingWrapper loading={loading} minHeight="120px" skeleton skeletonVariant="card" skeletonCount={1}>
-          <Box className="dashboard-section">
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Overall Progress
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <Box sx={{ width: "100%", mr: 1 }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={dashboardStats.completionRate}
-                    />
+        <AnimatedSection delay={0.1}>
+          <LoadingWrapper loading={loading} minHeight="120px" skeleton skeletonVariant="card" skeletonCount={1}>
+            <Box className="dashboard-section">
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Overall Progress
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <Box sx={{ width: "100%", mr: 1 }}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={dashboardStats.completionRate}
+                      />
+                    </Box>
+                    <Box sx={{ minWidth: 35 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {dashboardStats.completionRate}%
+                      </Typography>
+                    </Box>
                   </Box>
-                  <Box sx={{ minWidth: 35 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {dashboardStats.completionRate}%
-                    </Typography>
-                  </Box>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {dashboardStats.completedTodos} of{" "}
-                  {dashboardStats.totalTodos} tasks completed
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-        </LoadingWrapper>
+                  <Typography variant="body2" color="text.secondary">
+                    {dashboardStats.completedTodos} of{" "}
+                    {dashboardStats.totalTodos} tasks completed
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Box>
+          </LoadingWrapper>
+        </AnimatedSection>
       )}
       
       {/* Summary Cards Section */}
-      <LoadingWrapper loading={loading} minHeight="200px" skeleton skeletonVariant="card" skeletonCount={4}>
-        <Box className="dashboard-section">
-          <Typography variant="h5" component="h2">
-            Overview
-          </Typography>
-          <Grid container spacing={3}>
-            {enabledDashboardCards.map((card) => (
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
-                <DataCard
-                  card={card}
-                  value={getCardValue(card)}
-                  onClick={() => handleNavigateToPage(card.dataSource)}
-                />
+      <AnimatedSection delay={0.2}>
+        <LoadingWrapper loading={loading} minHeight="200px" skeleton skeletonVariant="card" skeletonCount={4}>
+          <Box className="dashboard-section">
+            <Typography variant="h5" component="h2">
+              Overview
+            </Typography>
+            <AnimatedGrid staggerDelay={0.08} initialDelay={0.1}>
+              <Grid container spacing={3}>
+                {enabledDashboardCards.map((card) => (
+                  <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
+                    <AnimatedGridItem>
+                      <DataCard
+                        card={card}
+                        value={getCardValue(card)}
+                        onClick={() => handleNavigateToPage(card.dataSource)}
+                      />
+                    </AnimatedGridItem>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </LoadingWrapper>
+            </AnimatedGrid>
+          </Box>
+        </LoadingWrapper>
+      </AnimatedSection>
 
      
 
       {/* Dynamic Sections */}
-      <LoadingWrapper loading={loading} minHeight="300px" skeleton skeletonVariant="list" skeletonCount={5}>
-        <Box className="dashboard-section">
-          <Grid container spacing={3}>
-            {appConfig.dashboardSections
-              .filter((section) => {
-                const enabledPageIds = new Set(getEnabledPages().map(page => page.id));
-                return section.enabled && enabledPageIds.has(section.pageId);
-              })
-              .map((section) => {
-                const sectionData = getSectionData(section);
-                return (
-                  <Grid size={{ xs: 12, md: 6 }} key={section.id}>
-                    <Card
-                      sx={{
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease-in-out',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: (theme) => theme.shadows[4],
-                        }
-                      }}
-                      onClick={() => handleNavigateToPage(section.dataSource)}
-                    >
+      <AnimatedSection delay={0.3}>
+        <LoadingWrapper loading={loading} minHeight="300px" skeleton skeletonVariant="list" skeletonCount={5}>
+          <Box className="dashboard-section">
+            <AnimatedGrid staggerDelay={0.15} initialDelay={0.1}>
+              <Grid container spacing={3}>
+                {appConfig.dashboardSections
+                  .filter((section) => {
+                    const enabledPageIds = new Set(getEnabledPages().map(page => page.id));
+                    return section.enabled && enabledPageIds.has(section.pageId);
+                  })
+                  .map((section) => {
+                    const sectionData = getSectionData(section);
+                    return (
+                      <Grid size={{ xs: 12, md: 6 }} key={section.id}>
+                        <AnimatedGridItem>
+                          <Card
+                            sx={{
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease-in-out',
+                              '&:hover': {
+                                transform: 'translateY(-2px)',
+                                boxShadow: (theme) => theme.shadows[4],
+                              }
+                            }}
+                            onClick={() => handleNavigateToPage(section.dataSource)}
+                          >
                       <CardContent>
                         <Typography variant="h6" gutterBottom>
                           {section.title}
@@ -278,12 +291,15 @@ const Home = memo(() => {
                         </Typography>
                       </CardContent>
                     </Card>
-                  </Grid>
-                );
-              })}
-          </Grid>
-        </Box>
-      </LoadingWrapper>
+                        </AnimatedGridItem>
+                      </Grid>
+                    );
+                  })}
+              </Grid>
+            </AnimatedGrid>
+          </Box>
+        </LoadingWrapper>
+      </AnimatedSection>
     </PageLayout>
   );
 });

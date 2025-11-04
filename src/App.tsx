@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+import { AnimatePresence } from 'framer-motion'
 import createPortalTheme from './theme/portalTheme'
 import { appConfig } from './data/configurableData'
 import { ContextProvider, useUser, useTheme } from './context/ContextProvider'
@@ -8,6 +9,7 @@ import { MockProvider, MockNotificationHandler } from './context/MockContext'
 import { NotificationProvider } from './context/NotificationContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './layouts/Layout'
+import PageTransition from './components/PageTransition'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
 import Home from './pages/Home'
 import Tasks from './pages/Tasks'
@@ -25,6 +27,8 @@ import './utils/colorManager'
 
 // Component for authenticated users
 function AuthenticatedApp() {
+  const location = useLocation()
+
   const pageComponents = {
     home: Home,
     tasks: Tasks,
@@ -38,18 +42,20 @@ function AuthenticatedApp() {
 
   return (
     <Layout>
-      <Routes>
-        {appConfig.navigation
-          .filter(nav => nav.enabled)
-          .map(nav => {
-            const Component = pageComponents[nav.id as keyof typeof pageComponents]
-            return Component ? (
-              <Route key={nav.id} path={nav.path} element={<Component />} />
-            ) : null
-          })}
-        <Route path="/my-account" element={<MyAccount />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {appConfig.navigation
+            .filter(nav => nav.enabled)
+            .map(nav => {
+              const Component = pageComponents[nav.id as keyof typeof pageComponents]
+              return Component ? (
+                <Route key={nav.id} path={nav.path} element={<PageTransition><Component /></PageTransition>} />
+              ) : null
+            })}
+          <Route path="/my-account" element={<PageTransition><MyAccount /></PageTransition>} />
+          <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+        </Routes>
+      </AnimatePresence>
     </Layout>
   )
 }
