@@ -233,6 +233,54 @@ export interface FormSchemas {
   [entityKey: string]: EntityFormSchema<any>
 }
 
+// Generic Entity Page Configuration
+export interface EntityAction {
+  id: string
+  label: string
+  icon?: string
+  handler: string
+  condition?: string
+}
+
+export interface EntityPageConfig {
+  entityKey: string
+  title?: string
+  subtitle?: string
+  showFilters?: boolean
+  showSort?: boolean
+  showCreate?: boolean
+  showExport?: boolean
+  showRefresh?: boolean
+  viewMode?: 'table' | 'cards' | 'both'
+  defaultView?: 'table' | 'cards'
+  cardRenderer?: string
+  tableColumns?: Array<{
+    field: string
+    header: string
+    sortable?: boolean
+    render?: (value: any, row: any) => React.ReactNode
+  }>
+  filters?: Array<{
+    field: string
+    label: string
+    type: 'select' | 'text' | 'date' | 'dateRange' | 'multiselect'
+    options?: { value: string; label: string }[]
+  }>
+  actions?: EntityAction[]
+  sortOptions?: Array<{
+    value: string
+    label: string
+  }>
+  defaultSort?: {
+    field: string
+    direction: 'asc' | 'desc'
+  }
+}
+
+export interface EntityPages {
+  [pageId: string]: EntityPageConfig
+}
+
 export interface AppConfig {
   appName: string
   navigation: NavigationItem[]
@@ -248,4 +296,5 @@ export interface AppConfig {
   statusConfig: StatusConfig | LegacyStatusConfig // Support both new and legacy formats
   fieldConfig: FieldConfig
   formSchemas?: FormSchemas // Optional form generation schemas
+  entityPages?: EntityPages // Optional generic entity page configurations
 }

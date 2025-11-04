@@ -61,31 +61,25 @@ export function generateRoutesFromConfig(config: AppConfig): GeneratedRoute[] {
     // Determine component path: explicit override or convention-based
     const componentPath = nav.component || capitalizeFirst(nav.id)
 
-    try {
-      // Dynamically import the component
-      // Note: File extension is required for Vite's dynamic import
-      const Component = lazy(() =>
-        import(`../pages/${componentPath}.tsx`).catch((error) => {
-          console.warn(
-            `RouteGenerator: No page component found for "${nav.id}" at pages/${componentPath}.tsx`,
-            `This navigation item will be skipped.`,
-            `\nError:`, error
-          )
-          // Return a fallback that throws so Suspense boundary handles it
-          throw error
-        })
-      )
-
-      routes.push({
-        id: nav.id,
-        path: nav.path,
-        label: nav.label,
-        Component
+    // Dynamically import the component with fallback to GenericEntityPage
+    const Component = lazy(() =>
+      import(`../pages/${componentPath}.tsx`).catch((error) => {
+        console.warn(
+          `RouteGenerator: No page component found for "${nav.id}" at pages/${componentPath}.tsx`,
+          `Falling back to GenericEntityPage. Configure in appConfig.entityPages['${nav.id}']`,
+          `\nError:`, error.message
+        )
+        // Fallback to GenericEntityPage
+        return import('../pages/GenericEntityPage')
       })
-    } catch (error) {
-      // Component import failed, skip this route
-      console.error(`RouteGenerator: Failed to load component for "${nav.id}"`)
-    }
+    )
+
+    routes.push({
+      id: nav.id,
+      path: nav.path,
+      label: nav.label,
+      Component
+    })
   }
 
   return routes
