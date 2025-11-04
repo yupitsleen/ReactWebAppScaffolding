@@ -12,7 +12,11 @@ import {
   TextField,
   InputAdornment,
   Typography,
-  TablePagination
+  TablePagination,
+  Card,
+  CardContent,
+  useMediaQuery,
+  useTheme
 } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
 
@@ -113,6 +117,109 @@ function DataTableInner<T extends Record<string, any>>({
     return row[column.field as keyof T]
   }
 
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  // Mobile Card View Component
+  const MobileCardView = () => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {paginatedData.length === 0 ? (
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                py: 4,
+                textAlign: 'center',
+                color: 'text.secondary',
+              }}
+            >
+              <SearchIcon
+                sx={{
+                  fontSize: 48,
+                  mb: 2,
+                  opacity: 0.3,
+                }}
+              />
+              <Typography variant="body1" fontWeight={500} gutterBottom>
+                {emptyMessage}
+              </Typography>
+              {filterText && (
+                <Typography variant="body2" color="text.secondary">
+                  Try adjusting your search terms
+                </Typography>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      ) : (
+        paginatedData.map((row, index) => (
+          <Card
+            key={index}
+            onClick={() => onRowClick?.(row)}
+            sx={{
+              cursor: onRowClick ? 'pointer' : 'default',
+              transition: 'all 0.2s ease-in-out',
+              ...(onRowClick && {
+                '&:hover': {
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  transform: 'translateY(-2px)',
+                },
+                '&:active': {
+                  transform: 'scale(0.98)',
+                }
+              })
+            }}
+          >
+            <CardContent>
+              {columns.map((column, colIndex) => (
+                <Box
+                  key={String(column.field)}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    py: 1,
+                    borderBottom: colIndex < columns.length - 1 ? '1px solid' : 'none',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      color: 'text.secondary',
+                      textTransform: 'uppercase',
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.05em',
+                      minWidth: '40%',
+                    }}
+                  >
+                    {column.header}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      textAlign: 'right',
+                      color: 'text.primary',
+                      fontWeight: 500,
+                      maxWidth: '55%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {column.render
+                      ? column.render(getCellValue(row, column), row)
+                      : String(getCellValue(row, column) ?? '')}
+                  </Typography>
+                </Box>
+              ))}
+            </CardContent>
+          </Card>
+        ))
+      )}
+    </Box>
+  )
+
   return (
     <Box>
       {filterable && (
@@ -132,7 +239,8 @@ function DataTableInner<T extends Record<string, any>>({
               },
             }}
             sx={{
-              maxWidth: 400,
+              maxWidth: { xs: '100%', sm: 400 },
+              width: { xs: '100%', sm: 'auto' },
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
                 backgroundColor: 'rgba(0, 0, 0, 0.02)',
@@ -150,7 +258,11 @@ function DataTableInner<T extends Record<string, any>>({
         </Box>
       )}
 
-      <TableContainer component={Paper}>
+      {/* Render mobile card view on small screens, table view on larger screens */}
+      {isMobile ? (
+        <MobileCardView />
+      ) : (
+        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table size={dense ? 'small' : 'medium'}>
           <TableHead>
             <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}>
@@ -249,6 +361,7 @@ function DataTableInner<T extends Record<string, any>>({
           </TableBody>
         </Table>
       </TableContainer>
+      )}
 
       {paginated && sortedData.length > 0 && (
         <TablePagination

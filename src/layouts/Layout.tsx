@@ -7,6 +7,7 @@ import { useNavigation } from '../hooks/useNavigation'
 import Footer from '../components/Footer'
 import NotificationBell from '../components/NotificationBell'
 import { appConfig } from '../data/configurableData'
+import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material'
 import styles from './Layout.module.css'
 
 interface LayoutProps {
@@ -20,7 +21,9 @@ function Layout({ children }: LayoutProps) {
   const authService = useAuthService()
   const { isCurrentPage, getEnabledPages } = useNavigation()
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const accountMenuRef = useRef<HTMLDivElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   // Close account menu when clicking outside
   useEffect(() => {
@@ -37,6 +40,27 @@ function Layout({ children }: LayoutProps) {
       }
     }
   }, [accountMenuOpen])
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false)
+      }
+    }
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [mobileMenuOpen])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [navigate])
 
   const handleLogout = async () => {
     try {
@@ -60,6 +84,17 @@ function Layout({ children }: LayoutProps) {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.logo}>{appConfig.appName}</div>
+
+          {/* Hamburger Menu Button - Mobile Only */}
+          <button
+            className={styles.hamburger}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+
+          {/* Desktop Navigation */}
           <nav className={styles.nav}>
             {getEnabledPages().map(nav => (
               <Link
@@ -129,6 +164,69 @@ function Layout({ children }: LayoutProps) {
             <NotificationBell />
           </nav>
         </div>
+
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className={styles.mobileMenuOverlay} ref={mobileMenuRef}>
+            <nav className={styles.mobileNav}>
+              {getEnabledPages().map(nav => (
+                <Link
+                  key={nav.id}
+                  to={nav.path}
+                  className={`${styles.mobileNavLink} ${isCurrentPage(nav.path) ? styles.activeMobile : ''}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {nav.label}
+                </Link>
+              ))}
+              <div className={styles.mobileDivider} />
+              {user ? (
+                <>
+                  <div className={styles.mobileUserInfo}>
+                    {user.name} ({user.userType})
+                  </div>
+                  <Link
+                    to="/my-account"
+                    className={styles.mobileNavLink}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Account
+                  </Link>
+                  <button
+                    onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                    className={styles.mobileNavButton}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className={styles.mobileNavLink}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    className={styles.mobileNavLink}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+              <div className={styles.mobileDivider} />
+              <button
+                className={styles.mobileNavButton}
+                onClick={() => { handleToggleTheme(); setMobileMenuOpen(false); }}
+              >
+                {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+              </button>
+            </nav>
+          </div>
+        )}
       </header>
       <main className={styles.main}>
         {children}

@@ -47,6 +47,17 @@ const DataCard = memo<DataCardProps>(({
           '&:hover': {
             transform: 'translateY(-4px)',
             boxShadow: '0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.08)',
+          },
+          // Disable hover transform on mobile (prevents awkward touch behavior)
+          '@media (hover: none)': {
+            '&:hover': {
+              transform: 'none',
+              boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+            },
+            '&:active': {
+              transform: 'scale(0.98)',
+              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+            }
           }
         })
       }}
@@ -57,15 +68,15 @@ const DataCard = memo<DataCardProps>(({
           {displayIcon && (
             <Box
               sx={{
-                width: 56,
-                height: 56,
+                width: { xs: 48, sm: 56 },
+                height: { xs: 48, sm: 56 },
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.2)} 100%)`,
                 color: `${card.color}.main`,
-                fontSize: '1.75rem',
+                fontSize: { xs: '1.5rem', sm: '1.75rem' },
               }}
             >
               {displayIcon}
