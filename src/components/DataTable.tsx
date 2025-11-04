@@ -35,6 +35,8 @@ interface DataTableProps<T> {
   defaultRowsPerPage?: number
   emptyMessage?: string
   onRowClick?: (row: T) => void
+  striped?: boolean
+  dense?: boolean
 }
 
 function DataTableInner<T extends Record<string, any>>({
@@ -46,7 +48,9 @@ function DataTableInner<T extends Record<string, any>>({
   rowsPerPageOptions = [5, 10, 25, 50],
   defaultRowsPerPage = 10,
   emptyMessage = 'No data available',
-  onRowClick
+  onRowClick,
+  striped = true,
+  dense = false
 }: DataTableProps<T>) {
   const [orderBy, setOrderBy] = useState<keyof T | string | null>(null)
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
@@ -115,35 +119,68 @@ function DataTableInner<T extends Record<string, any>>({
         <Box className="spacing-bottom-md">
           <TextField
             size="small"
-            placeholder="Search..."
+            placeholder="Search across all columns..."
             value={filterText}
             onChange={(e) => setFilterText(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              },
             }}
-            sx={{ maxWidth: 400 }}
+            sx={{
+              maxWidth: 400,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+                '&.Mui-focused': {
+                  backgroundColor: 'white',
+                  boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                },
+              },
+            }}
           />
         </Box>
       )}
 
       <TableContainer component={Paper}>
-        <Table>
+        <Table size={dense ? 'small' : 'medium'}>
           <TableHead>
-            <TableRow>
+            <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}>
               {columns.map((column) => (
                 <TableCell
                   key={String(column.field)}
                   style={{ width: column.width }}
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: 'text.secondary',
+                    borderBottom: '2px solid',
+                    borderBottomColor: 'divider',
+                  }}
                 >
                   {sortable && column.sortable !== false ? (
                     <TableSortLabel
                       active={orderBy === column.field}
                       direction={orderBy === column.field ? order : 'asc'}
                       onClick={() => handleSort(column.field)}
+                      sx={{
+                        '&.Mui-active': {
+                          color: 'primary.main',
+                          '& .MuiTableSortLabel-icon': {
+                            color: 'primary.main',
+                          },
+                        },
+                      }}
                     >
                       {column.header}
                     </TableSortLabel>
@@ -158,10 +195,28 @@ function DataTableInner<T extends Record<string, any>>({
             {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length}>
-                  <Box className="empty-state">
-                    <Typography variant="body2" color="text.secondary">
+                  <Box
+                    sx={{
+                      py: 8,
+                      textAlign: 'center',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    <SearchIcon
+                      sx={{
+                        fontSize: 48,
+                        mb: 2,
+                        opacity: 0.3,
+                      }}
+                    />
+                    <Typography variant="body1" fontWeight={500} gutterBottom>
                       {emptyMessage}
                     </Typography>
+                    {filterText && (
+                      <Typography variant="body2" color="text.secondary">
+                        Try adjusting your search terms
+                      </Typography>
+                    )}
                   </Box>
                 </TableCell>
               </TableRow>
@@ -173,6 +228,12 @@ function DataTableInner<T extends Record<string, any>>({
                   onClick={() => onRowClick?.(row)}
                   sx={{
                     cursor: onRowClick ? 'pointer' : 'default',
+                    backgroundColor: striped && index % 2 === 1 ? 'rgba(0, 0, 0, 0.02)' : 'transparent',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      backgroundColor: onRowClick ? 'rgba(59, 130, 246, 0.08)' : striped && index % 2 === 1 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(0, 0, 0, 0.02)',
+                      transform: onRowClick ? 'translateX(4px)' : 'none',
+                    },
                   }}
                 >
                   {columns.map((column) => (
@@ -198,6 +259,36 @@ function DataTableInner<T extends Record<string, any>>({
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            backgroundColor: 'rgba(0, 0, 0, 0.01)',
+            '& .MuiTablePagination-toolbar': {
+              minHeight: 56,
+            },
+            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              fontSize: '0.875rem',
+              color: 'text.secondary',
+            },
+            '& .MuiTablePagination-select': {
+              borderRadius: 1,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+              },
+            },
+            '& .MuiIconButton-root': {
+              borderRadius: 1,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                transform: 'scale(1.05)',
+              },
+              '&.Mui-disabled': {
+                opacity: 0.3,
+              },
+            },
+          }}
         />
       )}
     </Box>

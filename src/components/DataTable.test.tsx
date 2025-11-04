@@ -55,7 +55,7 @@ describe('DataTable', () => {
   it('filters data based on search text', () => {
     renderTable()
 
-    const searchInput = screen.getByPlaceholderText('Search...')
+    const searchInput = screen.getByPlaceholderText('Search across all columns...')
     fireEvent.change(searchInput, { target: { value: 'Item A' } })
 
     expect(screen.getByText('Item A')).toBeInTheDocument()
