@@ -10,7 +10,6 @@ interface DataCardProps {
   value: string | number
   onClick?: () => void
   icon?: ReactNode
-  showClickHint?: boolean
   children?: ReactNode
   trend?: {
     direction: 'up' | 'down'
@@ -25,7 +24,6 @@ const DataCard = memo<DataCardProps>(({
   value,
   onClick,
   icon,
-  showClickHint = true,
   children,
   trend,
   sparklineData,
@@ -169,35 +167,6 @@ const DataCard = memo<DataCardProps>(({
           </Box>
         )}
 
-        {showClickHint && onClick && (
-          <Box
-            sx={{
-              mt: 2,
-              pt: 2,
-              borderTop: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Typography
-              variant="caption"
-              color="primary"
-              sx={{
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                opacity: 0.8,
-                transition: 'opacity 0.2s ease-in-out',
-                '&:hover': {
-                  opacity: 1,
-                }
-              }}
-            >
-              View details
-              <Icons.ArrowForward sx={{ fontSize: '0.875rem' }} />
-            </Typography>
-          </Box>
-        )}
       </CardContent>
     </Card>
   )
