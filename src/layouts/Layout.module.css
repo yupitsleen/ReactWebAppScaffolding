@@ -132,18 +132,6 @@
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
-.navLink.active::before {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 3px;
-  background: var(--primary-color);
-  border-radius: 2px 2px 0 0;
-}
-
 .logoutButton {
   background: #DC2626;
   color: white;
