@@ -646,6 +646,90 @@ You can migrate components incrementally:
 
 ---
 
+## Conditional Test Execution
+
+Run tests only for enabled features to keep your test suite aligned with production configuration.
+
+### Test Utils
+
+Import feature test utilities:
+
+```typescript
+import { isFeatureEnabled, isPageEnabled, isCrudEnabled, describeIfEnabled, itIfEnabled } from '../test-utils/featureTestUtils'
+```
+
+### Patterns
+
+**Skip entire test suite if feature disabled:**
+```typescript
+describe.skipIf(!isFeatureEnabled('darkMode'))('Dark Mode Tests', () => {
+  it('toggles dark mode', () => {
+    // Only runs if darkMode is enabled
+  })
+})
+```
+
+**Skip individual test:**
+```typescript
+it.skipIf(!isCrudEnabled('delete'))('deletes items', () => {
+  // Only runs if delete operation is enabled
+})
+```
+
+**Using helper functions (more readable):**
+```typescript
+describeIfEnabled('commandPalette', 'Command Palette', () => {
+  it('opens with Cmd+K', () => {
+    // Cleaner syntax, auto-skip if disabled
+  })
+})
+
+itIfEnabled('notifications', 'shows notification bell', () => {
+  // Individual test conditional execution
+})
+```
+
+**Page-specific tests:**
+```typescript
+describeIfEnabled('pages.discussions', 'Discussions Page', () => {
+  it('renders discussions list', () => {
+    // Only runs if discussions page is enabled
+  })
+})
+```
+
+**Multiple dependencies:**
+```typescript
+describe.skipIf(
+  !isFeatureEnabled('advancedFiltering') || !isFeatureEnabled('advancedSorting')
+)('Advanced Features', () => {
+  it('filters and sorts', () => {
+    // Requires BOTH features enabled
+  })
+})
+```
+
+### Benefits
+
+- ✅ **Aligned with production** - Tests match deployed features
+- ✅ **Faster test runs** - Skip irrelevant tests
+- ✅ **Clear reporting** - Skip messages show which features are disabled
+- ✅ **No false failures** - Disabled features don't cause test failures
+
+### Example Output
+
+```
+✓ Dark Mode Tests (3 tests)
+⊘ Command Palette (feature disabled: commandPalette) (2 tests)
+✓ CRUD Operations
+  ✓ creates items
+  ⊘ deletes items (feature disabled: crud.delete)
+```
+
+See [src/examples/conditionalTestExample.test.tsx](src/examples/conditionalTestExample.test.tsx) for complete examples.
+
+---
+
 ## Summary
 
 The feature flags system provides:
@@ -656,5 +740,6 @@ The feature flags system provides:
 - ✅ **Easy to use** - Simple `isEnabled()` hook
 - ✅ **Automatic filtering** - Routes and navigation updated automatically
 - ✅ **Backward compatible** - Works with existing apps (all features ON by default)
+- ✅ **Test integration** - Conditional test execution based on feature flags
 
 Perfect for customizing your scaffold for different business domains, deployments, or customer tiers!
