@@ -174,7 +174,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           border: `2px solid var(--border-color)`,  // Constructivism: bolder borders (was 1px)
           boxShadow: 'none',  // Constructivism: no shadows (flat design)
           transition: 'all 0.3s ease-in-out',
-          marginBottom: '24px',
+          marginBottom: '12px',  // Compact spacing (was 24px)
           '&.clickable:hover, &[role="button"]:hover': {
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             borderColor: 'var(--primary-color)',
@@ -192,9 +192,9 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: '20px',
+          padding: '12px 16px',  // Compact padding (was 20px)
           '&:last-child': {
-            paddingBottom: '20px',
+            paddingBottom: '12px',  // Compact padding (was 20px)
           },
         },
       },
@@ -206,7 +206,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
-          padding: '10px 24px',
+          padding: '8px 20px',  // Compact padding (was 10px 24px)
           fontSize: '0.9375rem',
           boxShadow: 'none',
           transition: 'all 0.2s ease-in-out',
@@ -229,16 +229,16 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
 
         // Size variants
         sizeSmall: {
-          padding: '6px 16px',
+          padding: '4px 12px',  // Compact (was 6px 16px)
           fontSize: '0.8125rem',
           fontWeight: 500,
         },
         sizeMedium: {
-          padding: '10px 24px',
+          padding: '8px 20px',  // Compact (was 10px 24px)
           fontSize: '0.9375rem',
         },
         sizeLarge: {
-          padding: '14px 32px',
+          padding: '10px 28px',  // Compact (was 14px 32px)
           fontSize: '1rem',
           fontWeight: 600,
         },
@@ -476,19 +476,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiContainer: {
       styleOverrides: {
         root: {
-          paddingTop: '24px',
-          paddingBottom: '24px',
+          paddingTop: '16px',  // Compact (was 24px)
+          paddingBottom: '16px',  // Compact (was 24px)
           paddingLeft: '16px',
           paddingRight: '16px',
           '@media (max-width: 640px)': {
-            paddingTop: '16px',
-            paddingBottom: '16px',
+            paddingTop: '12px',  // Compact (was 16px)
+            paddingBottom: '12px',  // Compact (was 16px)
             paddingLeft: '12px',
             paddingRight: '12px',
           },
           '@media (max-width: 480px)': {
-            paddingTop: '12px',
-            paddingBottom: '12px',
+            paddingTop: '8px',  // Compact (was 12px)
+            paddingBottom: '8px',  // Compact (was 12px)
             paddingLeft: '8px',
             paddingRight: '8px',
           },

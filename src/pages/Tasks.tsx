@@ -93,11 +93,11 @@ const Tasks = memo(() => {
 
   return (
     <PageLayout loading={loading}>
-      <Box className="spacing-top-lg">
+      <Box sx={{ mt: 2 }}>
         {/* Sort and Filter Controls */}
         {todos.length > 0 && (
-          <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2 }}>
-            <SortIcon color="action" />
+          <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.5 }}>
+            <SortIcon color="action" sx={{ fontSize: '1.25rem' }} />
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel>Sort by</InputLabel>
               <Select
@@ -124,7 +124,7 @@ const Tasks = memo(() => {
                 <MenuItem value="desc">Descending</MenuItem>
               </Select>
             </FormControl>
-            <Box sx={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
+            <Box sx={{ marginLeft: 'auto', display: 'flex', gap: 1.5 }}>
               <Button
                 variant={hideCompleted ? "contained" : "outlined"}
                 size="small"
@@ -160,21 +160,22 @@ const Tasks = memo(() => {
           const isCompleted = todo.status === 'completed'
 
           return (
-            <Card key={todo.id} className={isCompleted ? 'completed' : ''} sx={{ mb: 2 }}>
+            <Card key={todo.id} className={isCompleted ? 'completed' : ''}>
               <CardContent>
-                <Box className="flex-row" sx={{ alignItems: 'flex-start' }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                   <FormControlLabel
                     control={
                       <Checkbox
                         checked={isCompleted}
                         onChange={() => handleTaskToggle(todo.id)}
                         color="primary"
+                        size="small"
                       />
                     }
                     label=""
                     sx={{ m: 0, alignSelf: 'flex-start' }}
                   />
-                  <Box sx={{ flex: 1 }}>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
                     <FieldRenderer
                       field={todoFields.primary}
                       value={todo[todoFields.primary as keyof typeof todo]}
@@ -189,7 +190,7 @@ const Tasks = memo(() => {
                       variant="secondary"
                       isCompleted={isCompleted}
                     />
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 1.5 }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                       {todoFields.secondary.map(field => (
                         <FieldRenderer
                           key={field}
