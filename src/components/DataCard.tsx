@@ -84,7 +84,7 @@ const DataCard = memo<DataCardProps>(({
       onClick={onClick}
     >
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
           {displayIcon && (
             <Box
               aria-hidden="true"
@@ -131,7 +131,7 @@ const DataCard = memo<DataCardProps>(({
             component="div"
             sx={{
               fontWeight: 700,
-              mb: 0.5,
+              mb: 0.25,
               color: 'text.primary',
               lineHeight: 1.2,
             }}
@@ -142,13 +142,13 @@ const DataCard = memo<DataCardProps>(({
             variant="body1"
             sx={{
               fontWeight: 600,
-              mb: 0.5,
+              mb: 0.25,
               color: 'text.primary',
             }}
           >
             {card.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4 }}>
             {card.subtitle}
           </Typography>
         </Box>
@@ -157,11 +157,11 @@ const DataCard = memo<DataCardProps>(({
 
         {/* Sparkline visualization */}
         {sparklineData && sparklineData.length > 0 && (
-          <Box sx={{ mt: 2, mb: 1 }}>
+          <Box sx={{ mt: 1.5, mb: 0 }}>
             <Sparkline
               data={sparklineData}
               color={sparklineColor}
-              height={32}
+              height={28}
               showTrend={false}
             />
           </Box>

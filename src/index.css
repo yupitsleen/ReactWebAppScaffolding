@@ -39,43 +39,48 @@ html, body {
 /* Layout Density System */
 :root {
   --density-spacing: 1; /* Default multiplier for comfortable */
-  --density-card-padding: 24px;
-  --density-section-gap: 32px;
-  --density-row-height: 64px;
-  --density-icon-size: 56px;
+  --density-card-padding: 16px;
+  --density-section-gap: 24px;
+  --density-row-height: 56px;
+  --density-icon-size: 48px;
   --density-font-scale: 1;
 }
 
 [data-density="compact"] {
   --density-spacing: 0.75;
-  --density-card-padding: 16px;
-  --density-section-gap: 20px;
-  --density-row-height: 52px;
-  --density-icon-size: 48px;
+  --density-card-padding: 12px;
+  --density-section-gap: 16px;
+  --density-row-height: 48px;
+  --density-icon-size: 40px;
   --density-font-scale: 0.95;
 }
 
 [data-density="comfortable"] {
   --density-spacing: 1;
-  --density-card-padding: 24px;
-  --density-section-gap: 32px;
-  --density-row-height: 64px;
-  --density-icon-size: 56px;
+  --density-card-padding: 16px;
+  --density-section-gap: 24px;
+  --density-row-height: 56px;
+  --density-icon-size: 48px;
   --density-font-scale: 1;
 }
 
 [data-density="spacious"] {
   --density-spacing: 1.25;
-  --density-card-padding: 32px;
-  --density-section-gap: 48px;
-  --density-row-height: 80px;
-  --density-icon-size: 64px;
+  --density-card-padding: 24px;
+  --density-section-gap: 32px;
+  --density-row-height: 72px;
+  --density-icon-size: 56px;
   --density-font-scale: 1.05;
 }
 
 /* Apply density to common components */
-.MuiCard-root {
-  padding: calc(var(--density-card-padding) * var(--density-spacing));
+.MuiCardContent-root {
+  padding: calc(var(--density-card-padding) * var(--density-spacing)) !important;
+}
+
+/* Fix last-child padding for CardContent */
+.MuiCardContent-root:last-child {
+  padding-bottom: calc(var(--density-card-padding) * var(--density-spacing)) !important;
 }
 
 .MuiTableRow-root {
