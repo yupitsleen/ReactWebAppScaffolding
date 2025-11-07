@@ -83,8 +83,13 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       dark: '#7C3AED',
     },
     background: {
-      default: themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937',
-      paper: themeConfig.mode === 'light' ? '#FFFFFF' : '#374151',
+      // Use CSS variable from injectCSSVariables which respects Constructivism theme
+      default: themeConfig.primaryColor === '#8B0000'
+        ? (themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1212')
+        : (themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937'),
+      paper: themeConfig.primaryColor === '#8B0000'
+        ? (themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020')
+        : (themeConfig.mode === 'light' ? '#FFFFFF' : '#374151'),
     },
     text: {
       primary: themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB',
