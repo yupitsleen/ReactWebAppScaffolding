@@ -15,7 +15,6 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts';
-import type { PieLabelRenderProps } from 'recharts';
 import type { TodoItem } from '../types/portal';
 
 interface DashboardChartsProps {
@@ -191,27 +190,6 @@ const DashboardCharts = memo(({ todos }: DashboardChartsProps) => {
                   data={statusData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={(props: PieLabelRenderProps) => {
-                    const RADIAN = Math.PI / 180;
-                    const { cx, cy, midAngle, innerRadius, outerRadius, name, percent } = props;
-                    const radius = (innerRadius as number) + ((outerRadius as number) - (innerRadius as number)) * 0.5;
-                    const x = (cx as number) + radius * Math.cos(-(midAngle as number) * RADIAN);
-                    const y = (cy as number) + radius * Math.sin(-(midAngle as number) * RADIAN);
-
-                    return (
-                      <text
-                        x={x}
-                        y={y}
-                        fill="white"
-                        textAnchor={x > (cx as number) ? 'start' : 'end'}
-                        dominantBaseline="central"
-                        style={{ fontSize: '12px', fontWeight: 'bold' }}
-                      >
-                        {`${name} ${((percent as number) * 100).toFixed(0)}%`}
-                      </text>
-                    );
-                  }}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
@@ -223,6 +201,25 @@ const DashboardCharts = memo(({ todos }: DashboardChartsProps) => {
                 <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
+            {/* Color Legend */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 2 }}>
+              {statusData.map((entry, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box
+                    sx={{
+                      width: 16,
+                      height: 16,
+                      backgroundColor: entry.color,
+                      borderRadius: '2px',
+                      flexShrink: 0
+                    }}
+                  />
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                    {entry.name}: {entry.value} ({((entry.value / todos.length) * 100).toFixed(0)}%)
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </CardContent>
         </Card>
 
