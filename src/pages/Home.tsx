@@ -23,7 +23,6 @@ import StatusChip from "../components/StatusChip";
 import AnimatedSection from "../components/AnimatedSection";
 import AnimatedGrid, { AnimatedGridItem } from "../components/AnimatedGrid";
 import DashboardCharts from "../components/DashboardCharts";
-import { GeometricAccent } from "../components/constructivism";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { useDataOperations } from "../hooks/useDataOperations";
@@ -247,16 +246,7 @@ const Home = memo(() => {
                 {enabledDashboardCards.map((card, index) => (
                   <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
                     <AnimatedGridItem>
-                      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                        {/* Geometric accent - only on first card for subtle Constructivism touch */}
-                        {index === 0 && (
-                          <GeometricAccent
-                            shape="circle"
-                            size="medium"
-                            opacity={0.08}
-                            position={{ top: -40, right: -40 }}
-                          />
-                        )}
+                      <Box sx={{ position: 'relative' }}>
                         <DataCard
                           card={card}
                           value={getCardValue(card)}
