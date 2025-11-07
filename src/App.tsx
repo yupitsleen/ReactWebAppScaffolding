@@ -18,6 +18,7 @@ import { KeyboardShortcutsDialog } from './components/KeyboardShortcutsDialog'
 import { CommandPalette } from './components/CommandPalette'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { useFeature } from './hooks/useFeature'
 import { generateRoutesFromConfig } from './routing/RouteGenerator'
 import './utils/colorManager'
 
@@ -50,15 +51,22 @@ function AuthenticatedApp() {
   const location = useLocation()
   const [shortcutsDialogOpen, setShortcutsDialogOpen] = useState(false)
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+  const { isEnabled, isPageEnabled } = useFeature()
 
   // Generate routes from configuration (convention-based routing)
-  const routes = useMemo(() => generateRoutesFromConfig(appConfig), [])
+  // Filter by feature flags
+  const routes = useMemo(() => {
+    const allRoutes = generateRoutesFromConfig(appConfig)
+    return allRoutes.filter(route => isPageEnabled(route.id))
+  }, [isPageEnabled])
 
-  // Enable keyboard shortcuts
-  useKeyboardShortcuts({ enabled: true })
+  // Enable keyboard shortcuts only if feature is enabled
+  useKeyboardShortcuts({ enabled: isEnabled('keyboardShortcuts') })
 
   // Listen for keyboard shortcuts
   useEffect(() => {
+    if (!isEnabled('keyboardShortcuts')) return
+
     const handleKeyPress = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement
       const isInputField =
@@ -66,8 +74,8 @@ function AuthenticatedApp() {
         target.tagName === 'TEXTAREA' ||
         target.isContentEditable
 
-      // Cmd/Ctrl+K for command palette
-      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+      // Cmd/Ctrl+K for command palette (if enabled)
+      if (isEnabled('commandPalette') && (event.metaKey || event.ctrlKey) && event.key === 'k') {
         event.preventDefault()
         setCommandPaletteOpen(true)
         return
@@ -82,7 +90,7 @@ function AuthenticatedApp() {
 
     document.addEventListener('keydown', handleKeyPress)
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [])
+  }, [isEnabled])
 
   return (
     <Layout>
@@ -107,14 +115,18 @@ function AuthenticatedApp() {
           <Route path="*" element={<PageTransition><Suspense fallback={<PageLoadingFallback />}><NotFound /></Suspense></PageTransition>} />
         </Routes>
       </AnimatePresence>
-      <CommandPalette
-        open={commandPaletteOpen}
-        onClose={() => setCommandPaletteOpen(false)}
-      />
-      <KeyboardShortcutsDialog
-        open={shortcutsDialogOpen}
-        onClose={() => setShortcutsDialogOpen(false)}
-      />
+      {isEnabled('commandPalette') && (
+        <CommandPalette
+          open={commandPaletteOpen}
+          onClose={() => setCommandPaletteOpen(false)}
+        />
+      )}
+      {isEnabled('keyboardShortcuts') && (
+        <KeyboardShortcutsDialog
+          open={shortcutsDialogOpen}
+          onClose={() => setShortcutsDialogOpen(false)}
+        />
+      )}
     </Layout>
   )
 }

@@ -5,6 +5,7 @@ import { useUser, useTheme } from '../context/ContextProvider'
 import { useAuthService } from '../context/MockContext'
 import { useNavigation } from '../hooks/useNavigation'
 import { useHighContrast } from '../hooks/useHighContrast'
+import { useFeature } from '../hooks/useFeature'
 import Footer from '../components/Footer'
 import NotificationBell from '../components/NotificationBell'
 import { ColorPresetSelector } from '../components/ColorPresetSelector'
@@ -25,6 +26,7 @@ function Layout({ children }: LayoutProps) {
   const { isHighContrast, toggleHighContrast } = useHighContrast()
   const authService = useAuthService()
   const { isCurrentPage, getEnabledPages } = useNavigation()
+  const { isEnabled } = useFeature()
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [colorPresetDialogOpen, setColorPresetDialogOpen] = useState(false)
@@ -190,7 +192,7 @@ function Layout({ children }: LayoutProps) {
                 </div>
               )}
             </div>
-            <DensitySelector />
+            {isEnabled('layoutDensity') && <DensitySelector />}
             <button
               className={styles.iconButton}
               onClick={() => setColorPresetDialogOpen(true)}
@@ -199,24 +201,28 @@ function Layout({ children }: LayoutProps) {
             >
               <PaletteIcon />
             </button>
-            <button
-              className={styles.iconButton}
-              onClick={toggleHighContrast}
-              title={`${isHighContrast ? 'Disable' : 'Enable'} high contrast mode`}
-              aria-label={`${isHighContrast ? 'Disable' : 'Enable'} high contrast mode`}
-              style={{ opacity: isHighContrast ? 1 : 0.7 }}
-            >
-              <ContrastIcon />
-            </button>
-            <button
-              className={styles.themeToggle}
-              onClick={handleToggleTheme}
-              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-            <NotificationBell />
+            {isEnabled('highContrastMode') && (
+              <button
+                className={styles.iconButton}
+                onClick={toggleHighContrast}
+                title={`${isHighContrast ? 'Disable' : 'Enable'} high contrast mode`}
+                aria-label={`${isHighContrast ? 'Disable' : 'Enable'} high contrast mode`}
+                style={{ opacity: isHighContrast ? 1 : 0.7 }}
+              >
+                <ContrastIcon />
+              </button>
+            )}
+            {isEnabled('darkMode') && (
+              <button
+                className={styles.themeToggle}
+                onClick={handleToggleTheme}
+                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {theme === 'light' ? '🌙' : '☀️'}
+              </button>
+            )}
+            {isEnabled('notifications') && <NotificationBell />}
           </nav>
         </div>
 

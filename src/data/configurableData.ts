@@ -421,4 +421,60 @@ export const appConfig: AppConfig = {
       ],
     },
   },
+  features: {
+    // UI Features - Control which UI enhancements are available
+    darkMode: true,
+    highContrastMode: true,
+    layoutDensity: true,
+    commandPalette: true,
+    pdfExport: true,
+    keyboardShortcuts: true,
+    notifications: true,
+
+    // Pages - Control which pages are available (overrides navigation.enabled)
+    // Set to false to completely disable a page and remove from app
+    pages: {
+      home: true,
+      tasks: true,
+      payments: true,
+      documents: true,
+      discussions: true,  // Set to false to disable discussions
+      table: true,
+      timeline: true,
+      contact: true,
+    },
+
+    // Authentication - Control login/auth features
+    authentication: {
+      enabled: true,          // Set to false to disable login entirely (auto-login as guest)
+      allowGuest: false,       // Allow guest access without login
+      rememberMe: true,        // Show "Remember Me" checkbox
+      requireEmailVerification: false,  // Require email verification for new accounts
+    },
+
+    // CRUD Operations - Global defaults (can be overridden per entity)
+    crud: {
+      create: true,   // Allow creating new entities
+      edit: true,     // Allow editing existing entities
+      delete: true,   // Allow deleting entities
+      export: true,   // Allow exporting data to CSV/PDF
+      import: false,  // Allow importing data from files
+    },
+
+    // Dashboard Features - Control what appears on dashboard
+    dashboard: {
+      cards: true,          // Show summary cards
+      sections: true,       // Show data sections (Recent Discussions, etc.)
+      charts: false,        // Show charts/graphs (if implemented)
+      quickActions: true,   // Show quick action buttons
+    },
+
+    // Advanced Features - Premium/enterprise features
+    advancedFiltering: true,   // Multi-field filtering
+    advancedSorting: true,     // Multi-column sorting
+    bulkOperations: false,     // Bulk edit/delete
+    customFields: false,       // User-defined custom fields
+    webhooks: false,           // Webhook integrations
+    apiAccess: false,          // REST API access
+  },
 };

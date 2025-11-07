@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { appConfig } from '../data/configurableData'
 import type { NavigationItem } from '../types/portal'
+import { useFeature } from './useFeature'
 
 interface UseNavigationReturn {
   currentPage: NavigationItem | null
@@ -21,12 +22,14 @@ interface UseNavigationReturn {
 export const useNavigation = (): UseNavigationReturn => {
   const location = useLocation()
   const navigate = useNavigate()
+  const { isPageEnabled } = useFeature()
 
   const allPages = useMemo(() => appConfig.navigation, [])
 
+  // Filter pages by both navigation.enabled AND feature flags
   const enabledPages = useMemo(
-    () => allPages.filter(page => page.enabled),
-    [allPages]
+    () => allPages.filter(page => page.enabled && isPageEnabled(page.id)),
+    [allPages, isPageEnabled]
   )
 
   const currentPage = useMemo(

@@ -281,6 +281,56 @@ export interface EntityPages {
   [pageId: string]: EntityPageConfig
 }
 
+// Feature Flags System
+export interface FeatureFlags {
+  // UI Features
+  darkMode: boolean
+  highContrastMode: boolean
+  layoutDensity: boolean
+  commandPalette: boolean
+  pdfExport: boolean
+  keyboardShortcuts: boolean
+  notifications: boolean
+
+  // Pages (mapped to navigation ids)
+  pages: {
+    [pageId: string]: boolean
+  }
+
+  // Authentication
+  authentication: {
+    enabled: boolean
+    allowGuest: boolean
+    rememberMe: boolean
+    requireEmailVerification: boolean
+  }
+
+  // CRUD Operations (can be overridden per entity)
+  crud: {
+    create: boolean
+    edit: boolean
+    delete: boolean
+    export: boolean
+    import: boolean
+  }
+
+  // Dashboard Features
+  dashboard: {
+    cards: boolean
+    sections: boolean
+    charts: boolean
+    quickActions: boolean
+  }
+
+  // Advanced Features
+  advancedFiltering: boolean
+  advancedSorting: boolean
+  bulkOperations: boolean
+  customFields: boolean
+  webhooks: boolean
+  apiAccess: boolean
+}
+
 export interface AppConfig {
   appName: string
   navigation: NavigationItem[]
@@ -297,4 +347,5 @@ export interface AppConfig {
   fieldConfig: FieldConfig
   formSchemas?: FormSchemas // Optional form generation schemas
   entityPages?: EntityPages // Optional generic entity page configurations
+  features?: FeatureFlags // Optional feature flags configuration
 }
