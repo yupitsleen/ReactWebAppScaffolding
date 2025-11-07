@@ -8,12 +8,22 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
   const root = document.documentElement;
   root.style.setProperty('--primary-color', themeConfig.primaryColor);
   root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
-  root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
-  root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB');
-  root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF');
-  root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#374151');
+
+  // Constructivism colors (if using default Constructivism theme)
+  if (themeConfig.primaryColor === '#8B0000') {
+    root.style.setProperty('--accent-color', '#2C5F2D');      // Forest green
+    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1A1A');
+    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2A2A');
+  } else {
+    // Basic theme colors (fallback)
+    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
+    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
+  }
+
+  root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1A1A1A' : '#FAF7F2');
+  root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#4A4A4A' : '#D4A574');
+  root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#374151');
   root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
-  root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
 };
 
 // Create theme based on configuration
@@ -44,19 +54,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       contrastText: '#ffffff',
     },
     success: {
-      main: '#10B981',
-      light: '#34D399',
-      dark: '#047857',
+      main: '#2C5F2D',    // Forest green (Constructivism)
+      light: '#4A8A4B',
+      dark: '#1F4420',
     },
     warning: {
-      main: '#F59E0B',
-      light: '#FCD34D',
-      dark: '#D97706',
+      main: '#D4A574',    // Warm tan (Constructivism)
+      light: '#E0B896',
+      dark: '#B88A5A',
     },
     error: {
-      main: '#EF4444',
-      light: '#F87171',
-      dark: '#DC2626',
+      main: '#8B0000',    // Dark red (Constructivism)
+      light: '#B22222',
+      dark: '#660000',
     },
     info: {
       main: '#8B5CF6',
@@ -75,47 +85,61 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
   typography: {
     fontFamily: themeConfig.fontFamily,
     h1: {
-      fontSize: '2.5rem',
-      fontWeight: 500,
+      fontFamily: '"Bebas Neue", "Arial Black", sans-serif',
+      fontSize: '3rem',
+      fontWeight: 700,
       lineHeight: 1.2,
+      textTransform: 'uppercase',
+      letterSpacing: '0.15em',
       marginBottom: '1rem',
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: 500,
+      fontFamily: '"Bebas Neue", "Arial Black", sans-serif',
+      fontSize: '2.5rem',
+      fontWeight: 700,
       lineHeight: 1.3,
+      textTransform: 'uppercase',
+      letterSpacing: '0.12em',
       marginBottom: '0.875rem',
     },
     h3: {
-      fontSize: '1.75rem',
-      fontWeight: 500,
+      fontFamily: '"Bebas Neue", "Arial Black", sans-serif',
+      fontSize: '2rem',
+      fontWeight: 700,
       lineHeight: 1.4,
+      textTransform: 'uppercase',
+      letterSpacing: '0.12em',
       marginBottom: '0.75rem',
     },
     h4: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1.5rem',
-      fontWeight: 500,
+      fontWeight: 600,
       lineHeight: 1.4,
       marginBottom: '0.625rem',
     },
     h5: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1.25rem',
-      fontWeight: 500,
+      fontWeight: 600,
       lineHeight: 1.5,
       marginBottom: '0.5rem',
     },
     h6: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1.125rem',
       fontWeight: 500,
       lineHeight: 1.5,
       marginBottom: '0.5rem',
     },
     body1: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1rem',
       lineHeight: 1.6,
       marginBottom: '1rem',
     },
     body2: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '0.875rem',
       lineHeight: 1.5,
       marginBottom: '0.75rem',
@@ -123,7 +147,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
   },
   spacing: 8,
   shape: {
-    borderRadius: 12,
+    borderRadius: 4,  // Constructivism: subtle rounds (was 12)
   },
   components: {
     // Card component defaults
@@ -133,9 +157,9 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       },
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          border: `1px solid var(--border-color)`,
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+          borderRadius: 4,  // Constructivism: subtle rounds (was 12)
+          border: `2px solid var(--border-color)`,  // Constructivism: bolder borders (was 1px)
+          boxShadow: 'none',  // Constructivism: no shadows (flat design)
           transition: 'all 0.3s ease-in-out',
           marginBottom: '24px',
           '&.clickable:hover, &[role="button"]:hover': {
@@ -242,16 +266,25 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         // Outlined variant (secondary action)
         outlined: {
           borderWidth: '2px',
+          textTransform: 'uppercase',      // Constructivism
+          letterSpacing: '0.08em',         // Constructivism
 
           '&:hover': {
             borderWidth: '2px',
             transform: 'translateY(-1px)',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            backgroundColor: 'currentColor',  // Constructivism: fills on hover
+            color: '#FAF7F2',                 // Constructivism: text color becomes background
           },
 
           '&:active': {
             transform: 'translateY(0px)',
             boxShadow: 'none',
+          },
+
+          '&:focus-visible': {              // Constructivism: bold focus
+            borderWidth: '3px',
+            outline: 'none',
           },
         },
 
@@ -393,8 +426,12 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          fontWeight: 500,
+          borderRadius: 2,       // Constructivism: angular (was 16)
+          fontWeight: 600,       // Constructivism: bolder (was 500)
+          textTransform: 'uppercase',  // Constructivism
+          fontSize: '0.75rem',         // Constructivism
+          letterSpacing: '0.05em',     // Constructivism
+          border: '2px solid currentColor',  // Constructivism: visible borders
         },
         colorPrimary: {
           backgroundColor: '#EDE9FE',

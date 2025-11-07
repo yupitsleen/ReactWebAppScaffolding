@@ -23,6 +23,7 @@ import StatusChip from "../components/StatusChip";
 import AnimatedSection from "../components/AnimatedSection";
 import AnimatedGrid, { AnimatedGridItem } from "../components/AnimatedGrid";
 import DashboardCharts from "../components/DashboardCharts";
+import { GeometricAccent } from "../components/constructivism";
 import { usePageLoading } from "../hooks/usePageLoading";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { useDataOperations } from "../hooks/useDataOperations";
@@ -243,16 +244,27 @@ const Home = memo(() => {
             </Typography>
             <AnimatedGrid staggerDelay={0.08} initialDelay={0.1}>
               <Grid container spacing={3}>
-                {enabledDashboardCards.map((card) => (
+                {enabledDashboardCards.map((card, index) => (
                   <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
                     <AnimatedGridItem>
-                      <DataCard
-                        card={card}
-                        value={getCardValue(card)}
-                        onClick={() => handleNavigateToPage(card.dataSource)}
-                        sparklineData={sparklineData[card.dataSource as keyof typeof sparklineData]}
-                        sparklineColor={card.color ? `${card.color}.main` : undefined}
-                      />
+                      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                        {/* Geometric accent - only on first card for subtle Constructivism touch */}
+                        {index === 0 && (
+                          <GeometricAccent
+                            shape="circle"
+                            size="medium"
+                            opacity={0.08}
+                            position={{ top: -40, right: -40 }}
+                          />
+                        )}
+                        <DataCard
+                          card={card}
+                          value={getCardValue(card)}
+                          onClick={() => handleNavigateToPage(card.dataSource)}
+                          sparklineData={sparklineData[card.dataSource as keyof typeof sparklineData]}
+                          sparklineColor={card.color ? `${card.color}.main` : undefined}
+                        />
+                      </Box>
                     </AnimatedGridItem>
                   </Grid>
                 ))}

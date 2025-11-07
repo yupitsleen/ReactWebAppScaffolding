@@ -305,29 +305,55 @@ fieldConfig: {
 
 ## Design System
 
-### Color Management (CRITICAL)
+### Constructivism Theme (Default)
 
-Centralized CSS custom properties system:
+Inspired by 1920s Russian avant-garde art (Stepanova, Popova, Exter).
 
-**CSS Variables:**
+**Typography Rules (#memorize):**
+- Headers (H1-H3): Bebas Neue, bold, uppercase, 0.12-0.15em tracking
+- Subheaders (H4-H6): Work Sans, semibold, normal case
+- Body text: Work Sans, regular
+- Code/technical: IBM Plex Mono
 
-- `--primary-color` - Default: #312E81 (customize to your brand)
-- `--secondary-color` - Default: #F59E0B (customize to your brand)
-- `--background-color` - Default: #F3F4F6
+**Color Palette (#memorize):**
+- Primary: #8B0000 (dark red) - primary actions, urgent status
+- Secondary: #D4A574 (warm tan) - accents, borders, secondary actions
+- Accent: #2C5F2D (forest green) - success states
+- Background: #FAF7F2 (warm off-white) - page background
+- Surface: #FFFFFF (pure white) - card backgrounds
+- Text: #1A1A1A (near-black) - primary text
 
-**Live Testing (Browser Console):**
+**Button Treatment:**
+- Outlined: 2px border, fill with color on hover, 3px border on focus
+- Contained: Uppercase, subtle shadow
+- Text: Uppercase for labels
 
-```javascript
-setThemeColor("primary-color", "#YOUR_BRAND_COLOR");
-applyColorPreset("blue"); // Test presets
-```
+**Border Radius:**
+- Small: 2px (chips, small elements)
+- Medium: 4px (buttons, cards, containers)
+- Large: 6px (dialogs, modals)
 
-### Styling Rules (#memorize)
+**Geometric Accents:**
+- Used sparingly on featured sections only (dashboard hero)
+- Subtle opacity (8-10%)
+- Shapes: circles, triangles, diagonal bars
+- Colors: primary red or secondary tan
 
-- **NEVER use inline styles** - ALL styling through theme provider
-- **Use semantic CSS classes** - `header-section`, `dashboard-section`
-- **Desktop-first design** - Sophisticated layouts
-- **Theme colors, not hex** - Use `theme.palette.error.main`, not `'#ef4444'`
+**Styling Rules (#memorize):**
+- Use CSS custom properties (--primary-color, --font-header, etc.)
+- Target elements via CSS classes, not inline styles
+- Uppercase transforms via CSS, not JSX
+- Geometric accents via GeometricAccent component
+
+### Alternative Theme: Basic
+
+The "basic" theme is available as an alternative skin:
+- Rounded corners (12px)
+- Softer colors (blue/purple)
+- Inter font family
+- No geometric accents
+
+Switch by updating `configurableData.ts` theme section.
 
 ## User Preferences & Accessibility
 

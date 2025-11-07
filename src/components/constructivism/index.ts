@@ -1,0 +1,1 @@
+export { GeometricAccent } from './GeometricAccent';

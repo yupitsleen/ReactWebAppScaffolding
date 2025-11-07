@@ -137,12 +137,11 @@ export const appConfig: AppConfig = {
     },
   ],
   theme: {
-    primaryColor: "#3B82F6",
-    secondaryColor: "#8B5CF6",
+    primaryColor: "#8B0000",      // Dark red (Constructivism)
+    secondaryColor: "#D4A574",    // Warm tan (Constructivism)
     mode: "light",
-    borderRadius: 12,
-    fontFamily:
-      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    borderRadius: 4,              // Subtle rounds (was 12)
+    fontFamily: '"Work Sans", "Helvetica Neue", sans-serif',
     iconMappings: {
       AssignmentTurnedIn: "AssignmentTurnedIn",
       Payment: "Payment",

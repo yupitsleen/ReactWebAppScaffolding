@@ -149,3 +149,168 @@ html, body {
 [data-high-contrast="true"] * {
   background-image: none !important;
 }
+
+/* ============================================
+   CONSTRUCTIVISM THEME (DEFAULT)
+   ============================================ */
+
+:root {
+  /* Override color variables with Constructivism palette */
+  --primary-color: #8B0000;         /* Dark red */
+  --secondary-color: #D4A574;       /* Warm tan */
+  --accent-color: #2C5F2D;          /* Forest green */
+  --background-color: #FAF7F2;      /* Warm off-white */
+  --surface-color: #FFFFFF;         /* Pure white */
+  --text-primary: #1A1A1A;          /* Near-black */
+  --text-secondary: #4A4A4A;        /* Medium gray */
+
+  /* Typography - Constructivism fonts */
+  --font-header: "Bebas Neue", "Arial Black", sans-serif;
+  --font-subheader: "Work Sans", "Helvetica Neue", sans-serif;
+  --font-body: "Work Sans", "Helvetica Neue", sans-serif;
+  --font-code: "IBM Plex Mono", "Courier New", monospace;
+
+  /* Border radius - subtle rounds */
+  --border-radius-small: 2px;
+  --border-radius-medium: 4px;
+  --border-radius-large: 6px;
+
+  /* Borders - bolder */
+  --border-width-default: 2px;
+  --border-width-focus: 3px;
+}
+
+/* Dark mode overrides for Constructivism */
+[data-theme="dark"] {
+  --background-color: #1A1A1A;
+  --surface-color: #2A2A2A;
+  --text-primary: #FAF7F2;
+  --text-secondary: #D4A574;
+}
+
+/* ============================================
+   CONSTRUCTIVISM TYPOGRAPHY
+   ============================================ */
+
+/* Headers use Bebas Neue - bold, uppercase */
+h1, h2, h3,
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3 {
+  font-family: var(--font-header) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Subheaders use Work Sans */
+h4, h5, h6,
+.MuiTypography-h4,
+.MuiTypography-h5,
+.MuiTypography-h6 {
+  font-family: var(--font-subheader) !important;
+  font-weight: 600;
+}
+
+/* Body text uses Work Sans */
+body, p,
+.MuiTypography-body1,
+.MuiTypography-body2 {
+  font-family: var(--font-body) !important;
+}
+
+/* Code uses IBM Plex Mono */
+code, pre,
+.MuiTypography-code {
+  font-family: var(--font-code) !important;
+}
+
+/* ============================================
+   CONSTRUCTIVISM BUTTON STYLES
+   ============================================ */
+
+/* Outlined buttons - Constructivism default */
+.MuiButton-outlined {
+  border-width: 2px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.MuiButton-outlined:hover {
+  border-width: 2px !important;
+  background-color: currentColor !important;
+  color: var(--background-color) !important;
+  transform: translateY(-1px);
+}
+
+.MuiButton-outlined:focus-visible {
+  border-width: 3px !important;
+  outline: none;
+}
+
+/* Contained buttons */
+.MuiButton-contained {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border-radius: 4px;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   CONSTRUCTIVISM CARD STYLES
+   ============================================ */
+
+.MuiCard-root {
+  border-radius: 4px !important;
+  border-width: 2px;
+  box-shadow: none !important;
+}
+
+/* ============================================
+   CONSTRUCTIVISM CHIP STYLES
+   ============================================ */
+
+.MuiChip-root {
+  border-radius: 2px !important;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  border: 2px solid currentColor;
+}
+
+/* ============================================
+   CONSTRUCTIVISM TABLE STYLES
+   ============================================ */
+
+.MuiTableCell-head {
+  font-family: var(--font-subheader) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.875rem;
+  border-bottom-width: 3px !important;
+}
+
+/* ============================================
+   CONSTRUCTIVISM INPUT STYLES
+   ============================================ */
+
+.MuiOutlinedInput-root {
+  border-radius: 4px !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-width: 2px;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-width: 2px;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-width: 3px;
+}
