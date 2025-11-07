@@ -1,6 +1,11 @@
 import type { AppConfig, UserType } from "../types/portal";
 
-export const USER_TYPES: UserType[] = ['Customer', 'Vendor', 'Service Provider', 'Admin'];
+export const USER_TYPES: UserType[] = [
+  "Customer",
+  "Vendor",
+  "Service Provider",
+  "Admin",
+];
 
 // Re-export sample data for demo purposes
 export {
@@ -57,14 +62,14 @@ export const appConfig: AppConfig = {
       label: "Table Demo",
       path: "/table",
       enabled: true,
-      description: "DataTable component demonstration",
+      description: "",
     },
     {
       id: "timeline",
       label: "Timeline",
       path: "/timeline",
       enabled: true,
-      description: "Visual timeline of task due dates",
+      description: "",
     },
     {
       id: "contact",
@@ -140,10 +145,10 @@ export const appConfig: AppConfig = {
   // Colors inspired by 1920s Russian avant-garde art (Stepanova, Popova, Exter)
   // This provides warm modernist aesthetics with bold geometric forms
   theme: {
-    primaryColor: "#8B0000",      // Dark red (Constructivism)
-    secondaryColor: "#D4A574",    // Warm tan (Constructivism)
+    primaryColor: "#8B0000", // Dark red (Constructivism)
+    secondaryColor: "#D4A574", // Warm tan (Constructivism)
     mode: "light",
-    borderRadius: 4,              // Subtle rounds (was 12)
+    borderRadius: 4, // Subtle rounds (was 12)
     fontFamily: '"Work Sans", "Helvetica Neue", sans-serif',
     iconMappings: {
       AssignmentTurnedIn: "AssignmentTurnedIn",
@@ -212,9 +217,24 @@ export const appConfig: AppConfig = {
     // Payment entity statuses
     payment: {
       status: {
-        pending: { color: "warning", label: "Pending Payment", icon: "💳", description: "Payment is awaiting processing" },
-        paid: { color: "success", label: "Paid", icon: "✅", description: "Payment has been completed" },
-        overdue: { color: "error", label: "Overdue", icon: "⚠️", description: "Payment is past due date" },
+        pending: {
+          color: "warning",
+          label: "Pending Payment",
+          icon: "💳",
+          description: "Payment is awaiting processing",
+        },
+        paid: {
+          color: "success",
+          label: "Paid",
+          icon: "✅",
+          description: "Payment has been completed",
+        },
+        overdue: {
+          color: "error",
+          label: "Overdue",
+          icon: "⚠️",
+          description: "Payment is past due date",
+        },
       },
     },
     // Document entity statuses
@@ -425,8 +445,8 @@ export const appConfig: AppConfig = {
   },
   features: {
     // UI Features - Control which UI enhancements are available
-    darkMode: false,              // Disabled for now - focusing on light mode
-    highContrastMode: false,      // Disabled for now - focusing on light mode
+    darkMode: false, // Disabled for now - focusing on light mode
+    highContrastMode: false, // Disabled for now - focusing on light mode
     layoutDensity: false,
     commandPalette: true,
     pdfExport: true,
@@ -440,7 +460,7 @@ export const appConfig: AppConfig = {
       tasks: true,
       payments: true,
       documents: true,
-      discussions: true,  // Set to false to disable discussions
+      discussions: true, // Set to false to disable discussions
       table: true,
       timeline: true,
       contact: true,
@@ -448,35 +468,35 @@ export const appConfig: AppConfig = {
 
     // Authentication - Control login/auth features
     authentication: {
-      enabled: true,          // Set to false to disable login entirely (auto-login as guest)
-      allowGuest: false,       // Allow guest access without login
-      rememberMe: true,        // Show "Remember Me" checkbox
-      requireEmailVerification: false,  // Require email verification for new accounts
+      enabled: true, // Set to false to disable login entirely (auto-login as guest)
+      allowGuest: false, // Allow guest access without login
+      rememberMe: true, // Show "Remember Me" checkbox
+      requireEmailVerification: false, // Require email verification for new accounts
     },
 
     // CRUD Operations - Global defaults (can be overridden per entity)
     crud: {
-      create: true,   // Allow creating new entities
-      edit: true,     // Allow editing existing entities
-      delete: true,   // Allow deleting entities
-      export: true,   // Allow exporting data to CSV/PDF
-      import: false,  // Allow importing data from files
+      create: true, // Allow creating new entities
+      edit: true, // Allow editing existing entities
+      delete: true, // Allow deleting entities
+      export: true, // Allow exporting data to CSV/PDF
+      import: false, // Allow importing data from files
     },
 
     // Dashboard Features - Control what appears on dashboard
     dashboard: {
-      cards: true,          // Show summary cards
-      sections: true,       // Show data sections (Recent Discussions, etc.)
-      charts: false,        // Show charts/graphs (if implemented)
-      quickActions: true,   // Show quick action buttons
+      cards: true, // Show summary cards
+      sections: true, // Show data sections (Recent Discussions, etc.)
+      charts: false, // Show charts/graphs (if implemented)
+      quickActions: true, // Show quick action buttons
     },
 
     // Advanced Features - Premium/enterprise features
-    advancedFiltering: true,   // Multi-field filtering
-    advancedSorting: true,     // Multi-column sorting
-    bulkOperations: false,     // Bulk edit/delete
-    customFields: false,       // User-defined custom fields
-    webhooks: false,           // Webhook integrations
-    apiAccess: false,          // REST API access
+    advancedFiltering: true, // Multi-field filtering
+    advancedSorting: true, // Multi-column sorting
+    bulkOperations: false, // Bulk edit/delete
+    customFields: false, // User-defined custom fields
+    webhooks: false, // Webhook integrations
+    apiAccess: false, // REST API access
   },
 };
