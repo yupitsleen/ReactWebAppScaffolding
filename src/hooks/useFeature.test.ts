@@ -23,9 +23,10 @@ describe('useFeature', () => {
     it('returns true for enabled top-level features', () => {
       const { result } = renderHook(() => useFeature())
 
-      expect(result.current.isEnabled('darkMode')).toBe(true)
+      // darkMode and highContrastMode are currently disabled in config
       expect(result.current.isEnabled('commandPalette')).toBe(true)
       expect(result.current.isEnabled('notifications')).toBe(true)
+      expect(result.current.isEnabled('layoutDensity')).toBe(true)
     })
 
     it('returns false for disabled top-level features', async () => {

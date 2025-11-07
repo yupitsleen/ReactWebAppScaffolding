@@ -11,19 +11,28 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
 
   // Constructivism colors (if using default Constructivism theme)
   if (themeConfig.primaryColor === '#8B0000') {
-    root.style.setProperty('--accent-color', '#2C5F2D');      // Forest green
-    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1A1A');
-    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2A2A');
+    // Light mode Constructivism
+    root.style.setProperty('--accent-color', themeConfig.mode === 'light' ? '#2C5F2D' : '#4A8A4B');
+    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1212');
+    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020');
+    root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#4A4040');
+    root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020');
+
+    // Update primary/secondary for dark mode visibility
+    if (themeConfig.mode === 'dark') {
+      root.style.setProperty('--primary-color', '#B22222');    // Brighter red
+      root.style.setProperty('--secondary-color', '#E0B896');  // Lighter tan
+    }
   } else {
     // Basic theme colors (fallback)
     root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
     root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
+    root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#374151');
+    root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
   }
 
   root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1A1A1A' : '#FAF7F2');
   root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#4A4A4A' : '#D4A574');
-  root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#374151');
-  root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
 };
 
 // Create theme based on configuration
@@ -82,6 +91,10 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       secondary: themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF',
     },
   },
+  // Constructivism typography
+  // Headers use Bebas Neue (bold, uppercase) for dramatic hierarchy
+  // Body text uses Work Sans (readable, modern) for comfortable reading
+  // This creates strong visual contrast while maintaining readability
   typography: {
     fontFamily: themeConfig.fontFamily,
     h1: {
@@ -273,8 +286,8 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
             borderWidth: '2px',
             transform: 'translateY(-1px)',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            backgroundColor: 'currentColor',  // Constructivism: fills on hover
-            color: '#FAF7F2',                 // Constructivism: text color becomes background
+            // Keep buttons outlined on hover for better readability
+            // MUI will handle background color tinting based on theme
           },
 
           '&:active': {

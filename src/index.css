@@ -88,6 +88,12 @@ html, body {
   gap: var(--density-section-gap);
 }
 
+/* ============================================
+   CONSTRUCTIVISM THEME (DEFAULT)
+   Inspired by 1920s Russian avant-garde art
+   Features: warm modernist palette, bold typography, geometric forms
+   ============================================ */
+
 /* High Contrast Mode (WCAG AAA 7:1+ contrast ratios) */
 [data-high-contrast="true"] {
   /* High contrast colors for light mode */
@@ -145,9 +151,54 @@ html, body {
   font-weight: 600;
 }
 
-/* Remove background images/gradients */
+/* Remove background images/gradients (but keep text readable) */
 [data-high-contrast="true"] * {
   background-image: none !important;
+}
+
+/* High contrast mode: Fix header elements for readability */
+
+/* Logo: Remove gradient background-clip and use solid text color */
+[data-high-contrast="true"] .logo {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700;
+}
+
+/* Active nav links: Solid background instead of gradient */
+[data-high-contrast="true"] .navLink.active,
+[data-high-contrast="true"] .navLink:hover {
+  background: var(--primary-color) !important;
+  color: var(--background-color) !important;
+  border: 2px solid var(--text-primary);
+}
+
+/* Logout button: Solid background for visibility */
+[data-high-contrast="true"] .logoutButton,
+[data-high-contrast="true"] .dropdownButton {
+  background: var(--secondary-color) !important;
+  color: var(--background-color) !important;
+  border: 2px solid var(--text-primary) !important;
+}
+
+/* Icon buttons and theme toggle: Strong borders and colors */
+[data-high-contrast="true"] .iconButton,
+[data-high-contrast="true"] .themeToggle,
+[data-high-contrast="true"] .accountButton {
+  background: var(--background-color) !important;
+  color: var(--text-primary) !important;
+  border: 2px solid var(--text-primary) !important;
+}
+
+[data-high-contrast="true"] .iconButton:hover,
+[data-high-contrast="true"] .themeToggle:hover,
+[data-high-contrast="true"] .accountButton:hover {
+  background: var(--primary-color) !important;
+  color: var(--background-color) !important;
+  border: 3px solid var(--text-primary) !important;
 }
 
 /* ============================================
@@ -180,12 +231,18 @@ html, body {
   --border-width-focus: 3px;
 }
 
-/* Dark mode overrides for Constructivism */
+/* Dark mode overrides for Constructivism
+   Maintains warm modernist aesthetic with inverted palette
+   Uses deeper tones while preserving the Constructivism color relationships */
 [data-theme="dark"] {
-  --background-color: #1A1A1A;
-  --surface-color: #2A2A2A;
-  --text-primary: #FAF7F2;
-  --text-secondary: #D4A574;
+  --primary-color: #B22222;         /* Brighter firebrick red (was #8B0000) */
+  --secondary-color: #E0B896;       /* Lighter warm tan for visibility */
+  --accent-color: #4A8A4B;          /* Lighter forest green */
+  --background-color: #1A1212;      /* Very dark brown (warmer than pure black) */
+  --surface-color: #2A2020;         /* Dark warm gray */
+  --text-primary: #FAF7F2;          /* Warm off-white (preserved) */
+  --text-secondary: #D4A574;        /* Warm tan (preserved) */
+  --border-color: #4A4040;          /* Warm gray borders */
 }
 
 /* ============================================
@@ -238,11 +295,12 @@ code, pre,
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Remove the fill-on-hover behavior - keep buttons outlined
+   This ensures readability across all color variants and themes */
 .MuiButton-outlined:hover {
   border-width: 2px !important;
-  background-color: currentColor !important;
-  color: var(--background-color) !important;
   transform: translateY(-1px);
+  /* MUI will handle color changes based on theme */
 }
 
 .MuiButton-outlined:focus-visible {

@@ -5,6 +5,7 @@
 **Objective:** Make Constructivism the new default theme. Rename current theme to "basic" as an alternative skin.
 
 **Decisions Made:**
+
 - ✅ Constructivism becomes DEFAULT theme (not a variant)
 - ✅ Current "original" theme renamed to "basic"
 - ✅ No theme switcher UI needed (code-level configuration only)
@@ -19,6 +20,7 @@
 ### Phase 1: Foundation Setup
 
 #### 1.1 Add Google Fonts
+
 **File:** `src/index.html`
 
 ```html
@@ -26,9 +28,12 @@
   <!-- Existing head content -->
 
   <!-- ADD THESE LINES before closing </head> -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
 </head>
 ```
 
@@ -38,9 +43,11 @@
 ---
 
 #### 1.2 Update Default Colors in Configuration
+
 **File:** `src/data/configurableData.ts`
 
 **Find this section:**
+
 ```typescript
 theme: {
   primaryColor: "#3B82F6",
@@ -53,6 +60,7 @@ theme: {
 ```
 
 **Replace with:**
+
 ```typescript
 theme: {
   primaryColor: "#8B0000",      // Dark red (Constructivism)
@@ -72,6 +80,7 @@ theme: {
 ---
 
 #### 1.3 Add Constructivism CSS Variables
+
 **File:** `src/index.css`
 
 **Find the end of the file and ADD:**
@@ -83,13 +92,13 @@ theme: {
 
 :root {
   /* Override color variables with Constructivism palette */
-  --primary-color: #8B0000;         /* Dark red */
-  --secondary-color: #D4A574;       /* Warm tan */
-  --accent-color: #2C5F2D;          /* Forest green */
-  --background-color: #FAF7F2;      /* Warm off-white */
-  --surface-color: #FFFFFF;         /* Pure white */
-  --text-primary: #1A1A1A;          /* Near-black */
-  --text-secondary: #4A4A4A;        /* Medium gray */
+  --primary-color: #8b0000; /* Dark red */
+  --secondary-color: #d4a574; /* Warm tan */
+  --accent-color: #2c5f2d; /* Forest green */
+  --background-color: #faf7f2; /* Warm off-white */
+  --surface-color: #ffffff; /* Pure white */
+  --text-primary: #1a1a1a; /* Near-black */
+  --text-secondary: #4a4a4a; /* Medium gray */
 
   /* Typography - Constructivism fonts */
   --font-header: "Bebas Neue", "Arial Black", sans-serif;
@@ -109,10 +118,10 @@ theme: {
 
 /* Dark mode overrides for Constructivism */
 [data-theme="dark"] {
-  --background-color: #1A1A1A;
-  --surface-color: #2A2A2A;
-  --text-primary: #FAF7F2;
-  --text-secondary: #D4A574;
+  --background-color: #1a1a1a;
+  --surface-color: #2a2a2a;
+  --text-primary: #faf7f2;
+  --text-secondary: #d4a574;
 }
 
 /* ============================================
@@ -120,7 +129,9 @@ theme: {
    ============================================ */
 
 /* Headers use Bebas Neue - bold, uppercase */
-h1, h2, h3,
+h1,
+h2,
+h3,
 .MuiTypography-h1,
 .MuiTypography-h2,
 .MuiTypography-h3 {
@@ -130,7 +141,9 @@ h1, h2, h3,
 }
 
 /* Subheaders use Work Sans */
-h4, h5, h6,
+h4,
+h5,
+h6,
 .MuiTypography-h4,
 .MuiTypography-h5,
 .MuiTypography-h6 {
@@ -139,14 +152,16 @@ h4, h5, h6,
 }
 
 /* Body text uses Work Sans */
-body, p,
+body,
+p,
 .MuiTypography-body1,
 .MuiTypography-body2 {
   font-family: var(--font-body) !important;
 }
 
 /* Code uses IBM Plex Mono */
-code, pre,
+code,
+pre,
 .MuiTypography-code {
   font-family: var(--font-code) !important;
 }
@@ -249,6 +264,7 @@ code, pre,
 ---
 
 #### 1.4 Update Theme Configuration
+
 **File:** `src/theme/portalTheme.ts`
 
 **Find the typography section (around line 75) and REPLACE:**
@@ -400,6 +416,7 @@ MuiChip: {
 ---
 
 #### 1.5 Update CSS Variable Injection
+
 **File:** `src/theme/portalTheme.ts`
 
 **Find the `injectCSSVariables` function (around line 7) and UPDATE:**
@@ -407,24 +424,48 @@ MuiChip: {
 ```typescript
 const injectCSSVariables = (themeConfig: ThemeConfig) => {
   const root = document.documentElement;
-  root.style.setProperty('--primary-color', themeConfig.primaryColor);
-  root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
+  root.style.setProperty("--primary-color", themeConfig.primaryColor);
+  root.style.setProperty("--secondary-color", themeConfig.secondaryColor);
 
   // Constructivism colors (if using default)
-  if (themeConfig.primaryColor === '#8B0000') {
-    root.style.setProperty('--accent-color', '#2C5F2D');      // Forest green
-    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1A1A');
-    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2A2A');
+  if (themeConfig.primaryColor === "#8B0000") {
+    root.style.setProperty("--accent-color", "#2C5F2D"); // Forest green
+    root.style.setProperty(
+      "--background-color",
+      themeConfig.mode === "light" ? "#FAF7F2" : "#1A1A1A"
+    );
+    root.style.setProperty(
+      "--surface-color",
+      themeConfig.mode === "light" ? "#FFFFFF" : "#2A2A2A"
+    );
   } else {
     // Basic theme colors (fallback)
-    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
-    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
+    root.style.setProperty(
+      "--background-color",
+      themeConfig.mode === "light" ? "#E8E3EB" : "#1F2937"
+    );
+    root.style.setProperty(
+      "--surface-color",
+      themeConfig.mode === "light" ? "#FFFFFF" : "#374151"
+    );
   }
 
-  root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1A1A1A' : '#FAF7F2');
-  root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#4A4A4A' : '#D4A574');
-  root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#374151');
-  root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
+  root.style.setProperty(
+    "--text-primary",
+    themeConfig.mode === "light" ? "#1A1A1A" : "#FAF7F2"
+  );
+  root.style.setProperty(
+    "--text-secondary",
+    themeConfig.mode === "light" ? "#4A4A4A" : "#D4A574"
+  );
+  root.style.setProperty(
+    "--border-color",
+    themeConfig.mode === "light" ? "#E0E0E0" : "#374151"
+  );
+  root.style.setProperty(
+    "--card-background",
+    themeConfig.mode === "light" ? "#FFFFFF" : "#374151"
+  );
 };
 ```
 
@@ -435,6 +476,7 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
 ### Phase 2: Component Updates
 
 #### 2.1 Remove ColorPresetSelector UI
+
 **File:** `src/layouts/Layout.tsx`
 
 **Find and REMOVE/COMMENT OUT these lines:**
@@ -463,6 +505,7 @@ const handleColorPresetSelect = (primaryColor: string, secondaryColor: string) =
 ```
 
 **Keep these (we still want):**
+
 - Dark mode toggle
 - DensitySelector
 - High contrast toggle
@@ -477,6 +520,7 @@ const handleColorPresetSelect = (primaryColor: string, secondaryColor: string) =
 ---
 
 #### 2.2 Update Status Chip Colors
+
 **File:** `src/data/configurableData.ts`
 
 **Verify status colors work with new palette. The existing status config should work, but double-check:**
@@ -527,18 +571,19 @@ error: {
 ### Phase 3: Geometric Accents (Optional - Featured Sections Only)
 
 #### 3.1 Create Geometric Accent Component
+
 **File:** `src/components/constructivism/GeometricAccent.tsx` (NEW FILE)
 
 ```typescript
-import { Box } from '@mui/material';
-import { memo } from 'react';
+import { Box } from "@mui/material";
+import { memo } from "react";
 
-type GeometricShape = 'circle' | 'triangle' | 'diagonal-bar';
+type GeometricShape = "circle" | "triangle" | "diagonal-bar";
 
 interface GeometricAccentProps {
   shape: GeometricShape;
   color?: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
   opacity?: number;
   position?: {
     top?: string | number;
@@ -548,71 +593,73 @@ interface GeometricAccentProps {
   };
 }
 
-export const GeometricAccent = memo(({
-  shape,
-  color = 'var(--primary-color)',
-  size = 'medium',
-  opacity = 0.08,
-  position = { top: -40, right: -40 }
-}: GeometricAccentProps) => {
-  const sizes = {
-    small: 80,
-    medium: 120,
-    large: 180,
-  };
+export const GeometricAccent = memo(
+  ({
+    shape,
+    color = "var(--primary-color)",
+    size = "medium",
+    opacity = 0.08,
+    position = { top: -40, right: -40 },
+  }: GeometricAccentProps) => {
+    const sizes = {
+      small: 80,
+      medium: 120,
+      large: 180,
+    };
 
-  const dimension = sizes[size];
+    const dimension = sizes[size];
 
-  const getShapeStyles = () => {
-    switch (shape) {
-      case 'circle':
-        return {
-          width: dimension,
-          height: dimension,
-          borderRadius: '50%',
-          border: `3px solid ${color}`,
-          opacity,
-        };
+    const getShapeStyles = () => {
+      switch (shape) {
+        case "circle":
+          return {
+            width: dimension,
+            height: dimension,
+            borderRadius: "50%",
+            border: `3px solid ${color}`,
+            opacity,
+          };
 
-      case 'triangle':
-        return {
-          width: 0,
-          height: 0,
-          borderLeft: `${dimension / 2}px solid transparent`,
-          borderRight: `${dimension / 2}px solid transparent`,
-          borderBottom: `${dimension}px solid ${color}`,
-          opacity,
-        };
+        case "triangle":
+          return {
+            width: 0,
+            height: 0,
+            borderLeft: `${dimension / 2}px solid transparent`,
+            borderRight: `${dimension / 2}px solid transparent`,
+            borderBottom: `${dimension}px solid ${color}`,
+            opacity,
+          };
 
-      case 'diagonal-bar':
-        return {
-          width: '4px',
-          height: '100%',
-          background: `linear-gradient(135deg, ${color} 0%, var(--secondary-color) 100%)`,
-          transform: 'skewY(-2deg)',
-          opacity: opacity * 2,
-        };
+        case "diagonal-bar":
+          return {
+            width: "4px",
+            height: "100%",
+            background: `linear-gradient(135deg, ${color} 0%, var(--secondary-color) 100%)`,
+            transform: "skewY(-2deg)",
+            opacity: opacity * 2,
+          };
 
-      default:
-        return {};
-    }
-  };
+        default:
+          return {};
+      }
+    };
 
-  return (
-    <Box
-      sx={{
-        position: 'absolute',
-        ...position,
-        ...getShapeStyles(),
-        pointerEvents: 'none',
-        zIndex: 0,
-      }}
-      aria-hidden="true"
-    />
-  );
-});
+    return (
+      <Box
+        sx={{
+          position: "absolute",
+          ...position,
+          ...getShapeStyles(),
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+        aria-hidden="true"
+      />
+    );
+  }
+);
 
-GeometricAccent.displayName = 'GeometricAccent';
+GeometricAccent.displayName = "GeometricAccent";
 ```
 
 - [x] File created
@@ -621,10 +668,11 @@ GeometricAccent.displayName = 'GeometricAccent';
 ---
 
 #### 3.2 Create Index File for Constructivism Components
+
 **File:** `src/components/constructivism/index.ts` (NEW FILE)
 
 ```typescript
-export { GeometricAccent } from './GeometricAccent';
+export { GeometricAccent } from "./GeometricAccent";
 ```
 
 - [x] File created
@@ -632,11 +680,13 @@ export { GeometricAccent } from './GeometricAccent';
 ---
 
 #### 3.3 Add Geometric Accent to Dashboard Hero
+
 **File:** `src/pages/Home.tsx`
 
 **At the top, ADD import:**
+
 ```typescript
-import { GeometricAccent } from '../components/constructivism';
+import { GeometricAccent } from "../components/constructivism";
 ```
 
 **Find the dashboard cards section (around line 200-250) and ADD to ONE featured card:**
@@ -679,56 +729,64 @@ import { GeometricAccent } from '../components/constructivism';
 #### 4.1 Visual Testing Checklist
 
 **Typography:**
-- [ ] Dashboard page shows Bebas Neue uppercase headers (USER TO VERIFY)
-- [ ] Headers are readable (not too bold/overwhelming) (USER TO VERIFY)
-- [ ] Body text uses Work Sans (USER TO VERIFY)
-- [ ] Line spacing looks good (USER TO VERIFY)
-- [ ] All text is readable (USER TO VERIFY)
+
+- [x] Dashboard page shows Bebas Neue uppercase headers
+- [x] Headers are readable (not too bold/overwhelming)
+- [x] Body text uses Work Sans
+- [x] Line spacing looks good
+- [x] All text is readable (default theme verified)
 
 **Colors:**
-- [ ] Primary red (#8B0000) appears on primary buttons (USER TO VERIFY)
-- [ ] Secondary tan (#D4A574) appears on secondary elements (USER TO VERIFY)
-- [ ] Background is warm off-white (#FAF7F2) (USER TO VERIFY)
-- [ ] Text contrast is sufficient (readable) (USER TO VERIFY)
-- [ ] Status chips use new color palette (USER TO VERIFY)
+
+- [x] Primary red (#8B0000) appears on primary buttons
+- [x] Secondary tan (#D4A574) appears on secondary elements
+- [x] Background is warm off-white (#FAF7F2) (might change)
+- [x] Text contrast is sufficient (readable) (default theme is good, we can worry about other styles' readbility later)
+- [x] Status chips use new color palette
 
 **Buttons:**
-- [ ] Outlined buttons have 2px borders (USER TO VERIFY)
-- [ ] Hover fills button with color (USER TO VERIFY)
-- [ ] Focus shows 3px border (USER TO VERIFY)
-- [ ] Text transforms to uppercase (USER TO VERIFY)
-- [ ] Transitions are smooth (USER TO VERIFY)
+
+- [x] Outlined buttons have 2px borders
+- [x] Hover behavior readable (removed fill-on-hover to ensure readability across all themes)
+- [x] Focus shows 3px border
+- [x] Text transforms to uppercase (CSS applied correctly)
+- [x] Transitions are smooth (subtle lift on hover)
 
 **Cards:**
-- [ ] Border radius is 4px (subtle rounds) (USER TO VERIFY)
-- [ ] Borders are 2px (visible but not harsh) (USER TO VERIFY)
-- [ ] No shadows (flat design) (USER TO VERIFY)
-- [ ] Card hover states work (USER TO VERIFY)
+
+- [x] Border radius is 4px (subtle rounds)
+- [x] Borders are 2px (visible but not harsh)
+- [x] No shadows (flat design)
+- [x] Card hover states work
 
 **Tables:**
-- [ ] Headers are uppercase (USER TO VERIFY)
-- [ ] Headers are bold (USER TO VERIFY)
-- [ ] Bottom border is 3px (USER TO VERIFY)
-- [ ] Rows are readable (USER TO VERIFY)
-- [ ] Sorting works (USER TO VERIFY)
+
+- [x] Headers are uppercase
+- [x] Headers are bold
+- [x] Bottom border is 3px
+- [x] Rows are readable
+- [x] Sorting works
 
 **Geometric Accent:**
+
 - [ ] Circle appears on dashboard hero card (USER TO VERIFY)
 - [ ] Opacity is subtle (~8%) (USER TO VERIFY)
 - [ ] Doesn't interfere with text (USER TO VERIFY)
 - [ ] Positioned correctly (top-right) (USER TO VERIFY)
 
 **Dark Mode:**
-- [ ] Dark mode toggle still works (USER TO VERIFY)
-- [ ] Colors adjust appropriately (USER TO VERIFY)
-- [ ] Text is readable in dark mode (USER TO VERIFY)
-- [ ] Constructivism aesthetic maintained (USER TO VERIFY)
+
+- [x] Dark mode toggle still works
+- [x] Colors adjust appropriately (improved warm palette: #B22222, #E0B896, #4A8A4B)
+- [x] Text is readable in dark mode
+- [x] Constructivism aesthetic maintained (warm browns instead of cool grays)
 
 ---
 
 #### 4.2 Page-by-Page Testing
 
 **Dashboard (Home):**
+
 - [ ] Headers uppercase (Bebas Neue)
 - [ ] Cards show new border style
 - [ ] Geometric accent on hero card
@@ -736,6 +794,7 @@ import { GeometricAccent } from '../components/constructivism';
 - [ ] All interactive elements work
 
 **Tasks Page:**
+
 - [ ] Table headers uppercase
 - [ ] Status chips angular and uppercase
 - [ ] Buttons show outlined style
@@ -743,30 +802,35 @@ import { GeometricAccent } from '../components/constructivism';
 - [ ] Filters work
 
 **Payments Page:**
+
 - [ ] Status chips show correct colors
 - [ ] Table styling consistent
 - [ ] Amount formatting correct
 - [ ] All interactions work
 
 **Documents Page:**
+
 - [ ] Card grid displays correctly
 - [ ] Upload button styled correctly
 - [ ] Document actions work
 - [ ] Grid responsive
 
 **Discussions Page:**
+
 - [ ] Priority indicators visible
 - [ ] Reply forms styled correctly
 - [ ] Status chips work
 - [ ] All interactions functional
 
 **Timeline Page:**
+
 - [ ] Timeline visualization works
 - [ ] Date labels readable
 - [ ] Status colors correct
 - [ ] Responsive layout works
 
 **Forms/Dialogs:**
+
 - [ ] Input fields have 2px borders
 - [ ] Focus shows 3px borders
 - [ ] Labels uppercase where appropriate
@@ -778,24 +842,28 @@ import { GeometricAccent } from '../components/constructivism';
 #### 4.3 Responsive Testing
 
 **Desktop (1920px):**
+
 - [ ] Layout looks good
 - [ ] Typography scales appropriately
 - [ ] Geometric accent positioned correctly
 - [ ] All elements visible
 
 **Laptop (1366px):**
+
 - [ ] No horizontal scroll
 - [ ] Cards resize appropriately
 - [ ] Navigation works
 - [ ] Content readable
 
 **Tablet (768px):**
+
 - [ ] Grid stacks correctly
 - [ ] Typography still readable
 - [ ] Touch targets adequate
 - [ ] Navigation accessible
 
 **Mobile (375px):**
+
 - [ ] Single column layout
 - [ ] Headers not too large
 - [ ] Buttons tap-able
@@ -806,52 +874,60 @@ import { GeometricAccent } from '../components/constructivism';
 #### 4.4 Accessibility Testing
 
 **Keyboard Navigation:**
+
 - [ ] Tab through all interactive elements
 - [ ] Focus indicators visible (3px borders)
 - [ ] Skip links work
 - [ ] No keyboard traps
 
 **Screen Reader:**
+
 - [ ] Headers read correctly (despite uppercase)
 - [ ] Buttons have clear labels
 - [ ] Status chips announce properly
 - [ ] Form labels associated correctly
 
 **Color Contrast:**
+
 - [ ] Text meets WCAG AA (4.5:1) - Test with contrast checker
 - [ ] Buttons meet WCAG AA (3:1)
 - [ ] Status indicators don't rely on color alone
 - [ ] High contrast mode still works
 
 **WCAG Checker URLs:**
+
 - WebAIM Contrast Checker: https://webaim.org/resources/contrastchecker/
-- [ ] Primary red (#8B0000) on white: Contrast ratio ____:1 (should be ≥4.5:1)
-- [ ] Near-black (#1A1A1A) on off-white (#FAF7F2): Contrast ratio ____:1
-- [ ] Warm tan (#D4A574) on white: Contrast ratio ____:1
+- [ ] Primary red (#8B0000) on white: Contrast ratio \_\_\_\_:1 (should be ≥4.5:1)
+- [ ] Near-black (#1A1A1A) on off-white (#FAF7F2): Contrast ratio \_\_\_\_:1
+- [ ] Warm tan (#D4A574) on white: Contrast ratio \_\_\_\_:1
 
 ---
 
 #### 4.5 Cross-Browser Testing
 
 **Chrome/Edge:**
+
 - [ ] Fonts load correctly
 - [ ] CSS transforms work (skew, etc.)
 - [ ] Clip-path works
 - [ ] All features functional
 
 **Firefox:**
+
 - [ ] Fonts load correctly
 - [ ] Border styles render correctly
 - [ ] Uppercase transforms work
 - [ ] All features functional
 
 **Safari:**
+
 - [ ] Fonts load correctly
 - [ ] CSS variables work
 - [ ] Border radius renders correctly
 - [ ] All features functional
 
 **Mobile Browsers:**
+
 - [ ] Safari iOS - All features work
 - [ ] Chrome Android - All features work
 
@@ -860,18 +936,21 @@ import { GeometricAccent } from '../components/constructivism';
 #### 4.6 Performance Testing
 
 **Font Loading:**
+
 - [ ] Fonts load without blocking render
 - [ ] FOUT (Flash of Unstyled Text) minimal
 - [ ] Fallback fonts acceptable
 - [ ] No layout shift on font load
 
 **Page Load:**
+
 - [ ] First Contentful Paint < 1.5s
 - [ ] Time to Interactive < 3s
 - [ ] No console errors
 - [ ] No console warnings (or minimal)
 
 **Bundle Size:**
+
 - [ ] CSS file size increase < 5kb
 - [ ] No duplicate styles
 - [ ] Fonts cached correctly
@@ -881,11 +960,12 @@ import { GeometricAccent } from '../components/constructivism';
 ### Phase 5: Documentation & Cleanup
 
 #### 5.1 Update Documentation
+
 **File:** `README.md`
 
 **Find the Design System section and UPDATE:**
 
-```markdown
+````markdown
 ## Design System
 
 ### Theme
@@ -893,18 +973,21 @@ import { GeometricAccent } from '../components/constructivism';
 The application uses a **Constructivism-inspired design system** with warm modernist aesthetics.
 
 **Typography:**
+
 - Headers: Bebas Neue (bold, uppercase, tracking: 0.12em)
 - Subheaders: Work Sans (semibold)
 - Body: Work Sans (regular)
 - Code: IBM Plex Mono
 
 **Colors:**
+
 - Primary: #8B0000 (dark red)
 - Secondary: #D4A574 (warm tan)
 - Accent: #2C5F2D (forest green)
 - Background: #FAF7F2 (warm off-white)
 
 **Aesthetic:**
+
 - Subtle border radius (4px)
 - Bold borders (2px, 3px on focus)
 - Outlined buttons (fill on hover)
@@ -913,6 +996,7 @@ The application uses a **Constructivism-inspired design system** with warm moder
 
 **Alternative Theme:**
 To use the "basic" theme (previous default), update `src/data/configurableData.ts`:
+
 ```typescript
 theme: {
   primaryColor: "#3B82F6",
@@ -921,7 +1005,9 @@ theme: {
   fontFamily: '"Inter", sans-serif',
 }
 ```
-```
+````
+
+````
 
 - [x] README.md updated with new design system info ✅
 
@@ -983,16 +1069,18 @@ The "basic" theme is available as an alternative skin:
 - No geometric accents
 
 Switch by updating `configurableData.ts` theme section.
-```
+````
 
 - [x] CLAUDE.md updated with Constructivism design system ✅
 
 ---
 
 #### 5.2 Code Comments
+
 **Files to add comments:**
 
 **`src/data/configurableData.ts`:**
+
 ```typescript
 // Constructivism theme configuration (default)
 // Colors inspired by Russian avant-garde art
@@ -1004,6 +1092,7 @@ theme: {
 ```
 
 **`src/theme/portalTheme.ts`:**
+
 ```typescript
 // Constructivism typography
 // Headers use Bebas Neue (bold, uppercase)
@@ -1018,6 +1107,7 @@ typography: {
 ```
 
 **`src/index.css`:**
+
 ```css
 /* ============================================
    CONSTRUCTIVISM THEME
@@ -1025,18 +1115,20 @@ typography: {
    ============================================ */
 ```
 
-- [ ] Comments added to key configuration files
+- [x] Comments added to key configuration files
 
 ---
 
 #### 5.3 Remove Unused Code (Optional)
 
 **If completely removing "basic" theme support:**
+
 - [ ] Remove color preset arrays from ColorPresetSelector.tsx (or keep as examples)
 - [ ] Remove unused CSS for previous theme
 - [ ] Remove colorManager.ts if not needed
 
 **If keeping "basic" theme as option:**
+
 - [ ] Document how to switch themes in code
 - [ ] Add comments explaining theme variants
 - [ ] Keep colorManager.ts for manual color changes
@@ -1046,6 +1138,7 @@ typography: {
 ### Phase 6: Git & Deployment
 
 #### 6.1 Test Suite
+
 **Run existing tests:**
 
 ```bash
@@ -1059,6 +1152,7 @@ npm test
 ---
 
 #### 6.2 Build
+
 **Create production build:**
 
 ```bash
@@ -1072,6 +1166,7 @@ npm run build
 ---
 
 #### 6.3 Dev Server Test
+
 **Test in development:**
 
 ```bash
@@ -1086,6 +1181,7 @@ npm run dev
 ---
 
 #### 6.4 Commit
+
 **Create feature branch and commit:**
 
 ```bash
@@ -1111,6 +1207,7 @@ git commit -m "Replace default theme with Constructivism aesthetic
 ---
 
 #### 6.5 Push and Deploy
+
 **Push to GitHub:**
 
 ```bash
@@ -1123,6 +1220,7 @@ git push origin feat/constructivism-default-theme
 - [ ] Build succeeds in CI (WILL CHECK AFTER PUSH)
 
 **Merge to main:**
+
 - [ ] Create PR
 - [ ] Review changes
 - [ ] Merge to main
@@ -1134,6 +1232,7 @@ git push origin feat/constructivism-default-theme
 ## 🎯 Success Criteria
 
 ### Design Quality
+
 - [ ] Sophisticated, professional appearance
 - [ ] Constructivism aesthetic clear but subtle
 - [ ] Typography hierarchy effective
@@ -1141,6 +1240,7 @@ git push origin feat/constructivism-default-theme
 - [ ] Geometric accents enhance, don't distract
 
 ### Technical Quality
+
 - [ ] All tests pass
 - [ ] No console errors
 - [ ] No TypeScript errors
@@ -1148,6 +1248,7 @@ git push origin feat/constructivism-default-theme
 - [ ] Accessibility maintained
 
 ### User Experience
+
 - [ ] Dark mode works
 - [ ] Responsive on all devices
 - [ ] Keyboard navigation works
@@ -1188,6 +1289,7 @@ npm run deploy
 5. **Update this checklist** as you work
 
 **Key files modified:**
+
 - `src/index.html` - Google Fonts
 - `src/index.css` - Constructivism CSS
 - `src/data/configurableData.ts` - Default colors/theme
@@ -1197,6 +1299,7 @@ npm run deploy
 - `src/components/constructivism/*` - New geometric components
 
 **Testing priorities:**
+
 1. Typography (fonts loading)
 2. Colors (palette applied)
 3. Buttons (outlined with fill on hover)
@@ -1210,21 +1313,25 @@ npm run deploy
 ## 🔍 Troubleshooting
 
 **Fonts not loading:**
+
 - Check Network tab for font requests
 - Verify Google Fonts link in index.html
 - Check font-family names match exactly
 
 **Colors not applying:**
+
 - Check CSS variable names in index.css
 - Verify configurableData.ts colors
 - Check browser DevTools computed styles
 
 **Styles not applying:**
+
 - Check CSS specificity (!important may be needed)
 - Verify MuiTheme overrides in portalTheme.ts
 - Clear browser cache
 
 **Tests failing:**
+
 - Update snapshots if UI changed
 - Check for TypeScript errors
 - Verify component imports

@@ -18,8 +18,9 @@ describe('Feature Test Utils', () => {
 
   describe('isFeatureEnabled', () => {
     it('returns true for enabled top-level features', () => {
-      expect(isFeatureEnabled('darkMode')).toBe(true)
+      // darkMode and highContrastMode are currently disabled in config
       expect(isFeatureEnabled('commandPalette')).toBe(true)
+      expect(isFeatureEnabled('notifications')).toBe(true)
     })
 
     it('returns false for disabled top-level features', async () => {
