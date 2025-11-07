@@ -96,7 +96,7 @@ const Tasks = memo(() => {
       <Box className="spacing-top-lg">
         {/* Sort and Filter Controls */}
         {todos.length > 0 && (
-          <Box className="flex-row-wrap" sx={{ mb: 3 }}>
+          <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2 }}>
             <SortIcon color="action" />
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel>Sort by</InputLabel>
@@ -124,7 +124,7 @@ const Tasks = memo(() => {
                 <MenuItem value="desc">Descending</MenuItem>
               </Select>
             </FormControl>
-            <Box className="actions-right">
+            <Box sx={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
               <Button
                 variant={hideCompleted ? "contained" : "outlined"}
                 size="small"
@@ -189,7 +189,7 @@ const Tasks = memo(() => {
                       variant="secondary"
                       isCompleted={isCompleted}
                     />
-                    <Box className="flex-row-wrap" sx={{ justifyContent: 'center', gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 1.5 }}>
                       {todoFields.secondary.map(field => (
                         <FieldRenderer
                           key={field}
