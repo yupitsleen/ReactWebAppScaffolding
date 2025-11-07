@@ -243,7 +243,7 @@ const Home = memo(() => {
             </Typography>
             <AnimatedGrid staggerDelay={0.08} initialDelay={0.1}>
               <Grid container spacing={3}>
-                {enabledDashboardCards.map((card, index) => (
+                {enabledDashboardCards.map((card) => (
                   <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
                     <AnimatedGridItem>
                       <Box sx={{ position: 'relative' }}>

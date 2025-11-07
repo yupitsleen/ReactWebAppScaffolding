@@ -1,17 +1,12 @@
 /**
  * Sample Data for Development and Testing
  *
- * This file contains hardcoded sample data for the scaffold's demo entities.
+ * This file contains demo data for the scaffold's entities.
+ * All dates are dynamically calculated based on today's date to ensure
+ * timeline graphs and date-based features always show relevant data.
  *
- * **Note:** For dynamic test data generation, consider using the factory pattern:
- * ```typescript
- * import { todoItemFactory, documentFactory } from './factories'
- *
- * const todos = todoItemFactory.createMany(10)
- * const urgentTodo = todoItemFactory.create({ priority: 'high' })
- * ```
- *
- * See `src/data/factories/` for available entity factories.
+ * **Important:** Dates are calculated using demoDateHelpers utilities.
+ * In production, these will be replaced with user-inputted dates.
  */
 import type {
   User,
@@ -22,6 +17,7 @@ import type {
   ServiceInfo,
   DashboardSummary
 } from '../types/portal'
+import { daysFromNow, daysAgo, daysAgoISO } from '../utils/demoDateHelpers'
 
 export const users: User[] = [
   {
@@ -101,10 +97,10 @@ export const todoItems: TodoItem[] = [
     assignedTo: "Client",
     priority: "high",
     status: "pending",
-    dueDate: "2024-06-01",
+    dueDate: daysFromNow(3), // 3 days from today
     category: "Catering",
     createdBy: "Emily Rodriguez",
-    createdAt: "2024-05-15T10:30:00Z"
+    createdAt: daysAgoISO(10, 10, 30) // 10 days ago at 10:30
   },
   {
     id: "todo-002",
@@ -113,10 +109,10 @@ export const todoItems: TodoItem[] = [
     assignedTo: "Client",
     priority: "high",
     status: "in-progress",
-    dueDate: "2024-07-01",
+    dueDate: daysFromNow(5), // 5 days from today
     category: "Planning",
     createdBy: "Emily Rodriguez",
-    createdAt: "2024-05-10T14:20:00Z"
+    createdAt: daysAgoISO(15, 14, 20) // 15 days ago at 14:20
   },
   {
     id: "todo-003",
@@ -125,10 +121,10 @@ export const todoItems: TodoItem[] = [
     assignedTo: "Venue Staff",
     priority: "medium",
     status: "pending",
-    dueDate: "2024-08-15",
+    dueDate: daysFromNow(10), // 10 days from today
     category: "Setup",
     createdBy: "Sarah Johnson",
-    createdAt: "2024-05-20T09:15:00Z"
+    createdAt: daysAgoISO(5, 9, 15) // 5 days ago at 09:15
   },
   {
     id: "todo-004",
@@ -137,10 +133,10 @@ export const todoItems: TodoItem[] = [
     assignedTo: "Both",
     priority: "medium",
     status: "completed",
-    dueDate: "2024-05-25",
+    dueDate: daysAgo(2), // 2 days ago (completed task)
     category: "Coordination",
     createdBy: "Emily Rodriguez",
-    createdAt: "2024-05-12T16:45:00Z"
+    createdAt: daysAgoISO(12, 16, 45) // 12 days ago at 16:45
   }
 ]
 
@@ -149,9 +145,9 @@ export const payments: Payment[] = [
     id: "payment-001",
     description: "Venue Deposit",
     amount: 2500.00,
-    dueDate: "2024-03-01",
+    dueDate: daysAgo(30), // 30 days ago (already paid)
     status: "paid",
-    paidDate: "2024-02-28",
+    paidDate: daysAgo(31), // Paid 31 days ago (1 day before due)
     paymentMethod: "Credit Card",
     category: "Venue"
   },
@@ -159,7 +155,7 @@ export const payments: Payment[] = [
     id: "payment-002",
     description: "Catering Balance",
     amount: 4800.00,
-    dueDate: "2024-07-15",
+    dueDate: daysFromNow(15), // 15 days from today
     status: "pending",
     category: "Catering"
   },
@@ -167,7 +163,7 @@ export const payments: Payment[] = [
     id: "payment-003",
     description: "Final Service Payment",
     amount: 3200.00,
-    dueDate: "2024-08-01",
+    dueDate: daysFromNow(30), // 30 days from today
     status: "pending",
     category: "Services"
   },
@@ -175,7 +171,7 @@ export const payments: Payment[] = [
     id: "payment-004",
     description: "Decoration & Setup",
     amount: 1500.00,
-    dueDate: "2024-08-10",
+    dueDate: daysFromNow(40), // 40 days from today
     status: "pending",
     category: "Decoration"
   }
@@ -188,7 +184,7 @@ export const documents: Document[] = [
     type: "Contract",
     url: "/documents/service-agreement.pdf",
     uploadedBy: "Emily Rodriguez",
-    uploadedAt: "2024-02-15T10:30:00Z",
+    uploadedAt: daysAgoISO(60, 10, 30), // 60 days ago at 10:30
     size: "2.3 MB",
     shared: true
   },
@@ -198,7 +194,7 @@ export const documents: Document[] = [
     type: "Information",
     url: "/documents/menu-options.pdf",
     uploadedBy: "Emily Rodriguez",
-    uploadedAt: "2024-05-10T14:20:00Z",
+    uploadedAt: daysAgoISO(10, 14, 20), // 10 days ago at 14:20
     size: "1.8 MB",
     shared: true
   },
@@ -208,7 +204,7 @@ export const documents: Document[] = [
     type: "Layout",
     url: "/documents/floor-plan.pdf",
     uploadedBy: "Sarah Johnson",
-    uploadedAt: "2024-05-18T09:15:00Z",
+    uploadedAt: daysAgoISO(8, 9, 15), // 8 days ago at 09:15
     size: "950 KB",
     shared: true
   },
@@ -218,7 +214,7 @@ export const documents: Document[] = [
     type: "Schedule",
     url: "/documents/event-timeline.pdf",
     uploadedBy: "Emily Rodriguez",
-    uploadedAt: "2024-05-20T16:45:00Z",
+    uploadedAt: daysAgoISO(5, 16, 45), // 5 days ago at 16:45
     size: "1.2 MB",
     shared: true
   }
@@ -231,7 +227,7 @@ export const discussions: Discussion[] = [
     author: "Sarah Johnson",
     authorRole: "Client",
     content: "Hi Emily, we have several guests with dietary restrictions. Could you share the vegetarian and gluten-free options available?",
-    createdAt: "2024-05-16T10:30:00Z",
+    createdAt: daysAgoISO(9, 10, 30), // 9 days ago at 10:30
     priority: "normal",
     resolved: true,
     replies: [
@@ -240,14 +236,14 @@ export const discussions: Discussion[] = [
         author: "Emily Rodriguez",
         authorRole: "Coordinator",
         content: "Of course! We have multiple options for both dietary needs. I'll email you the detailed menu with all alternatives.",
-        createdAt: "2024-05-16T14:20:00Z"
+        createdAt: daysAgoISO(9, 14, 20) // Same day at 14:20
       },
       {
         id: "reply-002",
         author: "Sarah Johnson",
         authorRole: "Client",
         content: "Perfect! Thank you for accommodating our guests' needs.",
-        createdAt: "2024-05-17T09:15:00Z"
+        createdAt: daysAgoISO(8, 9, 15) // Next day at 09:15
       }
     ]
   },
@@ -257,7 +253,7 @@ export const discussions: Discussion[] = [
     author: "Emily Rodriguez",
     authorRole: "Coordinator",
     content: "What time would you like the vendors to arrive for setup? We need to coordinate access with all service providers.",
-    createdAt: "2024-05-18T11:00:00Z",
+    createdAt: daysAgoISO(7, 11, 0), // 7 days ago at 11:00
     priority: "urgent",
     resolved: false,
     replies: [
@@ -266,7 +262,7 @@ export const discussions: Discussion[] = [
         author: "Michael Chen",
         authorRole: "Client",
         content: "We were thinking around 10 AM? The event starts at 4 PM, so that should provide adequate setup time.",
-        createdAt: "2024-05-19T08:30:00Z"
+        createdAt: daysAgoISO(6, 8, 30) // Next day at 08:30
       }
     ]
   }

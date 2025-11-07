@@ -1,5 +1,6 @@
 import { BaseEntityFactory } from './BaseEntityFactory'
 import type { TodoItem } from '../../types/portal'
+import { daysFromNow, daysAgo, nowISO } from '../../utils/demoDateHelpers'
 
 /**
  * Factory for creating TodoItem test data.
@@ -44,9 +45,6 @@ export class TodoItemFactory extends BaseEntityFactory<TodoItem> {
   ]
 
   create(overrides?: Partial<TodoItem>): TodoItem {
-    const now = new Date()
-    const dueDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
-
     return {
       id: overrides?.id || this.generateId(),
       title: overrides?.title || this.getRandomTitle(),
@@ -54,10 +52,10 @@ export class TodoItemFactory extends BaseEntityFactory<TodoItem> {
       assignedTo: overrides?.assignedTo || 'user@example.com',
       priority: overrides?.priority || 'medium',
       status: overrides?.status || 'pending',
-      dueDate: overrides?.dueDate || dueDate.toISOString().split('T')[0],
+      dueDate: overrides?.dueDate || daysFromNow(7), // Dynamic: 7 days from today
       category: overrides?.category || this.getRandomCategory(),
       createdBy: overrides?.createdBy || 'System',
-      createdAt: overrides?.createdAt || now.toISOString(),
+      createdAt: overrides?.createdAt || nowISO(), // Dynamic: current timestamp
       ...overrides
     }
   }
@@ -89,9 +87,8 @@ export class TodoItemFactory extends BaseEntityFactory<TodoItem> {
    * Creates a todo that's overdue (due date in the past)
    */
   createOverdue(overrides?: Partial<TodoItem>): TodoItem {
-    const pastDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
     return this.create({
-      dueDate: pastDate.toISOString().split('T')[0],
+      dueDate: daysAgo(7), // Dynamic: 7 days ago
       priority: 'high',
       status: 'pending',
       ...overrides
