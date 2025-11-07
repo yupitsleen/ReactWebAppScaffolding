@@ -427,7 +427,7 @@ export const appConfig: AppConfig = {
     // UI Features - Control which UI enhancements are available
     darkMode: false,              // Disabled for now - focusing on light mode
     highContrastMode: false,      // Disabled for now - focusing on light mode
-    layoutDensity: true,
+    layoutDensity: false,
     commandPalette: true,
     pdfExport: true,
     keyboardShortcuts: true,

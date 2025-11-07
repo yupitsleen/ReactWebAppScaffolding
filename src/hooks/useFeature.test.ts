@@ -23,10 +23,10 @@ describe('useFeature', () => {
     it('returns true for enabled top-level features', () => {
       const { result } = renderHook(() => useFeature())
 
-      // darkMode and highContrastMode are currently disabled in config
+      // darkMode, highContrastMode, and layoutDensity are currently disabled in config
       expect(result.current.isEnabled('commandPalette')).toBe(true)
       expect(result.current.isEnabled('notifications')).toBe(true)
-      expect(result.current.isEnabled('layoutDensity')).toBe(true)
+      expect(result.current.isEnabled('keyboardShortcuts')).toBe(true)
     })
 
     it('returns false for disabled top-level features', async () => {
