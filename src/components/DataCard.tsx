@@ -97,7 +97,7 @@ const DataCard = memo<DataCardProps>(({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.2)} 100%)`,
+                background: (theme) => alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.15),
                 color: `${card.color}.main`,
                 fontSize: 'calc(1.75rem * var(--density-font-scale))',
               }}

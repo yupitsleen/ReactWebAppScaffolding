@@ -260,19 +260,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
 
         // Contained Primary
         containedPrimary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          background: theme.palette.primary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+            background: theme.palette.primary.dark,
           },
         }),
 
         // Contained Secondary
         containedSecondary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+          background: theme.palette.secondary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.secondary.dark} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: theme.palette.secondary.dark,
           },
         }),
 
@@ -419,18 +419,18 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
 
         primary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          background: theme.palette.primary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+            background: theme.palette.primary.dark,
           },
         }),
 
         secondary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+          background: theme.palette.secondary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.secondary.dark} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: theme.palette.secondary.dark,
           },
         }),
       },
@@ -500,10 +500,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       styleOverrides: {
         h1: {
           fontWeight: 600,
-          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: 'var(--primary-color)',
           marginBottom: '8px',
           textAlign: 'center',
           '@media (max-width: 640px)': {
@@ -517,10 +514,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
         h3: {
           fontWeight: 600,
-          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: 'var(--primary-color)',
           marginBottom: '8px',
           textAlign: 'center',
           '@media (max-width: 640px)': {
@@ -534,10 +528,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
         h4: {
           fontWeight: 600,
-          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: 'var(--primary-color)',
           marginBottom: '6px',
           textAlign: 'center',
           '@media (max-width: 640px)': {

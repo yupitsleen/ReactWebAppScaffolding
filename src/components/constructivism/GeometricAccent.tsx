@@ -56,7 +56,7 @@ export const GeometricAccent = memo(({
         return {
           width: '4px',
           height: '100%',
-          background: `linear-gradient(135deg, ${color} 0%, var(--secondary-color) 100%)`,
+          background: color,
           transform: 'skewY(-2deg)',
           opacity: opacity * 2,
         };
