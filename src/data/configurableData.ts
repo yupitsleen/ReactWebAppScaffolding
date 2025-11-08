@@ -1,5 +1,4 @@
 import type { AppConfig, UserType } from "../types/portal";
-import { DEFAULT_FEATURES } from "./featureFlags";
 
 export const USER_TYPES: UserType[] = [
   "Customer",

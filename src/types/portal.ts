@@ -1,4 +1,5 @@
 // Re-export FeatureFlags from centralized location
+import type { FeatureFlags } from '../data/featureFlags'
 export type { FeatureFlags } from '../data/featureFlags'
 
 export type UserType = 'Customer' | 'Vendor' | 'Service Provider' | 'Admin'
