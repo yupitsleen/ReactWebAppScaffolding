@@ -9,9 +9,9 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
   root.style.setProperty('--primary-color', themeConfig.primaryColor);
   root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
 
-  // Constructivism colors (if using default Constructivism theme)
-  if (themeConfig.primaryColor === '#8B0000') {
-    // Light mode Constructivism
+  // Constructivism theme colors
+  if (themeConfig.name === 'constructivism') {
+    // Light/Dark mode Constructivism
     root.style.setProperty('--accent-color', themeConfig.mode === 'light' ? '#2C5F2D' : '#4A8A4B');
     root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1212');
     root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020');
@@ -24,7 +24,7 @@ const injectCSSVariables = (themeConfig: ThemeConfig) => {
       root.style.setProperty('--secondary-color', '#E0B896');  // Lighter tan
     }
   } else {
-    // Basic theme colors (fallback)
+    // Basic theme or custom theme colors (fallback)
     root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
     root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
     root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#374151');

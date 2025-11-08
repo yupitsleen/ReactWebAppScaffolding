@@ -133,6 +133,7 @@ export interface DashboardSection {
 }
 
 export interface ThemeConfig {
+  name?: 'constructivism' | 'basic' | string // Theme name for extensibility
   primaryColor: string
   secondaryColor: string
   mode: 'light' | 'dark'

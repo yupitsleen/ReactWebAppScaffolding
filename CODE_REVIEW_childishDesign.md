@@ -1,6 +1,6 @@
 # Code Review - feat/childishDesign Branch
 
-**Progress: 4/40 issues resolved**
+**Progress: 6/40 issues resolved**
 
 ---
 
@@ -41,7 +41,7 @@ The `Discussions` component now manages:
 
 State management for reply functionality should be extracted to a custom hook like `useDiscussionReplies`.
 
-### Open/Closed (1/3 resolved)
+### Open/Closed (2/3 resolved)
 
 #### ❌ **src/components/ActionMenu.tsx:42-60** - Hard-coded icon mapping
 The `iconMap` object hard-codes icon names to components. New icons require modifying this file instead of using the centralized `iconRegistry.tsx`.
@@ -51,10 +51,8 @@ The `iconMap` object hard-codes icon names to components. New icons require modi
 #### ✅ **src/hooks/useFeature.ts:27-62** - Default features hard-coded in hook
 **Fixed**: Extracted to `DEFAULT_FEATURES` constant in `configurableData.ts`. Defaults are now configurable.
 
-#### ❌ **src/theme/portalTheme.ts:11-29** - Theme-specific logic hard-coded with magic color check
-The code checks `if (themeConfig.primaryColor === '#8B0000')` to apply Constructivism theme styles. This hard-codes the theme detection logic and makes it impossible to extend with new themes without modifying this file.
-
-**Fix**: Add a `themeName` property to `ThemeConfig` and use enum-based switching.
+#### ✅ **src/theme/portalTheme.ts:11-29** - Theme-specific logic hard-coded with magic color check
+**Fixed**: Added `name` property to `ThemeConfig`. Changed detection from `primaryColor === '#8B0000'` to `name === 'constructivism'`. New themes can now be added without modifying theme logic.
 
 ### Dependency Inversion (0/2 resolved)
 
@@ -225,15 +223,10 @@ The removal of `showClickHint` (lines 151-173 deleted) eliminates the "View deta
 
 ---
 
-## Hardcoding (1/4 resolved)
+## Hardcoding (2/4 resolved)
 
-### ❌ **src/theme/portalTheme.ts:13** - Magic color string for theme detection
-```typescript
-if (themeConfig.primaryColor === '#8B0000') {
-```
-The Constructivism theme is detected by hard-coding its primary color value. This is brittle - if the color changes slightly, theme detection breaks.
-
-**Fix**: Add a `theme.name` property to configurableData.
+### ✅ **src/theme/portalTheme.ts:13** - Magic color string for theme detection
+**Fixed**: Added `name: 'constructivism'` to theme config. Changed detection logic to use semantic theme name instead of brittle color value check.
 
 ### ✅ **src/hooks/useFeature.ts:27-62** - Default feature flags hard-coded
 **Fixed**: Extracted to `DEFAULT_FEATURES` constant in `configurableData.ts`. Defaults are now defined in one place.
@@ -253,7 +246,7 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 ## Summary Statistics
 
 - **DRY Violations**: 1/3 resolved
-- **SOLID Violations**: 1/9 resolved (SRP: 0/2, OCP: 1/3, DIP: 0/2)
+- **SOLID Violations**: 2/9 resolved (SRP: 0/2, OCP: 2/3, DIP: 0/2)
 - **KISS Violations**: 0/4 resolved
 - **Extensibility Pattern Violations**: 0/3 resolved
 - **Type Safety Issues**: 0/3 resolved
@@ -261,9 +254,9 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 - **Testing Issues**: 0/3 resolved
 - **Code Organization**: 0/4 resolved
 - **Accessibility**: 0/3 resolved
-- **Hardcoding**: 1/4 resolved
+- **Hardcoding**: 2/4 resolved
 
-**Total Progress: 4/40 issues resolved**
+**Total Progress: 6/40 issues resolved**
 
 ---
 
@@ -271,7 +264,7 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 
 1. ✅ **[src/App.tsx:59](src/App.tsx#L59)** - Missing `appConfig` in useMemo dependencies (breaks reactivity) **FIXED**
 2. ✅ **[src/hooks/useFeature.ts:27-62](src/hooks/useFeature.ts#L27-L62)** - Duplicated default features (maintenance burden) **FIXED**
-3. ❌ **[src/theme/portalTheme.ts:13](src/theme/portalTheme.ts#L13)** - Hard-coded theme detection (breaks extensibility)
+3. ✅ **[src/theme/portalTheme.ts:13](src/theme/portalTheme.ts#L13)** - Hard-coded theme detection (breaks extensibility) **FIXED**
 4. ❌ **[src/pages/Discussions.tsx:153](src/pages/Discussions.tsx#L153)** - Missing accessibility labels (WCAG violation)
 5. ❌ **[src/components/ActionMenu.tsx:42](src/components/ActionMenu.tsx#L42)** - Not using iconRegistry (inconsistent pattern)
 
