@@ -1,7 +1,6 @@
 import { memo, type ReactNode } from 'react'
 import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
 import { TrendingUp, TrendingDown } from '@mui/icons-material'
-import { appConfig } from '../data/configurableData'
 import type { DashboardCard } from '../types/portal'
 import Sparkline from './Sparkline'
 import { getIconComponent } from '../utils/iconRegistry'
@@ -30,7 +29,7 @@ const DataCard = memo<DataCardProps>(({
   sparklineData,
   sparklineColor
 }) => {
-  const displayIcon = icon || (card.icon && getIconComponent(appConfig.theme.iconMappings[card.icon] || card.icon))
+  const displayIcon = icon || (card.icon && getIconComponent(card.icon))
 
   return (
     <Card

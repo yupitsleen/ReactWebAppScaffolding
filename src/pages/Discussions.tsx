@@ -8,8 +8,8 @@ import type { Discussion, Reply } from '../types/portal'
 const Discussions = memo(() => {
   const [loading] = usePageLoading(false)
   const [discussions, setDiscussions] = useState<Discussion[]>(initialDiscussions)
-  const [replyText, setReplyText] = useState<{ [key: string]: string }>({})
-  const [showReplyBox, setShowReplyBox] = useState<{ [key: string]: boolean }>({})
+  const [replyText, setReplyText] = useState<Record<string, string>>({})
+  const [showReplyBox, setShowReplyBox] = useState<Record<string, boolean>>({})
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [newPost, setNewPost] = useState({
     title: '',

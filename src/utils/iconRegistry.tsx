@@ -11,7 +11,17 @@ import {
   Edit,
   Support,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Delete,
+  Visibility,
+  PlayArrow,
+  Pause,
+  Refresh,
+  Add,
+  Search,
+  FilterList,
+  Sort,
+  MoreVert
 } from '@mui/icons-material'
 
 // Centralized icon registry to avoid wildcard imports
@@ -28,7 +38,17 @@ export const iconRegistry: Record<string, React.ComponentType> = {
   Edit,
   Support,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Delete,
+  Visibility,
+  PlayArrow,
+  Pause,
+  Refresh,
+  Add,
+  Search,
+  FilterList,
+  Sort,
+  MoreVert
 }
 
 export const getIconComponent = (iconName: string): ReactNode => {

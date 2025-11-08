@@ -26,7 +26,7 @@ import type { FeatureFlags } from '../types/portal'
 export function useFeature() {
   const features = useMemo(() => {
     return appConfig.features || DEFAULT_FEATURES
-  }, [])
+  }, [appConfig.features])
 
   /**
    * Check if a feature is enabled using dot notation
@@ -35,17 +35,12 @@ export function useFeature() {
    * @returns true if feature is enabled, false otherwise
    */
   const isEnabled = (featurePath: string): boolean => {
-    const parts = featurePath.split('.')
-    let current: any = features
-
-    for (const part of parts) {
-      if (current === undefined || current === null) {
-        return false
-      }
-      current = current[part]
+    const keys = featurePath.split('.')
+    let value: unknown = features
+    for (const key of keys) {
+      value = (value as Record<string, unknown>)?.[key]
     }
-
-    return current === true
+    return value === true
   }
 
   /**

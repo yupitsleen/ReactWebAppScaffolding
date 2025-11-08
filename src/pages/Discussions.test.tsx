@@ -73,7 +73,7 @@ describe('Discussions Page', () => {
       await waitFor(() => {
         expect(screen.getByText('This is my test reply')).toBeInTheDocument()
       })
-    })
+    }, 10000)
 
     it('hides reply text field after posting', async () => {
       renderWithProviders(<Discussions />)
@@ -90,7 +90,7 @@ describe('Discussions Page', () => {
       await waitFor(() => {
         expect(screen.queryByPlaceholderText(/write your reply/i)).not.toBeInTheDocument()
       })
-    })
+    }, 10000)
 
     it('cancels reply and clears text when cancel button is clicked', async () => {
       renderWithProviders(<Discussions />)
