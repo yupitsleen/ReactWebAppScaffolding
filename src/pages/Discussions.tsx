@@ -1,5 +1,5 @@
 import { memo, useState } from 'react'
-import { Typography, Card, CardContent, Chip, Box, Avatar, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material'
+import { Typography, Card, CardContent, Chip, Box, Avatar, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, ToggleButtonGroup, ToggleButton } from '@mui/material'
 import { discussions as initialDiscussions } from '../data/sampleData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
@@ -160,6 +160,7 @@ const Discussions = memo(() => {
                       multiline
                       rows={3}
                       fullWidth
+                      label="Reply"
                       placeholder="Write your reply..."
                       value={replyText[discussion.id] || ''}
                       onChange={(e) => setReplyText(prev => ({ ...prev, [discussion.id]: e.target.value }))}
@@ -219,36 +220,20 @@ const Discussions = memo(() => {
               <Typography variant="subtitle2" gutterBottom>
                 Priority
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Chip
-                  label="Normal"
-                  onClick={() => setNewPost(prev => ({ ...prev, priority: 'normal' }))}
-                  color={newPost.priority === 'normal' ? 'primary' : 'default'}
-                  variant={newPost.priority === 'normal' ? 'filled' : 'outlined'}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: newPost.priority === 'normal'
-                        ? 'primary.dark'
-                        : 'action.hover'
-                    }
-                  }}
-                />
-                <Chip
-                  label="Urgent"
-                  onClick={() => setNewPost(prev => ({ ...prev, priority: 'urgent' }))}
-                  color={newPost.priority === 'urgent' ? 'error' : 'default'}
-                  variant={newPost.priority === 'urgent' ? 'filled' : 'outlined'}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: newPost.priority === 'urgent'
-                        ? 'error.dark'
-                        : 'action.hover'
-                    }
-                  }}
-                />
-              </Box>
+              <ToggleButtonGroup
+                value={newPost.priority}
+                exclusive
+                onChange={(_, value) => value && setNewPost(prev => ({ ...prev, priority: value as 'normal' | 'urgent' }))}
+                aria-label="post priority"
+                size="small"
+              >
+                <ToggleButton value="normal" aria-label="normal priority">
+                  Normal
+                </ToggleButton>
+                <ToggleButton value="urgent" aria-label="urgent priority">
+                  Urgent
+                </ToggleButton>
+              </ToggleButtonGroup>
             </Box>
           </Box>
         </DialogContent>

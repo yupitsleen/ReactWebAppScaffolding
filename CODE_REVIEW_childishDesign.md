@@ -1,6 +1,6 @@
 # Code Review - feat/childishDesign Branch
 
-**Progress: 6/40 issues resolved**
+**Progress: 8/40 issues resolved**
 
 ---
 
@@ -195,26 +195,13 @@ The `injectCSSVariables` function has Constructivism-specific logic embedded. Th
 
 ---
 
-## Accessibility (0/3 resolved)
+## Accessibility (2/3 resolved)
 
-### ❌ **src/pages/Discussions.tsx:153-188** - Reply TextField missing label
-```typescript
-<TextField
-  multiline
-  rows={3}
-  fullWidth
-  placeholder="Write your reply..."
-  ...
-/>
-```
-No `label` or `aria-label` provided. Screen readers will only see the placeholder.
+### ✅ **src/pages/Discussions.tsx:153-188** - Reply TextField missing label
+**Fixed**: Added `label="Reply"` to TextField. Screen readers now have proper label context.
 
-**Fix**: Add `label="Reply"` or `aria-label="Write your reply"`.
-
-### ❌ **src/pages/Discussions.tsx:303-333** - Priority Chip selection not keyboard accessible
-The priority selection uses `onClick` on Chips without proper keyboard handling (Enter/Space keys).
-
-**Fix**: Add `role="radio"`, `tabIndex`, and `onKeyDown` handlers, or use RadioGroup.
+### ✅ **src/pages/Discussions.tsx:303-333** - Priority Chip selection not keyboard accessible
+**Fixed**: Replaced Chips with ToggleButtonGroup which provides built-in keyboard navigation (Arrow keys, Space/Enter to select) and proper ARIA labels.
 
 ### ❌ **src/components/DataCard.tsx** - Removed click hint reduces discoverability
 The removal of `showClickHint` (lines 151-173 deleted) eliminates the "View details" hint. Users may not know cards are clickable.
@@ -253,10 +240,10 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 - **Performance Issues**: 1/4 resolved
 - **Testing Issues**: 0/3 resolved
 - **Code Organization**: 0/4 resolved
-- **Accessibility**: 0/3 resolved
+- **Accessibility**: 2/3 resolved
 - **Hardcoding**: 2/4 resolved
 
-**Total Progress: 6/40 issues resolved**
+**Total Progress: 8/40 issues resolved**
 
 ---
 
@@ -265,7 +252,7 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 1. ✅ **[src/App.tsx:59](src/App.tsx#L59)** - Missing `appConfig` in useMemo dependencies (breaks reactivity) **FIXED**
 2. ✅ **[src/hooks/useFeature.ts:27-62](src/hooks/useFeature.ts#L27-L62)** - Duplicated default features (maintenance burden) **FIXED**
 3. ✅ **[src/theme/portalTheme.ts:13](src/theme/portalTheme.ts#L13)** - Hard-coded theme detection (breaks extensibility) **FIXED**
-4. ❌ **[src/pages/Discussions.tsx:153](src/pages/Discussions.tsx#L153)** - Missing accessibility labels (WCAG violation)
+4. ✅ **[src/pages/Discussions.tsx:153](src/pages/Discussions.tsx#L153)** - Missing accessibility labels (WCAG violation) **FIXED**
 5. ❌ **[src/components/ActionMenu.tsx:42](src/components/ActionMenu.tsx#L42)** - Not using iconRegistry (inconsistent pattern)
 
 ---
