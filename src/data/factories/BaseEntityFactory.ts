@@ -1,3 +1,5 @@
+import { daysAgo, daysFromNow, daysAgoISO, daysFromNowISO, nowISO, todayISO } from '../../utils/demoDateHelpers'
+
 /**
  * Base factory class for generating entity test data.
  *
@@ -6,6 +8,7 @@
  * - Reduces boilerplate in test files and sample data
  * - Ensures type-safe entity creation with sensible defaults
  * - Supports easy customization via overrides
+ * - Provides date generation utilities for dynamic timestamps
  *
  * **Pattern:**
  * Each entity type gets its own factory (TodoItemFactory, DocumentFactory, etc.)
@@ -27,10 +30,47 @@
  *
  * // Create multiple with shared overrides
  * const highPriorityTodos = todoFactory.createMany(5, { priority: 'high' })
+ *
+ * // Use built-in date helpers
+ * const overdueTodo = todoFactory.create({
+ *   dueDate: this.dateAgo(7) // 7 days ago
+ * })
  * ```
  */
 export abstract class BaseEntityFactory<T extends { id: string }> {
   private counter = 0
+
+  // Date generation utilities (eliminates need for imports in subclasses)
+
+  /** Returns current timestamp as ISO string */
+  protected now(): string {
+    return nowISO()
+  }
+
+  /** Returns today's date (YYYY-MM-DD format) */
+  protected today(): string {
+    return todayISO()
+  }
+
+  /** Returns date N days in the past (YYYY-MM-DD format) */
+  protected dateAgo(days: number): string {
+    return daysAgo(days)
+  }
+
+  /** Returns date N days in the future (YYYY-MM-DD format) */
+  protected dateFuture(days: number): string {
+    return daysFromNow(days)
+  }
+
+  /** Returns timestamp N days in the past (ISO format) */
+  protected dateAgoISO(days: number, hours = 0, minutes = 0): string {
+    return daysAgoISO(days, hours, minutes)
+  }
+
+  /** Returns timestamp N days in the future (ISO format) */
+  protected dateFutureISO(days: number, hours = 0, minutes = 0): string {
+    return daysFromNowISO(days, hours, minutes)
+  }
 
   /**
    * Creates a single entity with optional field overrides.

@@ -145,11 +145,11 @@ export const appConfig: AppConfig = {
       enabled: true,
     },
   ],
-  // Constructivism theme configuration (default)
-  // Colors inspired by 1920s Russian avant-garde art (Stepanova, Popova, Exter)
-  // This provides warm modernist aesthetics with bold geometric forms
   theme: {
-    name: "constructivism", // Theme name for extensibility
+    name: "constructivism",
+    displayName: "Constructivism",
+    description: "Warm modernist aesthetics with bold geometric forms",
+    inspiration: "1920s Russian avant-garde art (Stepanova, Popova, Exter)",
     primaryColor: "#8B0000", // Dark red (Constructivism)
     secondaryColor: "#D4A574", // Warm tan (Constructivism)
     mode: "light",

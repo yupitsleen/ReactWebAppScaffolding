@@ -137,6 +137,9 @@ export interface DashboardSection {
 
 export interface ThemeConfig {
   name?: 'constructivism' | 'basic' | string // Theme name for extensibility
+  displayName?: string // Human-readable theme name
+  description?: string // Theme description for UI display
+  inspiration?: string // Design inspiration (e.g., "1920s Russian avant-garde art")
   primaryColor: string
   secondaryColor: string
   mode: 'light' | 'dark'

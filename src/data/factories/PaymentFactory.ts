@@ -1,6 +1,5 @@
 import { BaseEntityFactory } from './BaseEntityFactory'
 import type { Payment } from '../../types/portal'
-import { daysFromNow, daysAgo, todayISO } from '../../utils/demoDateHelpers'
 
 /**
  * Factory for creating Payment test data.
@@ -46,7 +45,7 @@ export class PaymentFactory extends BaseEntityFactory<Payment> {
       id: overrides?.id || this.generateId(),
       description: overrides?.description || this.getRandomDescription(),
       amount: overrides?.amount ?? amount,
-      dueDate: overrides?.dueDate || daysFromNow(30), // Dynamic: 30 days from today
+      dueDate: overrides?.dueDate || this.dateFuture(30), // Dynamic: 30 days from today
       status: overrides?.status || 'pending',
       category: overrides?.category || this.getRandomCategory(),
       paidDate: overrides?.paidDate,
@@ -79,7 +78,7 @@ export class PaymentFactory extends BaseEntityFactory<Payment> {
   createPaid(overrides?: Partial<Payment>): Payment {
     return this.create({
       status: 'paid',
-      paidDate: todayISO(), // Dynamic: today's date
+      paidDate: this.today(), // Dynamic: today's date
       paymentMethod: this.getRandomPaymentMethod(),
       ...overrides
     })
@@ -91,7 +90,7 @@ export class PaymentFactory extends BaseEntityFactory<Payment> {
   createOverdue(overrides?: Partial<Payment>): Payment {
     return this.create({
       status: 'overdue',
-      dueDate: daysAgo(15), // Dynamic: 15 days ago
+      dueDate: this.dateAgo(15), // Dynamic: 15 days ago
       ...overrides
     })
   }

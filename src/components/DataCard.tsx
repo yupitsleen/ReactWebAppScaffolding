@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from 'react'
 import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
-import { TrendingUp, TrendingDown } from '@mui/icons-material'
+import { TrendingUp, TrendingDown, ArrowForward } from '@mui/icons-material'
 import type { DashboardCard } from '../types/portal'
 import Sparkline from './Sparkline'
 import { getIconComponent } from '../utils/iconRegistry'
@@ -51,6 +51,7 @@ const DataCard = memo<DataCardProps>(({
         flexDirection: 'column',
         border: 'none',
         textAlign: 'inherit',
+        position: 'relative',
         ...(onClick && {
           '&:hover': {
             transform: 'translateY(-4px)',
@@ -157,6 +158,35 @@ const DataCard = memo<DataCardProps>(({
               height={28}
               showTrend={false}
             />
+          </Box>
+        )}
+
+        {/* Click affordance indicator - only shown for clickable cards */}
+        {onClick && (
+          <Box
+            aria-hidden="true"
+            sx={{
+              position: 'absolute',
+              bottom: 12,
+              right: 12,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              opacity: 0,
+              transition: 'opacity 0.2s ease-in-out',
+              color: 'primary.main',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              '.MuiCard-root:hover &': {
+                opacity: 1,
+              },
+              '.MuiCard-root:focus-visible &': {
+                opacity: 1,
+              },
+            }}
+          >
+            View details
+            <ArrowForward sx={{ fontSize: '0.875rem' }} />
           </Box>
         )}
 

@@ -1,6 +1,5 @@
 import { BaseEntityFactory } from './BaseEntityFactory'
 import type { Document } from '../../types/portal'
-import { nowISO } from '../../utils/demoDateHelpers'
 
 /**
  * Factory for creating Document test data.
@@ -30,7 +29,7 @@ export class DocumentFactory extends BaseEntityFactory<Document> {
       type,
       url: overrides?.url || `/files/sample-${this.generateId()}.${type.toLowerCase()}`,
       uploadedBy: overrides?.uploadedBy || 'user@example.com',
-      uploadedAt: overrides?.uploadedAt || nowISO(), // Dynamic: current timestamp
+      uploadedAt: overrides?.uploadedAt || this.now(), // Dynamic: current timestamp
       size: overrides?.size || this.getRandomFileSize(),
       shared: overrides?.shared ?? false,
       ...overrides

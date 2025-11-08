@@ -1,10 +1,10 @@
 # Code Review - feat/childishDesign Branch
 
-**Progress: 20/40 issues resolved (50%)**
+**Progress: 23/40 issues resolved (58%)**
 
 ---
 
-## DRY Violations (2/3 resolved)
+## DRY Violations (3/3 resolved) ✅
 
 ### ✅ **src/hooks/useFeature.ts:27-62** - Hardcoded default feature flags duplicated from configurableData
 **Fixed**: Extracted `DEFAULT_FEATURES` constant to `configurableData.ts` and imported it in `useFeature.ts`. Now defined once and reused everywhere.
@@ -12,8 +12,16 @@
 ### ✅ **src/hooks/useFeature.ts:74-84** - Redundant dot notation parsing logic
 **Fixed**: Simplified the `isEnabled` function to use optional chaining (`?.`) instead of manual null checking. Reduced from 13 lines to 6 lines while maintaining the same functionality.
 
-### ❌ **src/data/factories/*.ts** - Repeated date generation pattern
-All four factory files (`DiscussionFactory.ts`, `DocumentFactory.ts`, `PaymentFactory.ts`, `TodoItemFactory.ts`) implement the same pattern of importing date helpers and using them for dynamic timestamps. While using the helpers is good, the pattern could be abstracted to the `BaseEntityFactory`.
+### ✅ **src/data/factories/*.ts** - Repeated date generation pattern
+**Fixed**: Added date generation utility methods to `BaseEntityFactory` that all factory subclasses inherit:
+- `now()` - Current timestamp (ISO)
+- `today()` - Today's date (YYYY-MM-DD)
+- `dateAgo(days)` - Date N days in the past
+- `dateFuture(days)` - Date N days in the future
+- `dateAgoISO(days, hours, minutes)` - Timestamp in the past (ISO)
+- `dateFutureISO(days, hours, minutes)` - Timestamp in the future (ISO)
+
+Removed redundant imports from 4 factory files. Cleaner API: factories call `this.now()` instead of importing `nowISO()`.
 
 ---
 
@@ -68,7 +76,7 @@ The `iconMap` object hard-codes icon names to components. New icons require modi
 
 ---
 
-## KISS Violations (3/4 resolved)
+## KISS Violations (4/4 resolved) ✅✅✅
 
 ### ✅ **src/hooks/useFeature.ts:74-84** - Overly complex path resolution
 **Fixed**: Simplified using optional chaining as suggested:
@@ -87,8 +95,20 @@ Also improved type safety by replacing `any` with `unknown` and proper type asse
 ### ✅ **src/pages/Discussions.tsx:27-73** - Overly complex state management
 **Fixed**: Extracted to `useDiscussionReplies` hook. State management is now encapsulated in a single, focused hook with clean API methods (`showReply`, `hideReply`, `updateReplyText`, `clearReply`).
 
-### ❌ **src/theme/portalTheme.ts:11-29** - Complex conditional CSS variable injection
-The `injectCSSVariables` function has nested conditionals checking theme type and mode. This could be simplified with a theme preset lookup table.
+### ✅ **src/theme/portalTheme.ts:11-29** - Complex conditional CSS variable injection
+**Fixed**: Created [src/theme/themePresets.ts](src/theme/themePresets.ts) with theme preset lookup system. The `injectCSSVariables` function was simplified from 30 lines of nested conditionals to 10 lines using preset lookups:
+
+```typescript
+const preset = getThemePreset(themeConfig.name)
+const modeValues = themeConfig.mode === 'light' ? preset.light : preset.dark
+root.style.setProperty('--primary-color', modeValues.primary || themeConfig.primaryColor)
+// ... etc
+```
+
+Benefits:
+- New themes require only adding a preset object, no logic changes
+- Cleaner separation of theme data from theme logic
+- Runtime validation added via `validateThemeConfig()`
 
 ### ✅ **src/data/configurableData.ts:446-502** - Massive nested feature flags object
 **Fixed**: Extracted feature flags to dedicated [src/data/featureFlags.ts](src/data/featureFlags.ts) file. The 56-line nested object is now in its own module with:
@@ -112,7 +132,7 @@ The hook implements custom feature resolution logic instead of leveraging existi
 
 ---
 
-## Type Safety Issues (2/3 resolved)
+## Type Safety Issues (3/3 resolved) ✅
 
 ### ✅ **src/hooks/useFeature.ts:76** - Using `any` type for path traversal
 **Fixed**: Changed from `any` to `unknown` with proper type assertion:
@@ -132,8 +152,22 @@ const [showReplyBox, setShowReplyBox] = useState<Record<string, boolean>>({})
 ```
 This provides better type safety and is the TypeScript-recommended pattern for key-value objects.
 
-### ❌ **src/theme/portalTheme.ts:76** - Type assertions without validation
-The code uses typed objects without runtime validation. If `themeConfig.primaryColor` is undefined, the comparisons could fail silently.
+### ✅ **src/theme/portalTheme.ts:76** - Type assertions without validation
+**Fixed**: Added `validateThemeConfig()` function that performs runtime validation:
+```typescript
+const validateThemeConfig = (themeConfig: ThemeConfig): void => {
+  if (!themeConfig.primaryColor || typeof themeConfig.primaryColor !== 'string') {
+    throw new Error('ThemeConfig.primaryColor is required and must be a string')
+  }
+  if (!themeConfig.secondaryColor || typeof themeConfig.secondaryColor !== 'string') {
+    throw new Error('ThemeConfig.secondaryColor is required and must be a string')
+  }
+  if (!themeConfig.mode || !['light', 'dark'].includes(themeConfig.mode)) {
+    throw new Error('ThemeConfig.mode must be either "light" or "dark"')
+  }
+}
+```
+Called at the start of `injectCSSVariables()` to catch invalid configs before rendering.
 
 ---
 
@@ -181,7 +215,7 @@ The factories now use `daysAgo()`, `daysFromNow()`, etc., but there are no tests
 
 ---
 
-## Code Organization (1/4 resolved)
+## Code Organization (2/4 resolved)
 
 ### ❌ **src/hooks/useFeature.ts** - Feature flag logic mixed with navigation logic
 The hook contains both generic feature checking (`isEnabled`) and domain-specific logic (`isPageEnabled`, `canPerformCrud`, `getEnabledPages`). The domain-specific logic should be in separate hooks or utilities.
@@ -200,12 +234,18 @@ The `iconRegistry` only contains ~11 icons but ActionMenu defines 19 icons. This
 
 The 56-line nested object is now properly separated from main configuration.
 
-### ❌ **src/theme/portalTheme.ts:11-29** - CSS variable injection mixed with theme creation
-The `injectCSSVariables` function has Constructivism-specific logic embedded. Theme-specific variable mappings should be in theme preset files, not in the base theme creator.
+### ✅ **src/theme/portalTheme.ts:11-29** - CSS variable injection mixed with theme creation
+**Fixed**: Created [src/theme/themePresets.ts](src/theme/themePresets.ts) to separate theme-specific variable mappings from the base theme creator:
+- Constructivism preset with light/dark mode values
+- Basic preset with light/dark mode values
+- `getThemePreset()` lookup function
+- Theme preset registry for easy extensibility
+
+The `injectCSSVariables` function now uses preset lookups instead of embedded conditionals. Theme data is separated from theme logic.
 
 ---
 
-## Accessibility (2/3 resolved)
+## Accessibility (3/3 resolved) ✅
 
 ### ✅ **src/pages/Discussions.tsx:153-188** - Reply TextField missing label
 **Fixed**: Added `label="Reply"` to TextField. Screen readers now have proper label context.
@@ -213,14 +253,35 @@ The `injectCSSVariables` function has Constructivism-specific logic embedded. Th
 ### ✅ **src/pages/Discussions.tsx:303-333** - Priority Chip selection not keyboard accessible
 **Fixed**: Replaced Chips with ToggleButtonGroup which provides built-in keyboard navigation (Arrow keys, Space/Enter to select) and proper ARIA labels.
 
-### ❌ **src/components/DataCard.tsx** - Removed click hint reduces discoverability
-The removal of `showClickHint` (lines 151-173 deleted) eliminates the "View details" hint. Users may not know cards are clickable.
-
-**Accessibility concern**: No visual affordance for clickability (cursor change isn't sufficient for accessibility).
+### ✅ **src/components/DataCard.tsx** - Removed click hint reduces discoverability
+**Fixed**: Added a "View details →" affordance indicator that appears on hover and keyboard focus:
+```typescript
+{onClick && (
+  <Box
+    aria-hidden="true"
+    sx={{
+      position: 'absolute',
+      bottom: 12,
+      right: 12,
+      opacity: 0,
+      '.MuiCard-root:hover &': { opacity: 1 },
+      '.MuiCard-root:focus-visible &': { opacity: 1 },
+    }}
+  >
+    View details
+    <ArrowForward />
+  </Box>
+)}
+```
+Benefits:
+- Hidden by default to avoid visual clutter
+- Appears on both hover (mouse) and focus-visible (keyboard)
+- Provides clear actionable feedback
+- Works with existing `aria-label` for screen readers
 
 ---
 
-## Hardcoding (2/4 resolved)
+## Hardcoding (3/4 resolved)
 
 ### ✅ **src/theme/portalTheme.ts:13** - Magic color string for theme detection
 **Fixed**: Added `name: 'constructivism'` to theme config. Changed detection logic to use semantic theme name instead of brittle color value check.
@@ -228,12 +289,19 @@ The removal of `showClickHint` (lines 151-173 deleted) eliminates the "View deta
 ### ✅ **src/hooks/useFeature.ts:27-62** - Default feature flags hard-coded
 **Fixed**: Extracted to `DEFAULT_FEATURES` constant in `configurableData.ts`. Defaults are now defined in one place.
 
-### ❌ **src/data/configurableData.ts:147** - Theme comment hard-coded in data
+### ✅ **src/data/configurableData.ts:147** - Theme comment hard-coded in data
+**Fixed**: Moved theme metadata from comments to structured `ThemeConfig` properties:
 ```typescript
-// Constructivism theme configuration (default)
-// Colors inspired by 1920s Russian avant-garde art (Stepanova, Popova, Exter)
+theme: {
+  name: "constructivism",
+  displayName: "Constructivism",
+  description: "Warm modernist aesthetics with bold geometric forms",
+  inspiration: "1920s Russian avant-garde art (Stepanova, Popova, Exter)",
+  primaryColor: "#8B0000",
+  // ...
+}
 ```
-Theme metadata is in a comment instead of structured data. Should be in theme object properties.
+Updated `ThemeConfig` interface with optional `displayName`, `description`, and `inspiration` fields. Theme metadata is now accessible for UI theme switchers and documentation generation.
 
 ### ❌ **src/components/ActionMenu.tsx:42-60** - Icon name strings duplicated
 Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object keys. These should come from a shared enum or constant.
@@ -242,18 +310,18 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 
 ## Summary Statistics
 
-- **DRY Violations**: 2/3 resolved (67%)
+- **DRY Violations**: 3/3 resolved (100%) ✅✅✅
 - **SOLID Violations**: 3/9 resolved (SRP: 1/2, OCP: 2/3, DIP: 0/2) (33%)
-- **KISS Violations**: 3/4 resolved (75%) ✅
+- **KISS Violations**: 4/4 resolved (100%) ✅✅✅✅
 - **Extensibility Pattern Violations**: 2/3 resolved (67%)
-- **Type Safety Issues**: 2/3 resolved (67%)
+- **Type Safety Issues**: 3/3 resolved (100%) ✅✅✅
 - **Performance Issues**: 4/4 resolved (100%) ✅✅✅
 - **Testing Issues**: 0/3 resolved (0%)
-- **Code Organization**: 1/4 resolved (25%)
-- **Accessibility**: 2/3 resolved (67%)
-- **Hardcoding**: 2/4 resolved (50%)
+- **Code Organization**: 2/4 resolved (50%)
+- **Accessibility**: 3/3 resolved (100%) ✅✅✅
+- **Hardcoding**: 3/4 resolved (75%)
 
-**Total Progress: 20/40 issues resolved (50%)** 🎯
+**Total Progress: 27/40 issues resolved (68%)** 🎯🎯
 
 ---
 

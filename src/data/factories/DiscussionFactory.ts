@@ -1,6 +1,5 @@
 import { BaseEntityFactory } from './BaseEntityFactory'
 import type { Discussion, Reply } from '../../types/portal'
-import { nowISO, daysAgoISO } from '../../utils/demoDateHelpers'
 
 /**
  * Factory for creating Discussion test data.
@@ -49,7 +48,7 @@ export class DiscussionFactory extends BaseEntityFactory<Discussion> {
       author: overrides?.author || author.name,
       authorRole: overrides?.authorRole || author.role,
       content: overrides?.content || this.getRandomContent(),
-      createdAt: overrides?.createdAt || nowISO(), // Dynamic: current timestamp
+      createdAt: overrides?.createdAt || this.now(), // Dynamic: current timestamp
       replies: overrides?.replies || [],
       priority: overrides?.priority || 'normal',
       resolved: overrides?.resolved ?? false,
@@ -81,14 +80,14 @@ export class DiscussionFactory extends BaseEntityFactory<Discussion> {
   createWithReplies(replyCount: number, overrides?: Partial<Discussion>): Discussion {
     const replies: Reply[] = Array.from({ length: replyCount }, (_, i) => {
       const author = this.authors[i % this.authors.length]
-      // Use daysAgoISO to create replies in the past, with each reply 1 hour apart
+      // Create replies in the past, with each reply 1 hour apart
       const hoursAgo = replyCount - i // Most recent reply is newest
       return {
         id: `reply-${Date.now()}-${i}`,
         author: author.name,
         authorRole: author.role,
         content: `Reply ${i + 1}: ${this.getRandomContent()}`,
-        createdAt: daysAgoISO(0, hoursAgo, 0) // Dynamic: hours ago from today
+        createdAt: this.dateAgoISO(0, hoursAgo, 0) // Dynamic: hours ago from today
       }
     })
 

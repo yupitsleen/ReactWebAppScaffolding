@@ -1,39 +1,46 @@
 import { createTheme } from '@mui/material/styles'
 import type { ThemeConfig } from '../types/portal'
+import { getThemePreset } from './themePresets'
 // Layout classes are available but not applied via theme - use className prop on Box components
 // import { layoutClasses } from './layoutClasses'
 
+/**
+ * Validate theme configuration
+ * Ensures required properties are present and valid
+ */
+const validateThemeConfig = (themeConfig: ThemeConfig): void => {
+  if (!themeConfig.primaryColor || typeof themeConfig.primaryColor !== 'string') {
+    throw new Error('ThemeConfig.primaryColor is required and must be a string')
+  }
+  if (!themeConfig.secondaryColor || typeof themeConfig.secondaryColor !== 'string') {
+    throw new Error('ThemeConfig.secondaryColor is required and must be a string')
+  }
+  if (!themeConfig.mode || !['light', 'dark'].includes(themeConfig.mode)) {
+    throw new Error('ThemeConfig.mode must be either "light" or "dark"')
+  }
+}
+
 // Inject CSS custom properties for dynamic color management
 const injectCSSVariables = (themeConfig: ThemeConfig) => {
-  const root = document.documentElement;
-  root.style.setProperty('--primary-color', themeConfig.primaryColor);
-  root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
+  validateThemeConfig(themeConfig)
 
-  // Constructivism theme colors
-  if (themeConfig.name === 'constructivism') {
-    // Light/Dark mode Constructivism
-    root.style.setProperty('--accent-color', themeConfig.mode === 'light' ? '#2C5F2D' : '#4A8A4B');
-    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1212');
-    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020');
-    root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#4A4040');
-    root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020');
+  const root = document.documentElement
+  const preset = getThemePreset(themeConfig.name)
+  const modeValues = themeConfig.mode === 'light' ? preset.light : preset.dark
 
-    // Update primary/secondary for dark mode visibility
-    if (themeConfig.mode === 'dark') {
-      root.style.setProperty('--primary-color', '#B22222');    // Brighter red
-      root.style.setProperty('--secondary-color', '#E0B896');  // Lighter tan
-    }
-  } else {
-    // Basic theme or custom theme colors (fallback)
-    root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
-    root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
-    root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#E0E0E0' : '#374151');
-    root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
-  }
+  // Set primary and secondary colors (with optional preset overrides)
+  root.style.setProperty('--primary-color', modeValues.primary || themeConfig.primaryColor)
+  root.style.setProperty('--secondary-color', modeValues.secondary || themeConfig.secondaryColor)
 
-  root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1A1A1A' : '#FAF7F2');
-  root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#4A4A4A' : '#D4A574');
-};
+  // Set theme-specific colors from preset
+  root.style.setProperty('--accent-color', modeValues.accent)
+  root.style.setProperty('--background-color', modeValues.background)
+  root.style.setProperty('--surface-color', modeValues.surface)
+  root.style.setProperty('--border-color', modeValues.border)
+  root.style.setProperty('--card-background', modeValues.cardBackground)
+  root.style.setProperty('--text-primary', modeValues.textPrimary)
+  root.style.setProperty('--text-secondary', modeValues.textSecondary)
+}
 
 // Create theme based on configuration
 export const createPortalTheme = (themeConfig: ThemeConfig) => {
@@ -83,13 +90,9 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       dark: '#7C3AED',
     },
     background: {
-      // Use CSS variable from injectCSSVariables which respects Constructivism theme
-      default: themeConfig.primaryColor === '#8B0000'
-        ? (themeConfig.mode === 'light' ? '#FAF7F2' : '#1A1212')
-        : (themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937'),
-      paper: themeConfig.primaryColor === '#8B0000'
-        ? (themeConfig.mode === 'light' ? '#FFFFFF' : '#2A2020')
-        : (themeConfig.mode === 'light' ? '#FFFFFF' : '#374151'),
+      // Use values from theme preset for consistency
+      default: getThemePreset(themeConfig.name)[themeConfig.mode].background,
+      paper: getThemePreset(themeConfig.name)[themeConfig.mode].surface,
     },
     text: {
       primary: themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB',
