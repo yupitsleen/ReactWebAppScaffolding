@@ -1,4 +1,4 @@
-import type { AppConfig, UserType } from "../types/portal";
+import type { AppConfig, UserType, FeatureFlags } from "../types/portal";
 
 export const USER_TYPES: UserType[] = [
   "Customer",
@@ -6,6 +6,43 @@ export const USER_TYPES: UserType[] = [
   "Service Provider",
   "Admin",
 ];
+
+// Default feature flags (when not configured)
+export const DEFAULT_FEATURES: FeatureFlags = {
+  darkMode: true,
+  highContrastMode: true,
+  layoutDensity: true,
+  commandPalette: true,
+  pdfExport: true,
+  keyboardShortcuts: true,
+  notifications: true,
+  pages: {},
+  authentication: {
+    enabled: true,
+    allowGuest: false,
+    rememberMe: true,
+    requireEmailVerification: false,
+  },
+  crud: {
+    create: true,
+    edit: true,
+    delete: true,
+    export: true,
+    import: false,
+  },
+  dashboard: {
+    cards: true,
+    sections: true,
+    charts: false,
+    quickActions: true,
+  },
+  advancedFiltering: true,
+  advancedSorting: true,
+  bulkOperations: false,
+  customFields: false,
+  webhooks: false,
+  apiAccess: false,
+};
 
 // Re-export sample data for demo purposes
 export {

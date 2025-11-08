@@ -1,15 +1,13 @@
 # Code Review - feat/childishDesign Branch
 
-**Progress: 1/40 issues resolved**
+**Progress: 4/40 issues resolved**
 
 ---
 
-## DRY Violations (0/3 resolved)
+## DRY Violations (1/3 resolved)
 
-### ❌ **src/hooks/useFeature.ts:27-62** - Hardcoded default feature flags duplicated from configurableData
-The `defaultFeatures` object in `useFeature.ts` duplicates the exact same structure that exists (or should exist) in `configurableData.ts`. This violates DRY - if feature defaults change, they need to be updated in two places.
-
-**Fix**: Import default features from configurableData or define them once in a shared constant.
+### ✅ **src/hooks/useFeature.ts:27-62** - Hardcoded default feature flags duplicated from configurableData
+**Fixed**: Extracted `DEFAULT_FEATURES` constant to `configurableData.ts` and imported it in `useFeature.ts`. Now defined once and reused everywhere.
 
 ### ❌ **src/hooks/useFeature.ts:74-84** - Redundant dot notation parsing logic
 The `isEnabled` function implements custom dot-notation parsing that could be replaced with a standard utility like `lodash.get` or extracted to a shared utility if used elsewhere.
@@ -19,7 +17,7 @@ All four factory files (`DiscussionFactory.ts`, `DocumentFactory.ts`, `PaymentFa
 
 ---
 
-## SOLID Violations (0/9 resolved)
+## SOLID Violations (1/9 resolved)
 
 ### Single Responsibility (0/2 resolved)
 
@@ -43,15 +41,15 @@ The `Discussions` component now manages:
 
 State management for reply functionality should be extracted to a custom hook like `useDiscussionReplies`.
 
-### Open/Closed (0/3 resolved)
+### Open/Closed (1/3 resolved)
 
 #### ❌ **src/components/ActionMenu.tsx:42-60** - Hard-coded icon mapping
 The `iconMap` object hard-codes icon names to components. New icons require modifying this file instead of using the centralized `iconRegistry.tsx`.
 
 **Fix**: Use `iconRegistry` from `src/utils/iconRegistry.tsx` or make ActionMenu accept icons as props.
 
-#### ❌ **src/hooks/useFeature.ts:27-62** - Default features hard-coded in hook
-Default feature flags are hard-coded in the hook instead of being configurable. This makes it impossible to change defaults without modifying the hook source code.
+#### ✅ **src/hooks/useFeature.ts:27-62** - Default features hard-coded in hook
+**Fixed**: Extracted to `DEFAULT_FEATURES` constant in `configurableData.ts`. Defaults are now configurable.
 
 #### ❌ **src/theme/portalTheme.ts:11-29** - Theme-specific logic hard-coded with magic color check
 The code checks `if (themeConfig.primaryColor === '#8B0000')` to apply Constructivism theme styles. This hard-codes the theme detection logic and makes it impossible to extend with new themes without modifying this file.
@@ -227,7 +225,7 @@ The removal of `showClickHint` (lines 151-173 deleted) eliminates the "View deta
 
 ---
 
-## Hardcoding (0/4 resolved)
+## Hardcoding (1/4 resolved)
 
 ### ❌ **src/theme/portalTheme.ts:13** - Magic color string for theme detection
 ```typescript
@@ -237,8 +235,8 @@ The Constructivism theme is detected by hard-coding its primary color value. Thi
 
 **Fix**: Add a `theme.name` property to configurableData.
 
-### ❌ **src/hooks/useFeature.ts:27-62** - Default feature flags hard-coded
-All default feature values are hard-coded in the hook instead of being defined in configurableData or a constants file.
+### ✅ **src/hooks/useFeature.ts:27-62** - Default feature flags hard-coded
+**Fixed**: Extracted to `DEFAULT_FEATURES` constant in `configurableData.ts`. Defaults are now defined in one place.
 
 ### ❌ **src/data/configurableData.ts:147** - Theme comment hard-coded in data
 ```typescript
@@ -254,8 +252,8 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 
 ## Summary Statistics
 
-- **DRY Violations**: 0/3 resolved
-- **SOLID Violations**: 0/9 resolved (SRP: 0/2, OCP: 0/3, DIP: 0/2)
+- **DRY Violations**: 1/3 resolved
+- **SOLID Violations**: 1/9 resolved (SRP: 0/2, OCP: 1/3, DIP: 0/2)
 - **KISS Violations**: 0/4 resolved
 - **Extensibility Pattern Violations**: 0/3 resolved
 - **Type Safety Issues**: 0/3 resolved
@@ -263,16 +261,16 @@ Icon name strings like `"Download"`, `"Share"`, etc. are hard-coded as object ke
 - **Testing Issues**: 0/3 resolved
 - **Code Organization**: 0/4 resolved
 - **Accessibility**: 0/3 resolved
-- **Hardcoding**: 0/4 resolved
+- **Hardcoding**: 1/4 resolved
 
-**Total Progress: 1/40 issues resolved**
+**Total Progress: 4/40 issues resolved**
 
 ---
 
 ## Critical Issues Requiring Immediate Attention
 
 1. ✅ **[src/App.tsx:59](src/App.tsx#L59)** - Missing `appConfig` in useMemo dependencies (breaks reactivity) **FIXED**
-2. ❌ **[src/hooks/useFeature.ts:27-62](src/hooks/useFeature.ts#L27-L62)** - Duplicated default features (maintenance burden)
+2. ✅ **[src/hooks/useFeature.ts:27-62](src/hooks/useFeature.ts#L27-L62)** - Duplicated default features (maintenance burden) **FIXED**
 3. ❌ **[src/theme/portalTheme.ts:13](src/theme/portalTheme.ts#L13)** - Hard-coded theme detection (breaks extensibility)
 4. ❌ **[src/pages/Discussions.tsx:153](src/pages/Discussions.tsx#L153)** - Missing accessibility labels (WCAG violation)
 5. ❌ **[src/components/ActionMenu.tsx:42](src/components/ActionMenu.tsx#L42)** - Not using iconRegistry (inconsistent pattern)

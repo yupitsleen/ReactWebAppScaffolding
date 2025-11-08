@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { appConfig } from '../data/configurableData'
+import { appConfig, DEFAULT_FEATURES } from '../data/configurableData'
 import type { FeatureFlags } from '../types/portal'
 
 /**
@@ -25,44 +25,7 @@ import type { FeatureFlags } from '../types/portal'
  */
 export function useFeature() {
   const features = useMemo(() => {
-    // Default features if not configured (all enabled)
-    const defaultFeatures: FeatureFlags = {
-      darkMode: true,
-      highContrastMode: true,
-      layoutDensity: true,
-      commandPalette: true,
-      pdfExport: true,
-      keyboardShortcuts: true,
-      notifications: true,
-      pages: {},
-      authentication: {
-        enabled: true,
-        allowGuest: false,
-        rememberMe: true,
-        requireEmailVerification: false,
-      },
-      crud: {
-        create: true,
-        edit: true,
-        delete: true,
-        export: true,
-        import: false,
-      },
-      dashboard: {
-        cards: true,
-        sections: true,
-        charts: false,
-        quickActions: true,
-      },
-      advancedFiltering: true,
-      advancedSorting: true,
-      bulkOperations: false,
-      customFields: false,
-      webhooks: false,
-      apiAccess: false,
-    }
-
-    return appConfig.features || defaultFeatures
+    return appConfig.features || DEFAULT_FEATURES
   }, [])
 
   /**
