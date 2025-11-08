@@ -24,6 +24,30 @@ interface DashboardChartsProps {
 const DashboardCharts = memo(({ todos }: DashboardChartsProps) => {
   const theme = useTheme();
 
+  // Color legend component - memoized for performance
+  const ColorLegend = useMemo(() => {
+    return ({ data, totalCount }: { data: Array<{ name: string; value: number; color: string }>; totalCount: number }) => (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 2 }}>
+        {data.map((entry, index) => (
+          <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                width: 16,
+                height: 16,
+                backgroundColor: entry.color,
+                borderRadius: '2px',
+                flexShrink: 0
+              }}
+            />
+            <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+              {entry.name}: {entry.value} ({((entry.value / totalCount) * 100).toFixed(0)}%)
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    );
+  }, []);
+
   // Generate activity data (last 7 days)
   const activityData = useMemo(() => {
     const today = new Date();
@@ -201,25 +225,8 @@ const DashboardCharts = memo(({ todos }: DashboardChartsProps) => {
                 <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
-            {/* Color Legend */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mt: 2 }}>
-              {statusData.map((entry, index) => (
-                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      backgroundColor: entry.color,
-                      borderRadius: '2px',
-                      flexShrink: 0
-                    }}
-                  />
-                  <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
-                    {entry.name}: {entry.value} ({((entry.value / todos.length) * 100).toFixed(0)}%)
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
+            {/* Color Legend - memoized for performance */}
+            <ColorLegend data={statusData} totalCount={todos.length} />
           </CardContent>
         </Card>
 

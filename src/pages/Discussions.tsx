@@ -3,13 +3,13 @@ import { Typography, Card, CardContent, Chip, Box, Avatar, Button, TextField, Di
 import { discussions as initialDiscussions } from '../data/sampleData'
 import PageLayout from '../components/PageLayout'
 import { usePageLoading } from '../hooks/usePageLoading'
+import { useDiscussionReplies } from '../hooks/useDiscussionReplies'
 import type { Discussion, Reply } from '../types/portal'
 
 const Discussions = memo(() => {
   const [loading] = usePageLoading(false)
   const [discussions, setDiscussions] = useState<Discussion[]>(initialDiscussions)
-  const [replyText, setReplyText] = useState<Record<string, string>>({})
-  const [showReplyBox, setShowReplyBox] = useState<Record<string, boolean>>({})
+  const replyManager = useDiscussionReplies()
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [newPost, setNewPost] = useState({
     title: '',
@@ -28,7 +28,7 @@ const Discussions = memo(() => {
   }
 
   const handleAddReply = (discussionId: string) => {
-    const text = replyText[discussionId]?.trim()
+    const text = replyManager.getReplyText(discussionId).trim()
     if (!text) return
 
     const newReply: Reply = {
@@ -47,8 +47,7 @@ const Discussions = memo(() => {
       )
     )
 
-    setReplyText(prev => ({ ...prev, [discussionId]: '' }))
-    setShowReplyBox(prev => ({ ...prev, [discussionId]: false }))
+    replyManager.clearReply(discussionId)
   }
 
   const handleCreatePost = () => {
@@ -146,11 +145,11 @@ const Discussions = memo(() => {
               )}
 
               <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(0,0,0,0.1)' }}>
-                {!showReplyBox[discussion.id] ? (
+                {!replyManager.isReplyBoxVisible(discussion.id) ? (
                   <Button
                     size="small"
                     variant="text"
-                    onClick={() => setShowReplyBox(prev => ({ ...prev, [discussion.id]: true }))}
+                    onClick={() => replyManager.showReply(discussion.id)}
                   >
                     Reply
                   </Button>
@@ -162,17 +161,14 @@ const Discussions = memo(() => {
                       fullWidth
                       label="Reply"
                       placeholder="Write your reply..."
-                      value={replyText[discussion.id] || ''}
-                      onChange={(e) => setReplyText(prev => ({ ...prev, [discussion.id]: e.target.value }))}
+                      value={replyManager.getReplyText(discussion.id)}
+                      onChange={(e) => replyManager.updateReplyText(discussion.id, e.target.value)}
                       size="small"
                     />
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                       <Button
                         size="small"
-                        onClick={() => {
-                          setShowReplyBox(prev => ({ ...prev, [discussion.id]: false }))
-                          setReplyText(prev => ({ ...prev, [discussion.id]: '' }))
-                        }}
+                        onClick={() => replyManager.clearReply(discussion.id)}
                       >
                         Cancel
                       </Button>
@@ -180,7 +176,7 @@ const Discussions = memo(() => {
                         size="small"
                         variant="contained"
                         onClick={() => handleAddReply(discussion.id)}
-                        disabled={!replyText[discussion.id]?.trim()}
+                        disabled={!replyManager.getReplyText(discussion.id).trim()}
                       >
                         Post Reply
                       </Button>

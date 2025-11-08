@@ -1,3 +1,6 @@
+// Re-export FeatureFlags from centralized location
+export type { FeatureFlags } from '../data/featureFlags'
+
 export type UserType = 'Customer' | 'Vendor' | 'Service Provider' | 'Admin'
 
 export interface User {
@@ -283,54 +286,7 @@ export interface EntityPages {
 }
 
 // Feature Flags System
-export interface FeatureFlags {
-  // UI Features
-  darkMode: boolean
-  highContrastMode: boolean
-  layoutDensity: boolean
-  commandPalette: boolean
-  pdfExport: boolean
-  keyboardShortcuts: boolean
-  notifications: boolean
-
-  // Pages (mapped to navigation ids)
-  pages: {
-    [pageId: string]: boolean
-  }
-
-  // Authentication
-  authentication: {
-    enabled: boolean
-    allowGuest: boolean
-    rememberMe: boolean
-    requireEmailVerification: boolean
-  }
-
-  // CRUD Operations (can be overridden per entity)
-  crud: {
-    create: boolean
-    edit: boolean
-    delete: boolean
-    export: boolean
-    import: boolean
-  }
-
-  // Dashboard Features
-  dashboard: {
-    cards: boolean
-    sections: boolean
-    charts: boolean
-    quickActions: boolean
-  }
-
-  // Advanced Features
-  advancedFiltering: boolean
-  advancedSorting: boolean
-  bulkOperations: boolean
-  customFields: boolean
-  webhooks: boolean
-  apiAccess: boolean
-}
+// FeatureFlags interface is now defined in src/data/featureFlags.ts and re-exported above
 
 export interface AppConfig {
   appName: string
