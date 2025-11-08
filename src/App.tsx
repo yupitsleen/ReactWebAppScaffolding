@@ -58,7 +58,7 @@ function AuthenticatedApp() {
   const routes = useMemo(() => {
     const allRoutes = generateRoutesFromConfig(appConfig)
     return allRoutes.filter(route => isPageEnabled(route.id))
-  }, [isPageEnabled])
+  }, [isPageEnabled, appConfig])
 
   // Enable keyboard shortcuts only if feature is enabled
   useKeyboardShortcuts({ enabled: isEnabled('keyboardShortcuts') })
