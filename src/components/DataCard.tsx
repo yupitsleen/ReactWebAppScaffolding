@@ -1,9 +1,10 @@
 import { memo, type ReactNode } from 'react'
 import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
-import * as Icons from '@mui/icons-material'
+import { TrendingUp, TrendingDown } from '@mui/icons-material'
 import { appConfig } from '../data/configurableData'
 import type { DashboardCard } from '../types/portal'
 import Sparkline from './Sparkline'
+import { getIconComponent } from '../utils/iconRegistry'
 
 interface DataCardProps {
   card: DashboardCard
@@ -29,14 +30,7 @@ const DataCard = memo<DataCardProps>(({
   sparklineData,
   sparklineColor
 }) => {
-  const getIconComponent = (iconName: string): ReactNode => {
-    const IconComponent = Icons[iconName as keyof typeof Icons] as React.ComponentType
-    return IconComponent ? <IconComponent /> : null
-  }
-
   const displayIcon = icon || (card.icon && getIconComponent(appConfig.theme.iconMappings[card.icon] || card.icon))
-  const TrendUpIcon = Icons.TrendingUp
-  const TrendDownIcon = Icons.TrendingDown
 
   return (
     <Card
@@ -117,7 +111,7 @@ const DataCard = memo<DataCardProps>(({
                 color: trend.direction === 'up' ? '#047857' : '#DC2626',
               }}
             >
-              {trend.direction === 'up' ? <TrendUpIcon sx={{ fontSize: '1rem' }} aria-hidden="true" /> : <TrendDownIcon sx={{ fontSize: '1rem' }} aria-hidden="true" />}
+              {trend.direction === 'up' ? <TrendingUp sx={{ fontSize: '1rem' }} aria-hidden="true" /> : <TrendingDown sx={{ fontSize: '1rem' }} aria-hidden="true" />}
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
                 {trend.value}
               </Typography>

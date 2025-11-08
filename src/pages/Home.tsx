@@ -12,8 +12,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-import { PictureAsPdf as PdfIcon } from "@mui/icons-material";
-import * as Icons from "@mui/icons-material";
+import { PictureAsPdf as PdfIcon, Warning, CheckCircle } from "@mui/icons-material";
 import { serviceInfo } from "../data/sampleData";
 import { appConfig } from "../data/configurableData";
 import PageLayout from "../components/PageLayout";
@@ -312,7 +311,7 @@ const Home = memo(() => {
                               <ListItem key={String(item.id)}>
                                 {section.dataSource === "todoItems" && (
                                   <>
-                                    <Icons.Warning
+                                    <Warning
                                       color="error"
                                       sx={{ mr: 1 }}
                                     />
@@ -357,7 +356,7 @@ const Home = memo(() => {
                               py: 2,
                             }}
                           >
-                            <Icons.CheckCircle color="success" sx={{ mr: 1 }} />
+                            <CheckCircle color="success" sx={{ mr: 1 }} />
                             <Typography variant="body2" color="text.secondary">
                               {section.dataSource === "todoItems"
                                 ? "No urgent tasks at this time"

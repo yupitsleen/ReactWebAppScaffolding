@@ -1,6 +1,22 @@
 import { memo, type ReactNode } from 'react'
 import { Box, Button, IconButton, Tooltip } from '@mui/material'
-import * as Icons from '@mui/icons-material'
+import {
+  Download,
+  Share,
+  Edit,
+  Delete,
+  Support,
+  Visibility,
+  CheckCircle,
+  PlayArrow,
+  Pause,
+  Refresh,
+  Add,
+  Search,
+  FilterList,
+  Sort,
+  MoreVert
+} from '@mui/icons-material'
 import type { ActionButton } from '../types/portal'
 import { useEntityActions } from '../hooks/useEntityActions'
 
@@ -24,22 +40,22 @@ const ActionMenu = memo<ActionMenuProps>(({
   const { executeAction, isActionAvailable } = useEntityActions()
 
   const iconMap: Record<string, ReactNode> = {
-    Download: <Icons.Download />,
-    Share: <Icons.Share />,
-    Edit: <Icons.Edit />,
-    Delete: <Icons.Delete />,
-    Support: <Icons.Support />,
-    View: <Icons.Visibility />,
-    Complete: <Icons.CheckCircle />,
-    Resume: <Icons.PlayArrow />,
-    Pend: <Icons.Pause />,
-    Resolve: <Icons.CheckCircle />,
-    Reopen: <Icons.Refresh />,
-    Add: <Icons.Add />,
-    Search: <Icons.Search />,
-    Filter: <Icons.FilterList />,
-    Sort: <Icons.Sort />,
-    More: <Icons.MoreVert />,
+    Download: <Download />,
+    Share: <Share />,
+    Edit: <Edit />,
+    Delete: <Delete />,
+    Support: <Support />,
+    View: <Visibility />,
+    Complete: <CheckCircle />,
+    Resume: <PlayArrow />,
+    Pend: <Pause />,
+    Resolve: <CheckCircle />,
+    Reopen: <Refresh />,
+    Add: <Add />,
+    Search: <Search />,
+    Filter: <FilterList />,
+    Sort: <Sort />,
+    More: <MoreVert />,
   }
 
   const availableActions = actions.filter(action =>
