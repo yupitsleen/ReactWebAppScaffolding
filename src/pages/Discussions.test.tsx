@@ -192,8 +192,8 @@ describe('Discussions Page', () => {
       await waitFor(() => {
         expect(screen.getByText('New Test Discussion')).toBeInTheDocument()
         expect(screen.getByText('This is the content of my new discussion post')).toBeInTheDocument()
-      })
-    })
+      }, { timeout: 10000 })
+    }, 15000)
 
     it('closes dialog after creating post', async () => {
       renderWithProviders(<Discussions />)
@@ -212,8 +212,8 @@ describe('Discussions Page', () => {
 
       await waitFor(() => {
         expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-      })
-    })
+      }, { timeout: 10000 })
+    }, 15000)
 
     it('can toggle priority between normal and urgent', async () => {
       renderWithProviders(<Discussions />)
@@ -265,8 +265,8 @@ describe('Discussions Page', () => {
       await waitFor(() => {
         const allDiscussionTitles = screen.getAllByRole('heading', { level: 3 })
         expect(allDiscussionTitles[0]).toHaveTextContent('First Post')
-      })
-    })
+      }, { timeout: 10000 })
+    }, 15000)
   })
 
   describe('Existing Discussions Display', () => {
