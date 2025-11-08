@@ -1,7 +1,6 @@
 import { memo, type ReactNode } from 'react'
 import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
-import * as Icons from '@mui/icons-material'
-import { appConfig } from '../data/configurableData'
+import { TrendingUp, TrendingDown, ArrowForward } from '@mui/icons-material'
 import type { DashboardCard } from '../types/portal'
 import Sparkline from './Sparkline'
 
@@ -9,8 +8,12 @@ interface DataCardProps {
   card: DashboardCard
   value: string | number
   onClick?: () => void
+  /**
+   * Icon to display in the card
+   * REQUIRED: Must be resolved by caller via iconRegistry
+   * This follows Dependency Inversion Principle - DataCard doesn't depend on iconRegistry
+   */
   icon?: ReactNode
-  showClickHint?: boolean
   children?: ReactNode
   trend?: {
     direction: 'up' | 'down'
@@ -25,20 +28,12 @@ const DataCard = memo<DataCardProps>(({
   value,
   onClick,
   icon,
-  showClickHint = true,
   children,
   trend,
   sparklineData,
   sparklineColor
 }) => {
-  const getIconComponent = (iconName: string): ReactNode => {
-    const IconComponent = Icons[iconName as keyof typeof Icons] as React.ComponentType
-    return IconComponent ? <IconComponent /> : null
-  }
-
-  const displayIcon = icon || (card.icon && getIconComponent(appConfig.theme.iconMappings[card.icon] || card.icon))
-  const TrendUpIcon = Icons.TrendingUp
-  const TrendDownIcon = Icons.TrendingDown
+  const displayIcon = icon
 
   return (
     <Card
@@ -60,6 +55,7 @@ const DataCard = memo<DataCardProps>(({
         flexDirection: 'column',
         border: 'none',
         textAlign: 'inherit',
+        position: 'relative',
         ...(onClick && {
           '&:hover': {
             transform: 'translateY(-4px)',
@@ -86,7 +82,7 @@ const DataCard = memo<DataCardProps>(({
       onClick={onClick}
     >
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
           {displayIcon && (
             <Box
               aria-hidden="true"
@@ -97,7 +93,7 @@ const DataCard = memo<DataCardProps>(({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.2)} 100%)`,
+                background: (theme) => alpha(theme.palette[card.color]?.main || theme.palette.primary.main, 0.15),
                 color: `${card.color}.main`,
                 fontSize: 'calc(1.75rem * var(--density-font-scale))',
               }}
@@ -119,7 +115,7 @@ const DataCard = memo<DataCardProps>(({
                 color: trend.direction === 'up' ? '#047857' : '#DC2626',
               }}
             >
-              {trend.direction === 'up' ? <TrendUpIcon sx={{ fontSize: '1rem' }} aria-hidden="true" /> : <TrendDownIcon sx={{ fontSize: '1rem' }} aria-hidden="true" />}
+              {trend.direction === 'up' ? <TrendingUp sx={{ fontSize: '1rem' }} aria-hidden="true" /> : <TrendingDown sx={{ fontSize: '1rem' }} aria-hidden="true" />}
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
                 {trend.value}
               </Typography>
@@ -133,7 +129,7 @@ const DataCard = memo<DataCardProps>(({
             component="div"
             sx={{
               fontWeight: 700,
-              mb: 0.5,
+              mb: 0.25,
               color: 'text.primary',
               lineHeight: 1.2,
             }}
@@ -144,13 +140,13 @@ const DataCard = memo<DataCardProps>(({
             variant="body1"
             sx={{
               fontWeight: 600,
-              mb: 0.5,
+              mb: 0.25,
               color: 'text.primary',
             }}
           >
             {card.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4 }}>
             {card.subtitle}
           </Typography>
         </Box>
@@ -159,45 +155,45 @@ const DataCard = memo<DataCardProps>(({
 
         {/* Sparkline visualization */}
         {sparklineData && sparklineData.length > 0 && (
-          <Box sx={{ mt: 2, mb: 1 }}>
+          <Box sx={{ mt: 1.5, mb: 0 }}>
             <Sparkline
               data={sparklineData}
               color={sparklineColor}
-              height={32}
+              height={28}
               showTrend={false}
             />
           </Box>
         )}
 
-        {showClickHint && onClick && (
+        {/* Click affordance indicator - only shown for clickable cards */}
+        {onClick && (
           <Box
+            aria-hidden="true"
             sx={{
-              mt: 2,
-              pt: 2,
-              borderTop: '1px solid',
-              borderColor: 'divider',
+              position: 'absolute',
+              bottom: 12,
+              right: 12,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              opacity: 0,
+              transition: 'opacity 0.2s ease-in-out',
+              color: 'primary.main',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              '.MuiCard-root:hover &': {
+                opacity: 1,
+              },
+              '.MuiCard-root:focus-visible &': {
+                opacity: 1,
+              },
             }}
           >
-            <Typography
-              variant="caption"
-              color="primary"
-              sx={{
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                opacity: 0.8,
-                transition: 'opacity 0.2s ease-in-out',
-                '&:hover': {
-                  opacity: 1,
-                }
-              }}
-            >
-              View details
-              <Icons.ArrowForward sx={{ fontSize: '0.875rem' }} />
-            </Typography>
+            View details
+            <ArrowForward sx={{ fontSize: '0.875rem' }} />
           </Box>
         )}
+
       </CardContent>
     </Card>
   )

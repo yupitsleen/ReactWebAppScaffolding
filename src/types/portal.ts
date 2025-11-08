@@ -1,3 +1,7 @@
+// Re-export FeatureFlags from centralized location
+import type { FeatureFlags } from '../data/featureFlags'
+export type { FeatureFlags } from '../data/featureFlags'
+
 export type UserType = 'Customer' | 'Vendor' | 'Service Provider' | 'Admin'
 
 export interface User {
@@ -133,6 +137,10 @@ export interface DashboardSection {
 }
 
 export interface ThemeConfig {
+  name?: 'constructivism' | 'basic' | string // Theme name for extensibility
+  displayName?: string // Human-readable theme name
+  description?: string // Theme description for UI display
+  inspiration?: string // Design inspiration (e.g., "1920s Russian avant-garde art")
   primaryColor: string
   secondaryColor: string
   mode: 'light' | 'dark'
@@ -281,6 +289,9 @@ export interface EntityPages {
   [pageId: string]: EntityPageConfig
 }
 
+// Feature Flags System
+// FeatureFlags interface is now defined in src/data/featureFlags.ts and re-exported above
+
 export interface AppConfig {
   appName: string
   navigation: NavigationItem[]
@@ -297,4 +308,5 @@ export interface AppConfig {
   fieldConfig: FieldConfig
   formSchemas?: FormSchemas // Optional form generation schemas
   entityPages?: EntityPages // Optional generic entity page configurations
+  features?: FeatureFlags // Optional feature flags configuration
 }

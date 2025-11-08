@@ -86,9 +86,11 @@ const NotificationBell = () => {
         color="inherit"
         onClick={handleClick}
         sx={{
-          color: 'rgba(255, 255, 255, 0.9)',
+          // Use theme text color instead of hardcoded white
+          // This ensures visibility in light mode (dark icons) and dark mode (light icons)
+          color: 'text.primary',
           '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'action.hover',
           }
         }}
       >

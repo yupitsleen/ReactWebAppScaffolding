@@ -12,8 +12,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-import { PictureAsPdf as PdfIcon } from "@mui/icons-material";
-import * as Icons from "@mui/icons-material";
+import { PictureAsPdf as PdfIcon, Warning, CheckCircle } from "@mui/icons-material";
 import { serviceInfo } from "../data/sampleData";
 import { appConfig } from "../data/configurableData";
 import PageLayout from "../components/PageLayout";
@@ -29,6 +28,7 @@ import { useDataOperations } from "../hooks/useDataOperations";
 import { useNavigation } from "../hooks/useNavigation";
 import { useData } from "../context/ContextProvider";
 import { exportDashboardToPDF } from "../utils/pdfExport";
+import { getIconComponent } from "../utils/iconRegistry";
 
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
@@ -246,13 +246,16 @@ const Home = memo(() => {
                 {enabledDashboardCards.map((card) => (
                   <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.id}>
                     <AnimatedGridItem>
-                      <DataCard
-                        card={card}
-                        value={getCardValue(card)}
-                        onClick={() => handleNavigateToPage(card.dataSource)}
-                        sparklineData={sparklineData[card.dataSource as keyof typeof sparklineData]}
-                        sparklineColor={card.color ? `${card.color}.main` : undefined}
-                      />
+                      <Box sx={{ position: 'relative' }}>
+                        <DataCard
+                          card={card}
+                          value={getCardValue(card)}
+                          onClick={() => handleNavigateToPage(card.dataSource)}
+                          icon={card.icon ? getIconComponent(card.icon) : undefined}
+                          sparklineData={sparklineData[card.dataSource as keyof typeof sparklineData]}
+                          sparklineColor={card.color ? `${card.color}.main` : undefined}
+                        />
+                      </Box>
                     </AnimatedGridItem>
                   </Grid>
                 ))}
@@ -310,7 +313,7 @@ const Home = memo(() => {
                               <ListItem key={String(item.id)}>
                                 {section.dataSource === "todoItems" && (
                                   <>
-                                    <Icons.Warning
+                                    <Warning
                                       color="error"
                                       sx={{ mr: 1 }}
                                     />
@@ -355,7 +358,7 @@ const Home = memo(() => {
                               py: 2,
                             }}
                           >
-                            <Icons.CheckCircle color="success" sx={{ mr: 1 }} />
+                            <CheckCircle color="success" sx={{ mr: 1 }} />
                             <Typography variant="body2" color="text.secondary">
                               {section.dataSource === "todoItems"
                                 ? "No urgent tasks at this time"

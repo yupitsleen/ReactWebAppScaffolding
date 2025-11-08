@@ -39,15 +39,13 @@ export class PaymentFactory extends BaseEntityFactory<Payment> {
   ]
 
   create(overrides?: Partial<Payment>): Payment {
-    const now = new Date()
-    const dueDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
     const amount = Math.floor(Math.random() * 5000) + 100 // $100 - $5100
 
     return {
       id: overrides?.id || this.generateId(),
       description: overrides?.description || this.getRandomDescription(),
       amount: overrides?.amount ?? amount,
-      dueDate: overrides?.dueDate || dueDate.toISOString().split('T')[0],
+      dueDate: overrides?.dueDate || this.dateFuture(30), // Dynamic: 30 days from today
       status: overrides?.status || 'pending',
       category: overrides?.category || this.getRandomCategory(),
       paidDate: overrides?.paidDate,
@@ -78,10 +76,9 @@ export class PaymentFactory extends BaseEntityFactory<Payment> {
    * Creates a paid payment
    */
   createPaid(overrides?: Partial<Payment>): Payment {
-    const now = new Date()
     return this.create({
       status: 'paid',
-      paidDate: now.toISOString().split('T')[0],
+      paidDate: this.today(), // Dynamic: today's date
       paymentMethod: this.getRandomPaymentMethod(),
       ...overrides
     })
@@ -91,10 +88,9 @@ export class PaymentFactory extends BaseEntityFactory<Payment> {
    * Creates an overdue payment
    */
   createOverdue(overrides?: Partial<Payment>): Payment {
-    const pastDate = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
     return this.create({
       status: 'overdue',
-      dueDate: pastDate.toISOString().split('T')[0],
+      dueDate: this.dateAgo(15), // Dynamic: 15 days ago
       ...overrides
     })
   }

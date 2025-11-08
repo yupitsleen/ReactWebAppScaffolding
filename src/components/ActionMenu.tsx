@@ -1,8 +1,9 @@
-import { memo, type ReactNode } from 'react'
+import { memo } from 'react'
 import { Box, Button, IconButton, Tooltip } from '@mui/material'
-import * as Icons from '@mui/icons-material'
 import type { ActionButton } from '../types/portal'
 import { useEntityActions } from '../hooks/useEntityActions'
+import { getIconComponent } from '../utils/iconRegistry'
+import { IconAliases } from '../types/icons'
 
 interface ActionMenuProps {
   actions: ActionButton[]
@@ -23,25 +24,6 @@ const ActionMenu = memo<ActionMenuProps>(({
 }) => {
   const { executeAction, isActionAvailable } = useEntityActions()
 
-  const iconMap: Record<string, ReactNode> = {
-    Download: <Icons.Download />,
-    Share: <Icons.Share />,
-    Edit: <Icons.Edit />,
-    Delete: <Icons.Delete />,
-    Support: <Icons.Support />,
-    View: <Icons.Visibility />,
-    Complete: <Icons.CheckCircle />,
-    Resume: <Icons.PlayArrow />,
-    Pend: <Icons.Pause />,
-    Resolve: <Icons.CheckCircle />,
-    Reopen: <Icons.Refresh />,
-    Add: <Icons.Add />,
-    Search: <Icons.Search />,
-    Filter: <Icons.FilterList />,
-    Sort: <Icons.Sort />,
-    More: <Icons.MoreVert />,
-  }
-
   const availableActions = actions.filter(action =>
     isActionAvailable(action.id, entity)
   )
@@ -51,7 +33,8 @@ const ActionMenu = memo<ActionMenuProps>(({
   }
 
   const renderActionButton = (action: ActionButton) => {
-    const icon = action.icon ? iconMap[action.icon as keyof typeof iconMap] : null
+    const iconName = action.icon ? (IconAliases[action.icon] || action.icon) : null
+    const icon = iconName ? getIconComponent(iconName) : null
     const handleClick = () => executeAction(action, entity)
 
     if (!showLabels && icon) {

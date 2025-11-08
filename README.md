@@ -12,7 +12,6 @@ A production-ready, configuration-driven React portal designed for **instant bus
 - [Business Customization](#business-customization)
 - [Technical Architecture](#technical-architecture)
 - [Development Workflow](#development-workflow)
-- [Session Management for Claude Code](#session-management-for-claude-code)
 - [Development Commands](#development-commands)
 - [Customization Priority](#customization-priority)
 - [Deployment](#deployment)
@@ -149,6 +148,7 @@ fieldConfig: {
 ```
 
 **Benefits:**
+
 - 🎯 No naming conflicts between entities
 - 🎨 Icons for visual distinction
 - 💡 Tooltips for additional context
@@ -204,6 +204,7 @@ const Orders = memo(() => {
 ## Key Features
 
 ### Core Components
+
 - **DataTable** - Reusable table with sorting, filtering, pagination, custom renderers
 - **Timeline** - Interactive visualization with color-coded status indicators
 - **FieldRenderer** - Automatic field type handling (dates, currency, status, priority)
@@ -216,6 +217,7 @@ const Orders = memo(() => {
 **Registry-Based Architecture** - Add new entities with **84% less code** (~50 lines in 1 file vs 313 lines across 8 files):
 
 #### Phase 1 & 2: Core Infrastructure ✅
+
 - **ServiceRegistry** - Dynamic entity service registration without modifying core files
 - **FieldRendererRegistry** - Custom field rendering with pattern matching
 - **EntityValidator** - Schema-based validation with reusable rules
@@ -223,26 +225,27 @@ const Orders = memo(() => {
 - **Form Generation** - Schema-driven forms with automatic validation
 
 #### Phase 3: Developer Experience ✅
+
 - **Convention-Based Routing** - Pages auto-discovered from navigation config (zero manual routing)
 - **Data Factories** - Type-safe test data generation with sensible defaults
 
 ```typescript
 // 1. Register a new entity service (5 lines)
-serviceRegistry.register<Order>('orders', {
-  entityName: 'Orders',
-  endpoint: '/api/orders',
+serviceRegistry.register<Order>("orders", {
+  entityName: "Orders",
+  endpoint: "/api/orders",
   mockData: sampleOrders,
-  mode: 'fallback'
-})
+  mode: "fallback",
+});
 
 // 2. Add to navigation - route auto-generates! (3 lines)
 navigation: [
-  { id: "orders", label: "Orders", path: "/orders", enabled: true }
+  { id: "orders", label: "Orders", path: "/orders", enabled: true },
   // Creates route to pages/Orders.tsx automatically
-]
+];
 
 // 3. Generate test data with factories (1 line)
-const orders = orderFactory.createMany(10, { status: 'shipped' })
+const orders = orderFactory.createMany(10, { status: "shipped" });
 ```
 
 **See [EXTENSIBILITY_IMPROVEMENTS.md](EXTENSIBILITY_IMPROVEMENTS.md) for complete documentation.**
@@ -328,13 +331,38 @@ dashboardSections: [
 
 </details>
 
-### Live Theme Testing
+## Design System
 
-```javascript
-// Browser console commands
-setThemeColor("primary-color", "#e91e63"); // Pink theme
-applyColorPreset("blue"); // Corporate blue
-applyColorPreset("green"); // Nature theme
+The application uses a **Constructivism-inspired design system** with warm modernist aesthetics.
+
+**Typography:**
+- Headers: Bebas Neue (bold, uppercase, tracking: 0.12em)
+- Subheaders: Work Sans (semibold)
+- Body: Work Sans (regular)
+- Code: IBM Plex Mono
+
+**Colors:**
+- Primary: #8B0000 (dark red)
+- Secondary: #D4A574 (warm tan)
+- Accent: #2C5F2D (forest green)
+- Background: #FAF7F2 (warm off-white)
+
+**Aesthetic:**
+- Subtle border radius (4px)
+- Bold borders (2px, 3px on focus)
+- Outlined buttons (fill on hover)
+- Uppercase headers and labels
+- Geometric accents on featured sections (sparingly)
+
+**Alternative Theme:**
+To use the "basic" theme (previous default), update `src/data/configurableData.ts`:
+```typescript
+theme: {
+  primaryColor: "#3B82F6",
+  secondaryColor: "#8B5CF6",
+  borderRadius: 12,
+  fontFamily: '"Inter", sans-serif',
+}
 ```
 
 ## Technical Architecture
@@ -560,6 +588,7 @@ dotnet test        # Run 6 integration tests
 ## Recent Updates
 
 ### Phase 3: Developer Experience Complete ✅
+
 - **Convention-Based Routing** - Pages auto-discovered from navigation config (zero manual routing!)
 - **Data Factories** - Type-safe test data generation with BaseEntityFactory pattern
 - **84% code reduction** - Add entities with ~50 lines in 1 file (down from 313 lines across 8 files)
@@ -599,6 +628,7 @@ Three files must stay synchronized for GitHub Pages:
 3. **`package.json`** - `homepage: "https://yupitsleen.github.io/ReactWebAppScaffolding"`
 
 **To deploy to a different URL:**
+
 - Update all three configurations to match your repository name
 - Or rename your GitHub repository to match the desired path
 
@@ -610,6 +640,7 @@ Three files must stay synchronized for GitHub Pages:
 ### Quality Gates
 
 Every deployment must pass:
+
 - ✅ All 97 frontend tests
 - ✅ TypeScript compilation
 - ✅ Production build

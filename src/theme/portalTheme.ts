@@ -1,20 +1,46 @@
 import { createTheme } from '@mui/material/styles'
 import type { ThemeConfig } from '../types/portal'
+import { getThemePreset } from './themePresets'
 // Layout classes are available but not applied via theme - use className prop on Box components
 // import { layoutClasses } from './layoutClasses'
 
+/**
+ * Validate theme configuration
+ * Ensures required properties are present and valid
+ */
+const validateThemeConfig = (themeConfig: ThemeConfig): void => {
+  if (!themeConfig.primaryColor || typeof themeConfig.primaryColor !== 'string') {
+    throw new Error('ThemeConfig.primaryColor is required and must be a string')
+  }
+  if (!themeConfig.secondaryColor || typeof themeConfig.secondaryColor !== 'string') {
+    throw new Error('ThemeConfig.secondaryColor is required and must be a string')
+  }
+  if (!themeConfig.mode || !['light', 'dark'].includes(themeConfig.mode)) {
+    throw new Error('ThemeConfig.mode must be either "light" or "dark"')
+  }
+}
+
 // Inject CSS custom properties for dynamic color management
 const injectCSSVariables = (themeConfig: ThemeConfig) => {
-  const root = document.documentElement;
-  root.style.setProperty('--primary-color', themeConfig.primaryColor);
-  root.style.setProperty('--secondary-color', themeConfig.secondaryColor);
-  root.style.setProperty('--background-color', themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937');
-  root.style.setProperty('--text-primary', themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB');
-  root.style.setProperty('--text-secondary', themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF');
-  root.style.setProperty('--border-color', themeConfig.mode === 'light' ? '#F3F4F6' : '#374151');
-  root.style.setProperty('--card-background', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
-  root.style.setProperty('--surface-color', themeConfig.mode === 'light' ? '#FFFFFF' : '#374151');
-};
+  validateThemeConfig(themeConfig)
+
+  const root = document.documentElement
+  const preset = getThemePreset(themeConfig.name)
+  const modeValues = themeConfig.mode === 'light' ? preset.light : preset.dark
+
+  // Set primary and secondary colors (with optional preset overrides)
+  root.style.setProperty('--primary-color', modeValues.primary || themeConfig.primaryColor)
+  root.style.setProperty('--secondary-color', modeValues.secondary || themeConfig.secondaryColor)
+
+  // Set theme-specific colors from preset
+  root.style.setProperty('--accent-color', modeValues.accent)
+  root.style.setProperty('--background-color', modeValues.background)
+  root.style.setProperty('--surface-color', modeValues.surface)
+  root.style.setProperty('--border-color', modeValues.border)
+  root.style.setProperty('--card-background', modeValues.cardBackground)
+  root.style.setProperty('--text-primary', modeValues.textPrimary)
+  root.style.setProperty('--text-secondary', modeValues.textSecondary)
+}
 
 // Create theme based on configuration
 export const createPortalTheme = (themeConfig: ThemeConfig) => {
@@ -44,19 +70,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       contrastText: '#ffffff',
     },
     success: {
-      main: '#10B981',
-      light: '#34D399',
-      dark: '#047857',
+      main: '#2C5F2D',    // Forest green (Constructivism)
+      light: '#4A8A4B',
+      dark: '#1F4420',
     },
     warning: {
-      main: '#F59E0B',
-      light: '#FCD34D',
-      dark: '#D97706',
+      main: '#D4A574',    // Warm tan (Constructivism)
+      light: '#E0B896',
+      dark: '#B88A5A',
     },
     error: {
-      main: '#EF4444',
-      light: '#F87171',
-      dark: '#DC2626',
+      main: '#8B0000',    // Dark red (Constructivism)
+      light: '#B22222',
+      dark: '#660000',
     },
     info: {
       main: '#8B5CF6',
@@ -64,58 +90,77 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       dark: '#7C3AED',
     },
     background: {
-      default: themeConfig.mode === 'light' ? '#E8E3EB' : '#1F2937',
-      paper: themeConfig.mode === 'light' ? '#FFFFFF' : '#374151',
+      // Use values from theme preset for consistency
+      default: getThemePreset(themeConfig.name)[themeConfig.mode].background,
+      paper: getThemePreset(themeConfig.name)[themeConfig.mode].surface,
     },
     text: {
       primary: themeConfig.mode === 'light' ? '#1F2937' : '#F9FAFB',
       secondary: themeConfig.mode === 'light' ? '#6B7280' : '#9CA3AF',
     },
   },
+  // Constructivism typography
+  // Headers use Bebas Neue (bold, uppercase) for dramatic hierarchy
+  // Body text uses Work Sans (readable, modern) for comfortable reading
+  // This creates strong visual contrast while maintaining readability
   typography: {
     fontFamily: themeConfig.fontFamily,
     h1: {
-      fontSize: '2.5rem',
-      fontWeight: 500,
+      fontFamily: '"Bebas Neue", "Arial Black", sans-serif',
+      fontSize: '3rem',
+      fontWeight: 700,
       lineHeight: 1.2,
+      textTransform: 'uppercase',
+      letterSpacing: '0.15em',
       marginBottom: '1rem',
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: 500,
+      fontFamily: '"Bebas Neue", "Arial Black", sans-serif',
+      fontSize: '2.5rem',
+      fontWeight: 700,
       lineHeight: 1.3,
+      textTransform: 'uppercase',
+      letterSpacing: '0.12em',
       marginBottom: '0.875rem',
     },
     h3: {
-      fontSize: '1.75rem',
-      fontWeight: 500,
+      fontFamily: '"Bebas Neue", "Arial Black", sans-serif',
+      fontSize: '2rem',
+      fontWeight: 700,
       lineHeight: 1.4,
+      textTransform: 'uppercase',
+      letterSpacing: '0.12em',
       marginBottom: '0.75rem',
     },
     h4: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1.5rem',
-      fontWeight: 500,
+      fontWeight: 600,
       lineHeight: 1.4,
       marginBottom: '0.625rem',
     },
     h5: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1.25rem',
-      fontWeight: 500,
+      fontWeight: 600,
       lineHeight: 1.5,
       marginBottom: '0.5rem',
     },
     h6: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1.125rem',
       fontWeight: 500,
       lineHeight: 1.5,
       marginBottom: '0.5rem',
     },
     body1: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '1rem',
       lineHeight: 1.6,
       marginBottom: '1rem',
     },
     body2: {
+      fontFamily: '"Work Sans", sans-serif',
       fontSize: '0.875rem',
       lineHeight: 1.5,
       marginBottom: '0.75rem',
@@ -123,7 +168,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
   },
   spacing: 8,
   shape: {
-    borderRadius: 12,
+    borderRadius: 4,  // Constructivism: subtle rounds (was 12)
   },
   components: {
     // Card component defaults
@@ -133,11 +178,11 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       },
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          border: `1px solid var(--border-color)`,
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+          borderRadius: 4,  // Constructivism: subtle rounds (was 12)
+          border: `2px solid var(--border-color)`,  // Constructivism: bolder borders (was 1px)
+          boxShadow: 'none',  // Constructivism: no shadows (flat design)
           transition: 'all 0.3s ease-in-out',
-          marginBottom: '24px',
+          marginBottom: '12px',  // Compact spacing (was 24px)
           '&.clickable:hover, &[role="button"]:hover': {
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             borderColor: 'var(--primary-color)',
@@ -155,9 +200,9 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: '20px',
+          padding: '12px 16px',  // Compact padding (was 20px)
           '&:last-child': {
-            paddingBottom: '20px',
+            paddingBottom: '12px',  // Compact padding (was 20px)
           },
         },
       },
@@ -169,7 +214,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
-          padding: '10px 24px',
+          padding: '8px 20px',  // Compact padding (was 10px 24px)
           fontSize: '0.9375rem',
           boxShadow: 'none',
           transition: 'all 0.2s ease-in-out',
@@ -192,16 +237,16 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
 
         // Size variants
         sizeSmall: {
-          padding: '6px 16px',
+          padding: '4px 12px',  // Compact (was 6px 16px)
           fontSize: '0.8125rem',
           fontWeight: 500,
         },
         sizeMedium: {
-          padding: '10px 24px',
+          padding: '8px 20px',  // Compact (was 10px 24px)
           fontSize: '0.9375rem',
         },
         sizeLarge: {
-          padding: '14px 32px',
+          padding: '10px 28px',  // Compact (was 14px 32px)
           fontSize: '1rem',
           fontWeight: 600,
         },
@@ -223,35 +268,44 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
 
         // Contained Primary
         containedPrimary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          background: theme.palette.primary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+            background: theme.palette.primary.dark,
           },
         }),
 
         // Contained Secondary
         containedSecondary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+          background: theme.palette.secondary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.secondary.dark} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: theme.palette.secondary.dark,
           },
         }),
 
         // Outlined variant (secondary action)
         outlined: {
           borderWidth: '2px',
+          textTransform: 'uppercase',      // Constructivism
+          letterSpacing: '0.08em',         // Constructivism
 
           '&:hover': {
             borderWidth: '2px',
             transform: 'translateY(-1px)',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            // Keep buttons outlined on hover for better readability
+            // MUI will handle background color tinting based on theme
           },
 
           '&:active': {
             transform: 'translateY(0px)',
             boxShadow: 'none',
+          },
+
+          '&:focus-visible': {              // Constructivism: bold focus
+            borderWidth: '3px',
+            outline: 'none',
           },
         },
 
@@ -373,18 +427,18 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
 
         primary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          background: theme.palette.primary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+            background: theme.palette.primary.dark,
           },
         }),
 
         secondary: ({ theme }) => ({
-          background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+          background: theme.palette.secondary.main,
 
           '&:hover': {
-            background: `linear-gradient(135deg, ${theme.palette.secondary.dark} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: theme.palette.secondary.dark,
           },
         }),
       },
@@ -393,8 +447,12 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          fontWeight: 500,
+          borderRadius: 2,       // Constructivism: angular (was 16)
+          fontWeight: 600,       // Constructivism: bolder (was 500)
+          textTransform: 'uppercase',  // Constructivism
+          fontSize: '0.75rem',         // Constructivism
+          letterSpacing: '0.05em',     // Constructivism
+          border: '2px solid currentColor',  // Constructivism: visible borders
         },
         colorPrimary: {
           backgroundColor: '#EDE9FE',
@@ -426,19 +484,19 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
     MuiContainer: {
       styleOverrides: {
         root: {
-          paddingTop: '24px',
-          paddingBottom: '24px',
+          paddingTop: '16px',  // Compact (was 24px)
+          paddingBottom: '16px',  // Compact (was 24px)
           paddingLeft: '16px',
           paddingRight: '16px',
           '@media (max-width: 640px)': {
-            paddingTop: '16px',
-            paddingBottom: '16px',
+            paddingTop: '12px',  // Compact (was 16px)
+            paddingBottom: '12px',  // Compact (was 16px)
             paddingLeft: '12px',
             paddingRight: '12px',
           },
           '@media (max-width: 480px)': {
-            paddingTop: '12px',
-            paddingBottom: '12px',
+            paddingTop: '8px',  // Compact (was 12px)
+            paddingBottom: '8px',  // Compact (was 12px)
             paddingLeft: '8px',
             paddingRight: '8px',
           },
@@ -450,10 +508,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
       styleOverrides: {
         h1: {
           fontWeight: 600,
-          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: 'var(--primary-color)',
           marginBottom: '8px',
           textAlign: 'center',
           '@media (max-width: 640px)': {
@@ -467,10 +522,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
         h3: {
           fontWeight: 600,
-          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: 'var(--primary-color)',
           marginBottom: '8px',
           textAlign: 'center',
           '@media (max-width: 640px)': {
@@ -484,10 +536,7 @@ export const createPortalTheme = (themeConfig: ThemeConfig) => {
         },
         h4: {
           fontWeight: 600,
-          background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          color: 'var(--primary-color)',
           marginBottom: '6px',
           textAlign: 'center',
           '@media (max-width: 640px)': {
