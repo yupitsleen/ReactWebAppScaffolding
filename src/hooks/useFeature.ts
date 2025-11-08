@@ -1,15 +1,19 @@
 import { useMemo } from 'react'
 import { appConfig, DEFAULT_FEATURES } from '../data/configurableData'
-import type { FeatureFlags } from '../types/portal'
 
 /**
- * Hook to check if a feature is enabled in the application
+ * Core hook for feature flag checking
+ *
+ * Single Responsibility: Generic feature path resolution only
+ * For domain-specific feature logic, use:
+ * - usePageFeatures() for page-related flags
+ * - useCrudFeatures() for CRUD operation flags
  *
  * @example
  * ```tsx
  * const { isEnabled, features } = useFeature()
  *
- * // Check specific features
+ * // Check any feature using dot notation
  * if (isEnabled('darkMode')) {
  *   // Render dark mode toggle
  * }
@@ -39,45 +43,15 @@ export function useFeature() {
     let value: unknown = features
     for (const key of keys) {
       value = (value as Record<string, unknown>)?.[key]
+      if (value === undefined || value === null) {
+        return false
+      }
     }
     return value === true
-  }
-
-  /**
-   * Check if a specific page is enabled
-   *
-   * @param pageId - Page identifier (e.g., 'discussions', 'tasks')
-   * @returns true if page is enabled, false otherwise
-   */
-  const isPageEnabled = (pageId: string): boolean => {
-    return isEnabled(`pages.${pageId}`)
-  }
-
-  /**
-   * Check if a specific CRUD operation is enabled
-   *
-   * @param operation - CRUD operation ('create', 'edit', 'delete', 'export', 'import')
-   * @returns true if operation is enabled, false otherwise
-   */
-  const canPerformCrud = (operation: keyof FeatureFlags['crud']): boolean => {
-    return isEnabled(`crud.${operation}`)
-  }
-
-  /**
-   * Get all enabled pages from the navigation
-   * Respects both navigation.enabled AND features.pages settings
-   */
-  const getEnabledPages = (): string[] => {
-    return appConfig.navigation
-      .filter(nav => nav.enabled && isPageEnabled(nav.id))
-      .map(nav => nav.id)
   }
 
   return {
     features,
     isEnabled,
-    isPageEnabled,
-    canPerformCrud,
-    getEnabledPages,
   }
 }

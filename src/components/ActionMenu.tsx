@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Tooltip } from '@mui/material'
 import type { ActionButton } from '../types/portal'
 import { useEntityActions } from '../hooks/useEntityActions'
 import { getIconComponent } from '../utils/iconRegistry'
+import { IconAliases } from '../types/icons'
 
 interface ActionMenuProps {
   actions: ActionButton[]
@@ -23,18 +24,6 @@ const ActionMenu = memo<ActionMenuProps>(({
 }) => {
   const { executeAction, isActionAvailable } = useEntityActions()
 
-  // Map action icon names to registry icon names
-  const iconAliases: Record<string, string> = {
-    View: 'Visibility',
-    Complete: 'CheckCircle',
-    Resume: 'PlayArrow',
-    Pend: 'Pause',
-    Resolve: 'CheckCircle',
-    Reopen: 'Refresh',
-    Filter: 'FilterList',
-    More: 'MoreVert',
-  }
-
   const availableActions = actions.filter(action =>
     isActionAvailable(action.id, entity)
   )
@@ -44,7 +33,7 @@ const ActionMenu = memo<ActionMenuProps>(({
   }
 
   const renderActionButton = (action: ActionButton) => {
-    const iconName = action.icon ? (iconAliases[action.icon] || action.icon) : null
+    const iconName = action.icon ? (IconAliases[action.icon] || action.icon) : null
     const icon = iconName ? getIconComponent(iconName) : null
     const handleClick = () => executeAction(action, entity)
 

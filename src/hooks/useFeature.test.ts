@@ -95,130 +95,67 @@ describe('useFeature', () => {
     })
   })
 
-  describe('isPageEnabled', () => {
-    it('returns true for enabled pages', () => {
+  describe('error handling', () => {
+    it('handles invalid paths gracefully', () => {
       const { result } = renderHook(() => useFeature())
 
-      expect(result.current.isPageEnabled('home')).toBe(true)
-      expect(result.current.isPageEnabled('tasks')).toBe(true)
-      expect(result.current.isPageEnabled('documents')).toBe(true)
+      expect(result.current.isEnabled('')).toBe(false)
+      expect(result.current.isEnabled('.')).toBe(false)
+      expect(result.current.isEnabled('..')).toBe(false)
     })
 
-    it('returns false for disabled pages', async () => {
+    it('handles null/undefined values in path', () => {
+      const { result } = renderHook(() => useFeature())
+
+      expect(result.current.isEnabled('some.deeply.nested.path.that.does.not.exist')).toBe(false)
+    })
+
+    it('handles features with null values', async () => {
       const configModule = await import('../data/configurableData')
       configModule.appConfig.features = {
         ...configModule.appConfig.features!,
-        pages: {
-          ...configModule.appConfig.features!.pages,
-          discussions: false,
-          timeline: false,
-        },
+        // @ts-expect-error - Testing runtime null handling
+        darkMode: null,
       }
 
       const { result } = renderHook(() => useFeature())
 
-      expect(result.current.isPageEnabled('discussions')).toBe(false)
-      expect(result.current.isPageEnabled('timeline')).toBe(false)
+      expect(result.current.isEnabled('darkMode')).toBe(false)
     })
 
-    it('returns false for non-existent pages', () => {
-      const { result } = renderHook(() => useFeature())
-
-      expect(result.current.isPageEnabled('nonExistentPage')).toBe(false)
-    })
-  })
-
-  describe('canPerformCrud', () => {
-    it('returns true for enabled CRUD operations', () => {
-      const { result } = renderHook(() => useFeature())
-
-      expect(result.current.canPerformCrud('create')).toBe(true)
-      expect(result.current.canPerformCrud('edit')).toBe(true)
-      expect(result.current.canPerformCrud('delete')).toBe(true)
-      expect(result.current.canPerformCrud('export')).toBe(true)
-    })
-
-    it('returns false for disabled CRUD operations', async () => {
+    it('handles features with undefined values', async () => {
       const configModule = await import('../data/configurableData')
       configModule.appConfig.features = {
         ...configModule.appConfig.features!,
-        crud: {
-          create: false,
-          edit: false,
-          delete: false,
-          export: false,
-          import: false,
-        },
+        // @ts-expect-error - Testing runtime undefined handling
+        darkMode: undefined,
       }
 
       const { result } = renderHook(() => useFeature())
 
-      expect(result.current.canPerformCrud('create')).toBe(false)
-      expect(result.current.canPerformCrud('edit')).toBe(false)
-      expect(result.current.canPerformCrud('delete')).toBe(false)
-      expect(result.current.canPerformCrud('export')).toBe(false)
+      expect(result.current.isEnabled('darkMode')).toBe(false)
     })
 
-    it('handles import operation (disabled by default)', () => {
-      const { result } = renderHook(() => useFeature())
-
-      expect(result.current.canPerformCrud('import')).toBe(false)
-    })
-  })
-
-  describe('getEnabledPages', () => {
-    it('returns all enabled pages from navigation', () => {
-      const { result } = renderHook(() => useFeature())
-
-      const enabledPages = result.current.getEnabledPages()
-
-      expect(enabledPages).toContain('home')
-      expect(enabledPages).toContain('tasks')
-      expect(enabledPages).toContain('documents')
-      expect(enabledPages.length).toBeGreaterThan(0)
-    })
-
-    it('filters out disabled pages', async () => {
+    it('handles non-boolean leaf values', async () => {
       const configModule = await import('../data/configurableData')
       configModule.appConfig.features = {
         ...configModule.appConfig.features!,
-        pages: {
-          home: true,
-          tasks: true,
-          payments: true,
-          documents: true,
-          discussions: false,  // Disabled
-          table: true,
-          timeline: false,     // Disabled
-          contact: true,
-        },
+        // @ts-expect-error - Testing runtime type checking
+        darkMode: 'yes',
       }
 
       const { result } = renderHook(() => useFeature())
 
-      const enabledPages = result.current.getEnabledPages()
-
-      expect(enabledPages).not.toContain('discussions')
-      expect(enabledPages).not.toContain('timeline')
-      expect(enabledPages).toContain('home')
-      expect(enabledPages).toContain('tasks')
+      // Should return false for non-boolean values
+      expect(result.current.isEnabled('darkMode')).toBe(false)
     })
 
-    it('respects navigation.enabled flag as well', async () => {
-      const configModule = await import('../data/configurableData')
-
-      // Disable a page in navigation config
-      const homeNav = configModule.appConfig.navigation.find(n => n.id === 'home')
-      if (homeNav) {
-        homeNav.enabled = false
-      }
-
+    it('handles circular references gracefully', () => {
       const { result } = renderHook(() => useFeature())
 
-      const enabledPages = result.current.getEnabledPages()
-
-      // Home should not appear even if feature flag is true
-      expect(enabledPages).not.toContain('home')
+      // This shouldn't throw, just return false
+      expect(() => result.current.isEnabled('circular.ref.test')).not.toThrow()
+      expect(result.current.isEnabled('circular.ref.test')).toBe(false)
     })
   })
 
@@ -252,29 +189,6 @@ describe('useFeature', () => {
     })
   })
 
-  describe('read-only mode scenario', () => {
-    it('disables all write operations while keeping read operations', async () => {
-      const configModule = await import('../data/configurableData')
-      configModule.appConfig.features = {
-        ...configModule.appConfig.features!,
-        crud: {
-          create: false,
-          edit: false,
-          delete: false,
-          export: true,  // Allow export in read-only mode
-          import: false,
-        },
-      }
-
-      const { result } = renderHook(() => useFeature())
-
-      expect(result.current.canPerformCrud('create')).toBe(false)
-      expect(result.current.canPerformCrud('edit')).toBe(false)
-      expect(result.current.canPerformCrud('delete')).toBe(false)
-      expect(result.current.canPerformCrud('export')).toBe(true)
-    })
-  })
-
   describe('minimal UI scenario', () => {
     it('disables all UI enhancements', async () => {
       const configModule = await import('../data/configurableData')
@@ -296,33 +210,6 @@ describe('useFeature', () => {
       expect(result.current.isEnabled('commandPalette')).toBe(false)
       expect(result.current.isEnabled('keyboardShortcuts')).toBe(false)
       expect(result.current.isEnabled('notifications')).toBe(false)
-    })
-  })
-
-  describe('custom page configuration', () => {
-    it('allows selective page enabling for different business domains', async () => {
-      const configModule = await import('../data/configurableData')
-      configModule.appConfig.features = {
-        ...configModule.appConfig.features!,
-        pages: {
-          home: true,
-          tasks: true,
-          payments: false,    // Not needed for this business
-          documents: true,
-          discussions: false, // Not needed for this business
-          table: false,       // Demo page disabled
-          timeline: true,
-          contact: true,
-        },
-      }
-
-      const { result } = renderHook(() => useFeature())
-
-      expect(result.current.isPageEnabled('tasks')).toBe(true)
-      expect(result.current.isPageEnabled('documents')).toBe(true)
-      expect(result.current.isPageEnabled('payments')).toBe(false)
-      expect(result.current.isPageEnabled('discussions')).toBe(false)
-      expect(result.current.isPageEnabled('table')).toBe(false)
     })
   })
 })

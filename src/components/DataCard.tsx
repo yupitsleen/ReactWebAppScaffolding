@@ -3,12 +3,16 @@ import { Card, CardContent, Box, Typography, alpha } from '@mui/material'
 import { TrendingUp, TrendingDown, ArrowForward } from '@mui/icons-material'
 import type { DashboardCard } from '../types/portal'
 import Sparkline from './Sparkline'
-import { getIconComponent } from '../utils/iconRegistry'
 
 interface DataCardProps {
   card: DashboardCard
   value: string | number
   onClick?: () => void
+  /**
+   * Icon to display in the card
+   * REQUIRED: Must be resolved by caller via iconRegistry
+   * This follows Dependency Inversion Principle - DataCard doesn't depend on iconRegistry
+   */
   icon?: ReactNode
   children?: ReactNode
   trend?: {
@@ -29,7 +33,7 @@ const DataCard = memo<DataCardProps>(({
   sparklineData,
   sparklineColor
 }) => {
-  const displayIcon = icon || (card.icon && getIconComponent(card.icon))
+  const displayIcon = icon
 
   return (
     <Card

@@ -19,6 +19,7 @@ import { CommandPalette } from './components/CommandPalette'
 import { useDocumentTitle } from './hooks/useDocumentTitle'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { useFeature } from './hooks/useFeature'
+import { usePageFeatures } from './hooks/usePageFeatures'
 import { generateRoutesFromConfig } from './routing/RouteGenerator'
 import './utils/colorManager'
 
@@ -51,7 +52,8 @@ function AuthenticatedApp() {
   const location = useLocation()
   const [shortcutsDialogOpen, setShortcutsDialogOpen] = useState(false)
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
-  const { isEnabled, isPageEnabled } = useFeature()
+  const { isEnabled } = useFeature()
+  const { isPageEnabled } = usePageFeatures()
 
   // Generate routes from configuration (convention-based routing)
   // Filter by feature flags

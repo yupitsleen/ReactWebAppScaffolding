@@ -28,6 +28,7 @@ import { useDataOperations } from "../hooks/useDataOperations";
 import { useNavigation } from "../hooks/useNavigation";
 import { useData } from "../context/ContextProvider";
 import { exportDashboardToPDF } from "../utils/pdfExport";
+import { getIconComponent } from "../utils/iconRegistry";
 
 const Home = memo(() => {
   const [loading] = usePageLoading(false);
@@ -250,6 +251,7 @@ const Home = memo(() => {
                           card={card}
                           value={getCardValue(card)}
                           onClick={() => handleNavigateToPage(card.dataSource)}
+                          icon={card.icon ? getIconComponent(card.icon) : undefined}
                           sparklineData={sparklineData[card.dataSource as keyof typeof sparklineData]}
                           sparklineColor={card.color ? `${card.color}.main` : undefined}
                         />
